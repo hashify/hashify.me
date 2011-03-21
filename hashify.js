@@ -156,7 +156,19 @@
   };
 
   $('a').onclick = function () {
-    // TODO: add logic
+    var
+      selection = new Selection(),
+      before = selection.before,
+      after = selection.after,
+      start = before.length,
+      text = selection.toString();
+
+    selection.textarea.value = (
+      /^\]\(http:\/\/\)/.test(after) && /\[$/.test(before)?
+        before.substr(0, --start) + text + after.substr(10):
+        (++start, before + '[' + text + '](http://)' + after));
+
+    selection.textarea.setSelectionRange(start, start + text.length);
     return false;
   };
 
