@@ -1,11 +1,15 @@
 (function () {
 
   var
+
     $ = function (id) {
       return document.getElementById(id);
     },
+
     ____ = '    ',
+
     editor = $('markdown'),
+
     resolve = function (reSelection, reBefore, reAfter, open, close) {
       var
         openLen = open.length,
@@ -28,12 +32,14 @@
       selection.textarea.setSelectionRange(start, start + len);
       return false;
     },
+
     setLocation = (function () {
       return (
         history && history.pushState?
           function (hash) { history.pushState(null, null, '/' + hash); }:
           function (hash) { location.hash = '#!/' + hash; });
     }()),
+
     setTitle = (function () {
       var div = document.createElement('div');
       return function () {
@@ -44,6 +50,7 @@
         }
       };
     }()),
+
     setValue = function (text) {
       $('markup').innerHTML = new Showdown().convert(text);
     };
