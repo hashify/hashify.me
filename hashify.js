@@ -200,10 +200,13 @@
   };
 
   $('hr').onclick = function () {
-    var selection = new Selection().blockify();
-    selection.lines = ['- - -'];
-    selection.textarea.value = selection.before + selection.toString() + selection.after;
-    selection.textarea.setSelectionRange(selection.before.length, selection.before.length + 5);
+    var
+      selection = new Selection().blockify(),
+      before = selection.before,
+      start = before.length;
+
+    selection.textarea.value = before + '- - -' + selection.after;
+    selection.textarea.setSelectionRange(start, start + 5);
     return false;
   };
 
