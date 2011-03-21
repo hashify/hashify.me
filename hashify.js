@@ -146,14 +146,17 @@
       before = selection.before,
       after = selection.after,
       start = before.length,
-      text = selection.toString();
+      text = selection.toString(),
+      len = text.length;
 
     selection.textarea.value = (
-      /^(__|\*\*)/.test(after) && /(__|\*\*)$/.test(before)?
-        (start -= 2, before.substr(0, start) + text + after.substr(2)):
-        (start += 2, before + '**' + text + '**' + after));
+      /^(__|\*\*).*\1$/.test(text)?
+        (len -= 4, before + text.substr(2, len) + after):
+        /^(__|\*\*)/.test(after) && /(__|\*\*)$/.test(before)?
+          (start -= 2, before.substr(0, start) + text + after.substr(2)):
+          (start += 2, before + '**' + text + '**' + after));
 
-    selection.textarea.setSelectionRange(start, start + text.length);
+    selection.textarea.setSelectionRange(start, start + len);
     return false;
   };
 
@@ -163,14 +166,17 @@
       before = selection.before,
       after = selection.after,
       start = before.length,
-      text = selection.toString();
+      text = selection.toString(),
+      len = text.length;
 
     selection.textarea.value = (
-      /^[_*]/.test(after) && /[_*]$/.test(before)?
-        before.substr(0, --start) + text + after.substr(1):
-        (++start, before + '_' + text + '_' + after));
+      /^[_*].*[_*]$/.test(text)?
+        (len -= 2, before + text.substr(1, len) + after):
+        /^[_*]/.test(after) && /[_*]$/.test(before)?
+          before.substr(0, --start) + text + after.substr(1):
+          (++start, before + '_' + text + '_' + after));
 
-    selection.textarea.setSelectionRange(start, start + text.length);
+    selection.textarea.setSelectionRange(start, start + len);
     return false;
   };
 
