@@ -6,6 +6,28 @@
     },
     ____ = '    ',
     editor = $('markdown'),
+    resolve = function (reSelection, reBefore, reAfter, open, close) {
+      var
+        openLen = open.length,
+        selection = new Selection(),
+        before = selection.before,
+        after = selection.after,
+        start = before.length,
+        text = selection.toString(),
+        len = text.length;
+
+      close || (close = open);
+
+      selection.textarea.value = (
+        reSelection.test(text)?
+          (len -= openLen + close.length, before + text.substr(openLen, len) + after):
+          reAfter.test(after) && reBefore.test(before)?
+            (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
+            (start += openLen, before + open + text + close + after));
+
+      selection.textarea.setSelectionRange(start, start + len);
+      return false;
+    },
     setLocation = (function () {
       return (
         history && history.pushState?
@@ -141,83 +163,35 @@
   };
 
   $('strong').onclick = function () {
-    var
-      selection = new Selection(),
-      before = selection.before,
-      after = selection.after,
-      start = before.length,
-      text = selection.toString(),
-      len = text.length;
-
-    selection.textarea.value = (
-      /^(__|\*\*).*\1$/.test(text)?
-        (len -= 4, before + text.substr(2, len) + after):
-        /^(__|\*\*)/.test(after) && /(__|\*\*)$/.test(before)?
-          (start -= 2, before.substr(0, start) + text + after.substr(2)):
-          (start += 2, before + '**' + text + '**' + after));
-
-    selection.textarea.setSelectionRange(start, start + len);
-    return false;
+    return resolve(
+      /^(__|\*\*).*\1$/,
+      /(__|\*\*)$/, /^(__|\*\*)/,
+      '**'
+    );
   };
 
   $('em').onclick = function () {
-    var
-      selection = new Selection(),
-      before = selection.before,
-      after = selection.after,
-      start = before.length,
-      text = selection.toString(),
-      len = text.length;
-
-    selection.textarea.value = (
-      /^[_*].*[_*]$/.test(text)?
-        (len -= 2, before + text.substr(1, len) + after):
-        /^[_*]/.test(after) && /[_*]$/.test(before)?
-          before.substr(0, --start) + text + after.substr(1):
-          (++start, before + '_' + text + '_' + after));
-
-    selection.textarea.setSelectionRange(start, start + len);
-    return false;
+    return resolve(
+      /^[_*].*[_*]$/,
+      /[_*]$/, /^[_*]/,
+      '_'
+    );
   };
 
   $('img').onclick = function () {
-    var
-      selection = new Selection(),
-      before = selection.before,
-      after = selection.after,
-      start = before.length,
-      text = selection.toString(),
-      len = text.length;
-
-    selection.textarea.value = (
-      /^!\[.*\]\(http:\/\/\)$/.test(text)?
-        (len -= 12, before + text.substr(2, len) + after):
-        /^\]\(http:\/\/\)/.test(after) && /!\[$/.test(before)?
-          (start -= 2, before.substr(0, start) + text + after.substr(10)):
-          (start += 2, before + '![' + text + '](http://)' + after));
-
-    selection.textarea.setSelectionRange(start, start + len);
-    return false;
+    return resolve(
+      /^!\[.*\]\(http:\/\/\)$/,
+      /!\[$/, /^\]\(http:\/\/\)/,
+      '![', '](http://)'
+    );
   };
 
   $('a').onclick = function () {
-    var
-      selection = new Selection(),
-      before = selection.before,
-      after = selection.after,
-      start = before.length,
-      text = selection.toString(),
-      len = text.length;
-
-    selection.textarea.value = (
-      /^\[.*\]\(http:\/\/\)$/.test(text)?
-        (len -= 11, before + text.substr(1, len) + after):
-        /^\]\(http:\/\/\)/.test(after) && /\[$/.test(before)?
-          before.substr(0, --start) + text + after.substr(10):
-          (++start, before + '[' + text + '](http://)' + after));
-
-    selection.textarea.setSelectionRange(start, start + len);
-    return false;
+    return resolve(
+      /^\[.*\]\(http:\/\/\)$/,
+      /\[$/, /^\]\(http:\/\/\)/,
+      '[', '](http://)'
+    );
   };
 
   $('blockquote').onclick = function () {
