@@ -17,13 +17,13 @@
       return function () {
         var match = editor.value.match(/^.*$/m);
         if (match) {
-          div.innerHTML = new Showdown.converter().makeHtml(match[0]);
+          div.innerHTML = new Showdown().convert(match[0]);
           document.title = div.textContent;
         }
       };
     }()),
     setValue = function (text) {
-      $('markup').innerHTML = new Showdown.converter().makeHtml(text);
+      $('markup').innerHTML = new Showdown().convert(text);
     };
 
   function Selection(re, prefix, prefix0) {
