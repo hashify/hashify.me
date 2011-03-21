@@ -129,8 +129,6 @@
     setTitle();
   };
 
-  // TODO: support keyboard shortcuts
-
   $('strong').onclick = function () {
     // TODO: add logic
     return false;
