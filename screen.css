@@ -79,8 +79,8 @@ body {
 
   #credits {
     position: fixed;
-    top: 86px;
-    margin: 70% 0 0 1px;
+    top: 70%;
+    margin: 86px 0 0 1px;
     width: 400px;
     padding: 6px 24px;
     font: italic 12px/1.5 Georgia, serif;
