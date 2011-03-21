@@ -1,0 +1,54 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Hashify</title>
+    <link rel="stylesheet" href="media/screen.css" media="screen" />
+  </head>
+  <body>
+    <div id="editor">
+      <textarea id="markdown"></textarea>
+      <ul id="toolbar">
+        <li title="Strong <strong> Ctrl+B"><a href="#strong" id="strong">Strong</a></li>
+        <li title="Emphasis <em> Ctrl+I"><a href="#emphasis" id="em">Emphasis</a></li>
+        <li title="Image <img> Ctrl+G"><a href="#image" id="img">Image</a></li>
+        <li title="Hyperlink <a> Ctrl+L"><a href="#hyperlink" id="a">Hyperlink</a></li>
+        <li title="Blockquote <blockquote> Ctrl+Q"><a href="#blockquote" id="blockquote">Blockquote</a></li>
+        <li title="Code Sample <pre><code> Ctrl+K"><a href="#code-sample" id="pre-code">Code Sample</a></li>
+        <li title="Numbered List <ol> Ctrl+O"><a href="#numbered-list" id="ol">Numbered List</a></li>
+        <li title="Bulleted List <ul> Ctrl+U"><a href="#bulleted-list" id="ul">Bulleted List</a></li>
+        <li title="Heading <h1>/<h2>/<h3>/<h4> Ctrl+H"><a href="#heading" id="h1">Heading</a></li>
+        <li title="Horizontal Rule <hr> Ctrl+R"><a href="#horizontal-rule" id="hr">Horizontal Rule</a></li>
+      </ul>
+    </div>
+    <div id="markup">
+      <noscript>
+        <h1>Hashify requires JavaScript</h1>
+        <p>Enable JavaScript and reload this page to get hashing.</p>
+      </noscript>
+    </div>
+    <div id="credits">
+      <p>
+        Many thanks to <a href="http://twitter.com/GRUBER">John Gruber</a> and John Fraser
+        for <a href="http://daringfireball.net/projects/markdown/syntax">Markdown</a> and
+        Showdown respectively, without which this site would not exist.
+      </p>
+      <p>
+        Copyright <a href="http://twitter.com/davidchambers">David Chambers</a> 2011.
+      </p>
+    </div>
+    <script src="media/base64.js"></script>
+    <script src="media/showdown.js"></script>
+    <script src="media/hashify.js"></script>
+    <script>
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-22176121-1']);
+      _gaq.push(['_trackPageview']);
+      (function () {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = (document.location.protocol === 'https:' ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      }());
+    </script>
+  </body>
+</html>
