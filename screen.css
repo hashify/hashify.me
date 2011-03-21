@@ -102,6 +102,7 @@ h1                  { font-size: 48px; line-height: 1; margin: 24px 0; }
 h2, h3, h4, h5, h6  { font-size: 24px; line-height: 36px; margin: 12px 0; }
 h2                  { font-size: 36px; margin-top: 24px; }
 h3                  { font-size: 30px; margin-top: 24px; }
+hr                  { margin: 18px 0 12px; border: none; border-top: 1px solid #ccc; }
 p, ol, ul           { margin: 12px 0; }
 blockquote          { margin: 12px 0; font-style: italic; font-family: Georgia, serif; color: #407; }
 blockquote em       { font-style: normal; }
