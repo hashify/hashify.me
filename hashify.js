@@ -188,7 +188,10 @@
   };
 
   $('hr').onclick = function () {
-    // TODO: add logic
+    var selection = new Selection().blockify();
+    selection.lines = ['- - -'];
+    selection.textarea.value = selection.before + selection.toString() + selection.after;
+    selection.textarea.setSelectionRange(selection.before.length, selection.before.length + 5);
     return false;
   };
 
