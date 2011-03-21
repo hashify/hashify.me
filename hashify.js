@@ -181,7 +181,22 @@
   };
 
   $('img').onclick = function () {
-    // TODO: add logic
+    var
+      selection = new Selection(),
+      before = selection.before,
+      after = selection.after,
+      start = before.length,
+      text = selection.toString(),
+      len = text.length;
+
+    selection.textarea.value = (
+      /^!\[.*\]\(http:\/\/\)$/.test(text)?
+        (len -= 12, before + text.substr(2, len) + after):
+        /^\]\(http:\/\/\)/.test(after) && /!\[$/.test(before)?
+          (start -= 2, before.substr(0, start) + text + after.substr(10)):
+          (start += 2, before + '![' + text + '](http://)' + after));
+
+    selection.textarea.setSelectionRange(start, start + len);
     return false;
   };
 
