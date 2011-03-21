@@ -123,6 +123,17 @@
 
   // EVENT HANDLERS //
 
+  // improve discoverability
+  editor.onfocus = function () {
+    if (!this.value) {
+      this.value = '# Title';
+      // don't ask me why this is required
+      window.setTimeout(function () {
+        editor.setSelectionRange(2, 7);
+      }, 0);
+    }
+  };
+
   editor.onkeyup = function () {
     setLocation(btoa(this.value));
     setValue(this.value);
