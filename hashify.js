@@ -191,14 +191,17 @@
       before = selection.before,
       after = selection.after,
       start = before.length,
-      text = selection.toString();
+      text = selection.toString(),
+      len = text.length;
 
     selection.textarea.value = (
-      /^\]\(http:\/\/\)/.test(after) && /\[$/.test(before)?
-        before.substr(0, --start) + text + after.substr(10):
-        (++start, before + '[' + text + '](http://)' + after));
+      /^\[.*\]\(http:\/\/\)$/.test(text)?
+        (len -= 11, before + text.substr(1, len) + after):
+        /^\]\(http:\/\/\)/.test(after) && /\[$/.test(before)?
+          before.substr(0, --start) + text + after.substr(10):
+          (++start, before + '[' + text + '](http://)' + after));
 
-    selection.textarea.setSelectionRange(start, start + text.length);
+    selection.textarea.setSelectionRange(start, start + len);
     return false;
   };
 
