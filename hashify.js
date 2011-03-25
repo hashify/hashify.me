@@ -215,7 +215,7 @@
           shortUrlVisible = true;
         }
       }
-    }
+    };
     request.send();
     (event || window.event).preventDefault();
   };
@@ -312,7 +312,34 @@
 
   // INITIALIZATION //
 
-  setValue(editor.value = decode(atob(documentHash())));
-  setTitle();
+  (function (hash) {
+    if (/^[A-Za-z0-9+/=]*$/.test(hash)) {
+      setValue(editor.value = decode(atob(hash)));
+      setTitle();
+    } else if (/^unpack:/.test(hash)) {
+      request = new XMLHttpRequest();
+      request.open('GET', [
+        'http://api.bitly.com/v3/expand?login=davidchambers&',
+        'apiKey=R_20d23528ed6381ebb614a997de11c20a&',
+        'hash=', hash.substr(7).split(',').join('&hash=')
+      ].join(''));
+      request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+          if (request.status === 200) {
+            var
+              list = parseJSON(request.responseText).data.expand,
+              i = list.length;
+            while (i--) {
+              list[i] = list[i].long_url.substr(18);
+            }
+            setLocation(list.join(''));
+            // TODO: add event handlers to make this redundant
+            location.reload();
+          }
+        }
+      };
+      request.send();
+    }
+  }(documentHash()));
 
 }());
