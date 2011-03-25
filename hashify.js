@@ -110,9 +110,9 @@
       };
     }()),
 
-    setShortUrl = function (url) {
+    setShortUrl = function (data) {
       wrapper.innerHTML = (
-        '<a id="shorturl" href="' + url + '">' + url + '</a>'
+        ['<a id="shorturl" href="', '">', '</a>'].join(data.url)
       );
       selection = getSelection();
       selection.selectAllChildren(wrapper);
@@ -230,9 +230,7 @@
       sendRequest(
         'shorten',
         'longUrl=' + hashifyMe + hash,
-        function (data) {
-          setShortUrl(data.url);
-        }
+        setShortUrl
       );
     } else {
       // 500 char chunks produce hashes <= 2000 chars
@@ -249,9 +247,7 @@
                 sendRequest(
                   'shorten',
                   'longUrl=' + hashifyMe + 'unpack:' + list.join(','),
-                  function (data) {
-                    setShortUrl(data.url);
-                  }
+                  setShortUrl
                 );
               }
             }
