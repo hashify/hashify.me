@@ -246,7 +246,13 @@
             function (data) {
               list[index] = data.hash;
               if (!--yetToReturn) {
-                setShortUrl(hashifyMe + 'unpack:' + list.join(','));
+                sendRequest(
+                  'shorten',
+                  'longUrl=' + hashifyMe + 'unpack:' + list.join(','),
+                  function (data) {
+                    setShortUrl(data.url);
+                  }
+                );
               }
             }
           );
