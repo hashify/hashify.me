@@ -195,28 +195,62 @@
 
   shorten.onclick = function (event) {
     var
-      request = new XMLHttpRequest(),
-      selection;
+      hash = documentHash(), i, list,
+      request, selection, yetToReturn;
 
-    request.open('GET', [
-      'http://api.bitly.com/v3/shorten?login=davidchambers&',
-      'apiKey=R_20d23528ed6381ebb614a997de11c20a&',
-      'longUrl=http://hashify.me/', documentHash()
-    ].join(''));
-    request.onreadystatechange = function () {
-      if (request.readyState === 4) {
-        if (request.status === 200) {
-          wrapper.innerHTML = [
-            '<a id="shorturl" href="', '">', '</a>'
-          ].join(parseJSON(request.responseText).data.url);
-          selection = getSelection();
-          selection.selectAllChildren(wrapper);
-          shorten.style.display = 'none';
-          shortUrlVisible = true;
+    if (18 + hash.length <= 2048) {
+      request = new XMLHttpRequest();
+      request.open('GET', [
+        'http://api.bitly.com/v3/shorten?login=davidchambers&',
+        'apiKey=R_20d23528ed6381ebb614a997de11c20a&',
+        'longUrl=http://hashify.me/', hash
+      ].join(''));
+      request.onreadystatechange = function () {
+        if (request.readyState === 4) {
+          if (request.status === 200) {
+            wrapper.innerHTML = [
+              '<a id="shorturl" href="', '">', '</a>'
+            ].join(parseJSON(request.responseText).data.url);
+            selection = getSelection();
+            selection.selectAllChildren(wrapper);
+            shorten.style.display = 'none';
+            shortUrlVisible = true;
+          }
         }
+      };
+      request.send();
+    } else {
+      // 500 char chunks produce hashes <= 2000 chars
+      list = editor.value.match(/[\s\S]{1,500}/g);
+      i = yetToReturn = list.length;
+      while (i--) {
+        (function (item, index, request) {
+          request = new XMLHttpRequest();
+          request.open('GET', [
+            'http://api.bitly.com/v3/shorten?login=davidchambers&',
+            'apiKey=R_20d23528ed6381ebb614a997de11c20a&',
+            'longUrl=http://hashify.me/', btoa(encode(item))
+          ].join(''));
+          request.onreadystatechange = function () {
+            if (request.readyState === 4) {
+              if (request.status === 200) {
+                list[index] = parseJSON(request.responseText).data.hash;
+                if (!--yetToReturn) {
+                  wrapper.innerHTML = [
+                    '<a id="shorturl" href="', '">', '</a>'
+                  ].join('http://hashify.me/unpack:' + list.join(','));
+                  selection = getSelection();
+                  selection.selectAllChildren(wrapper);
+                  shorten.style.display = 'none';
+                  shortUrlVisible = true;
+                }
+              }
+            }
+          };
+          request.send();
+        }(list[i], i));
       }
-    };
-    request.send();
+    }
     (event || window.event).preventDefault();
   };
 
@@ -333,9 +367,9 @@
               list = parseJSON(request.responseText).data.expand;
               i = list.length;
               while (i--) {
-                list[i] = list[i].long_url.substr(18);
-              }
-              setLocation(list.join(''));
+                list[i] = decode(atob(list[i].long_url.substr(18)));
+              } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
+              setLocation(btoa(encode(list.join(''))));
               // TODO: add event handlers to make this redundant
               location.reload();
             }
