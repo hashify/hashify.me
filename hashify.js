@@ -14,6 +14,8 @@
 
     wrapper = $('wrapper'),
 
+    hashifyMe = 'http://hashify.me/',
+
     shortUrlVisible,
 
     encode = function (text) {
@@ -227,7 +229,7 @@
     if (18 + hash.length <= 2048) {
       sendRequest(
         'shorten',
-        'longUrl=http://hashify.me/' + hash,
+        'longUrl=' + hashifyMe + hash,
         function (data) {
           setShortUrl(data.url);
         }
@@ -240,11 +242,11 @@
         (function (item, index) {
           sendRequest(
             'shorten',
-            'longUrl=http://hashify.me/' + btoa(encode(item)),
+            'longUrl=' + hashifyMe + btoa(encode(item)),
             function (data) {
               list[index] = data.hash;
               if (!--yetToReturn) {
-                setShortUrl('http://hashify.me/unpack:' + list.join(','));
+                setShortUrl(hashifyMe + 'unpack:' + list.join(','));
               }
             }
           );
