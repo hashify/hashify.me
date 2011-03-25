@@ -28,6 +28,29 @@
       return location.pathname.substr(1) || location.hash.substr(3);
     },
 
+    // logic borrowed from https://github.com/jquery/jquery
+    parseJSON = function (data) {
+      if (typeof data !== 'string' || !data) {
+        return null;
+      }
+      data = data.replace(/^\s+|\s+$/g, '');
+      if (
+        /^[\],:{}\s]*$/
+          .test(
+            data
+              .replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
+              .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/g, ']')
+              .replace(/(?:^|:|,)(?:\s*\[)+/g, '')
+          )
+      )
+      return (
+        window.JSON && window.JSON.parse?
+          window.JSON.parse(data):
+          new Function('return ' + data)()
+      );
+      throw 'SyntaxError';
+    }
+
     resolve = function (reSelection, reBefore, reAfter, open, close) {
       var
         openLen = open.length,
@@ -183,10 +206,9 @@
     request.onreadystatechange = function () {
       if (request.readyState === 4) {
         if (request.status === 200) {
-          // TODO: add fallback for browsers without native JSON support
           wrapper.innerHTML = [
             '<a id="shorturl" href="', '">', '</a>'
-          ].join(JSON.parse(request.responseText).data.url);
+          ].join(parseJSON(request.responseText).data.url);
           selection = getSelection();
           selection.selectAllChildren(wrapper);
           shorten.style.display = 'none';
