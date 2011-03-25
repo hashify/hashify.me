@@ -10,17 +10,12 @@
 
     editor = $('markdown'),
 
-    // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/
-    // ... String/fromCharCode#Getting_it_to_work_with_higher_values
-    fromCharCode = function (charCode) {
-      if (charCode > 0xFFFF) {
-        charCode -= 0x10000;
-        return String.fromCharCode(
-          0xD800 + (charCode >> 10),
-          0xDC00 + (charCode & 0x3FF)
-        );
-      }
-      return String.fromCharCode(charCode);
+    encode = function (text) {
+      return unescape(encodeURIComponent(text));
+    },
+
+    decode = function (text) {
+      return decodeURIComponent(escape(text));
     },
 
     resolve = function (reSelection, reBefore, reAfter, open, close) {
@@ -177,24 +172,7 @@
   };
 
   editor.onkeyup = function () {
-    var
-      charCode, chars = [],
-      value = this.value.replace('~', '~7e~'),
-      index = 0, len = value.length;
-
-    // https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/String/charCodeAt
-    for (; index < len; ++index) {
-      charCode = value.charCodeAt(index);
-      if (0xD800 <= charCode && charCode < 0xDC00) {
-        charCode = (charCode - 0xD800) * 0x400 + value.charCodeAt(++index) - 0xDC00 + 0x10000;
-      }
-      chars.push(
-        charCode > 0xFF?
-          '~' + charCode.toString(16) + '~':
-          value[index]
-      );
-    }
-    setLocation(btoa(chars.join('')));
+    setLocation(btoa(encode(this.value)));
     setValue(this.value);
     setTitle();
   };
@@ -273,13 +251,9 @@
 
   setValue(
     editor.value = (
-      atob(location.pathname.substr(1) || location.hash.substr(3))
-        .replace(
-          /~([^~]+?)~/g,
-          function (_, charCode) {
-            return fromCharCode('0x' + charCode);
-          }
-        )
+      decode(
+        atob(location.pathname.substr(1) || location.hash.substr(3))
+      )
     )
   );
   setTitle();
