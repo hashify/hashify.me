@@ -21,9 +21,9 @@ body {
 
     #markdown {
       position: fixed;
-      margin: 6em 0 0;
+      margin: 81px 0 0;
       width: 386px;
-      height: 70%;
+      height: 67.5%;
       border: 1px solid #ddd;
       background: #f7f7f7;
       font: 12px/1.25 Monaco, monospace;
@@ -32,7 +32,7 @@ body {
 
     #toolbar {
       position: fixed;
-      margin: 36px 0 0;
+      margin: 45px 0 0;
       padding: 0 0 0 56px;
     }
 
@@ -71,30 +71,62 @@ body {
         #h1         { background-position: -192px; }
         #hr         { background-position: -216px; }
 
+  #shorten,
+  #shorturl {
+    position: fixed;
+    display: block;
+    width: 448px;
+    border-width: 0 1px 1px;
+    border-style: solid;
+    border-color: #ddd;
+    background: #e7e7e7;
+    padding: 10px 0 8px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 1;
+    color: #666;
+  }
+
+  #shorten {
+    text-decoration: none;
+    color: #999;
+  }
+
+  #shorten:focus,
+  #shorten:hover,
+  #shorturl:focus,
+  #shorturl:hover {
+    background: #ddd;
+    color: #333;
+    outline: none;
+  }
+
+  #shorten:focus,
+  #shorten:hover {
+    border-color: #08f;
+    background: #08f;
+    color: #fff;
+  }
+
   #markup {
     margin-left: 450px;
     max-width: 32em;
     padding: 1em 2em;
   }
 
+    #markup a {
+      color: #00c;
+    }
+
   #credits {
     position: fixed;
-    top: 70%;
-    margin: 86px 0 0 1px;
+    top: 67.5%;
+    margin: 95px 0 0 1px;
     width: 400px;
     padding: 6px 24px;
     font: italic 12px/1.5 Georgia, serif;
     color: #666;
   }
-
-      #credits a {
-        color: inherit;
-      }
-
-      #credits a:focus,
-      #credits a:hover {
-        color: #333;
-      }
 
 /* content styling */
 
@@ -109,4 +141,5 @@ blockquote em       { font-style: normal; }
 pre                 { margin: 24px 0; background: #eee; padding: 12px 18px; white-space: pre-wrap; }
 pre>code            { display: block; background: none; padding: 0; font-size: 18px; line-height: 24px; }
 code                { background: #eee; padding: 0 0.25em; font-size: 87.5%; }
-a                   { color: #00c; }
+a                   { color: inherit; }
+a:focus, a:hover    { color: #333; }

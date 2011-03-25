@@ -10,12 +10,22 @@
 
     editor = $('markdown'),
 
+    shorten = $('shorten'),
+
+    wrapper = $('wrapper'),
+
+    shortUrlVisible,
+
     encode = function (text) {
       return unescape(encodeURIComponent(text));
     },
 
     decode = function (text) {
       return decodeURIComponent(escape(text));
+    },
+
+    documentHash = function () {
+      return location.pathname.substr(1) || location.hash.substr(3);
     },
 
     resolve = function (reSelection, reBefore, reAfter, open, close) {
@@ -160,6 +170,34 @@
 
   // EVENT HANDLERS //
 
+  shorten.onclick = function (event) {
+    var
+      request = new XMLHttpRequest(),
+      selection;
+
+    request.open('GET', [
+      'http://api.bitly.com/v3/shorten?login=davidchambers&',
+      'apiKey=R_20d23528ed6381ebb614a997de11c20a&',
+      'longUrl=http://hashify.me/', documentHash()
+    ].join(''));
+    request.onreadystatechange = function () {
+      if (request.readyState === 4) {
+        if (request.status === 200) {
+          // TODO: add fallback for browsers without native JSON support
+          wrapper.innerHTML = [
+            '<a id="shorturl" href="', '">', '</a>'
+          ].join(JSON.parse(request.responseText).data.url);
+          selection = getSelection();
+          selection.selectAllChildren(wrapper);
+          shorten.style.display = 'none';
+          shortUrlVisible = true;
+        }
+      }
+    }
+    request.send();
+    (event || window.event).preventDefault();
+  };
+
   // improve discoverability
   editor.onfocus = function () {
     if (!this.value) {
@@ -172,6 +210,9 @@
   };
 
   editor.onkeyup = function () {
+    if (shortUrlVisible) {
+      shorten.style.display = 'block';
+    }
     setLocation(btoa(encode(this.value)));
     setValue(this.value);
     setTitle();
@@ -249,13 +290,7 @@
 
   // INITIALIZATION //
 
-  setValue(
-    editor.value = (
-      decode(
-        atob(location.pathname.substr(1) || location.hash.substr(3))
-      )
-    )
-  );
+  setValue(editor.value = decode(atob(documentHash())));
   setTitle();
 
 }());
