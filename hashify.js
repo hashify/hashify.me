@@ -92,6 +92,16 @@
       };
     }()),
 
+    setShortUrl = function (url) {
+      wrapper.innerHTML = (
+        '<a id="shorturl" href="' + url + '">' + url + '</a>'
+      );
+      selection = getSelection();
+      selection.selectAllChildren(wrapper);
+      shorten.style.display = 'none';
+      shortUrlVisible = true;
+    },
+
     setValue = function (text) {
       $('markup').innerHTML = new Showdown().convert(text);
     };
@@ -208,13 +218,7 @@
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
           if (request.status === 200) {
-            wrapper.innerHTML = [
-              '<a id="shorturl" href="', '">', '</a>'
-            ].join(parseJSON(request.responseText).data.url);
-            selection = getSelection();
-            selection.selectAllChildren(wrapper);
-            shorten.style.display = 'none';
-            shortUrlVisible = true;
+            setShortUrl(parseJSON(request.responseText).data.url);
           }
         }
       };
@@ -236,13 +240,7 @@
               if (request.status === 200) {
                 list[index] = parseJSON(request.responseText).data.hash;
                 if (!--yetToReturn) {
-                  wrapper.innerHTML = [
-                    '<a id="shorturl" href="', '">', '</a>'
-                  ].join('http://hashify.me/unpack:' + list.join(','));
-                  selection = getSelection();
-                  selection.selectAllChildren(wrapper);
-                  shorten.style.display = 'none';
-                  shortUrlVisible = true;
+                  setShortUrl('http://hashify.me/unpack:' + list.join(','));
                 }
               }
             }
