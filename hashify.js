@@ -102,11 +102,8 @@
     setTitle = (function () {
       var div = document.createElement('div');
       return function () {
-        var match = editor.value.match(/^.*$/m);
-        if (match) {
-          div.innerHTML = new Showdown().convert(match[0]);
-          document.title = div.textContent;
-        }
+        div.innerHTML = new Showdown().convert(editor.value.match(/^.*$/m)[0]);
+        document.title = div.textContent || 'Hashify';
       };
     }()),
 
