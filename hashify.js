@@ -182,19 +182,11 @@
       offset = 0, start, text, value;
 
     if (matches) {
-      if (this.insertHeading) {
-        this.before = this.before.replace(this.beforeRegex, matches[1].length < 4 ? '$1# ' : '');
-      } else {
-        this.before = this.before.replace(this.beforeRegex, '');
-        this.unprefix();
-      }
+      this.before = this.before.replace(this.beforeRegex, '');
+      this.unprefix();
     }
     else if (matches = this.textRegex.exec(this.lines[0])) {
-      if (this.insertHeading) {
-        this.lines[0] = this.lines[0].replace(this.textRegex, matches[1].length < 4 ? '$1# ' : '');
-      } else {
-        this.unprefix();
-      }
+      this.unprefix();
     }
     else {
       this.blockify().prefix();
@@ -319,10 +311,35 @@
   };
 
   $('h1').onclick = function () {
-    var selection = new Selection('(#{1,6})[ \\t]*', '# ');
-    selection.insertHeading = true;
+    var
+      matches, offset = 0, start, text,
+      selection = new Selection('(#{1,6})[ \\t]*', '# ');
+
     selection.lines = [selection.lines.join(' ').replace(/\s+/g, ' ')];
-    return setValue(selection.render());
+
+    if (matches = selection.beforeRegex.exec(selection.before)) {
+      selection.before = (
+        selection.before.replace(
+          selection.beforeRegex, matches[1].length < 4 ? '$1# ' : ''
+        )
+      );
+    }
+    else if (matches = selection.textRegex.exec(selection.lines[0])) {
+      selection.lines[0] = (
+        selection.lines[0].replace(
+          selection.textRegex, matches[1].length < 4 ? '$1# ' : ''
+        )
+      );
+    }
+    else {
+      selection.blockify().prefix();
+      offset = selection.prefix0.length;
+    }
+    start = selection.before.length;
+    text = selection.toString();
+    setValue(selection.textarea.value = selection.before + text + selection.after);
+    selection.textarea.setSelectionRange(start + offset, start + text.length);
+    return false;
   };
 
   $('hr').onclick = function () {
