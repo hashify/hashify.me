@@ -66,14 +66,14 @@
       close || (close = open);
 
       setValue(
-        selection.textarea.value = (
+        editor.value = (
           reSelection.test(text)?
             (len -= openLen + close.length, before + text.substr(openLen, len) + after):
             reAfter.test(after) && reBefore.test(before)?
               (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
               (start += openLen, before + open + text + close + after)));
 
-      selection.textarea.setSelectionRange(start, start + len);
+      editor.setSelectionRange(start, start + len);
       return false;
     },
 
@@ -141,9 +141,9 @@
 
   function Selection(re, prefix, prefix0) {
     var
-      value = (this.value = this.textarea.value),
-      start = (this.start = this.textarea.selectionStart),
-      end   = (this.end   = this.textarea.selectionEnd);
+      value = (this.value = editor.value),
+      start = (this.start = editor.selectionStart),
+      end   = (this.end   = editor.selectionEnd);
 
     this.textRegex   = new RegExp('^' + re);
     this.beforeRegex = new RegExp('^' + re + '$', 'm');
@@ -155,8 +155,6 @@
     this.after = value.substr(end);
     this.lines = value.substring(start, end).split(/\r?\n/g);
   }
-
-  Selection.prototype.textarea = editor;
 
   Selection.prototype.each = function (iterator) {
     var
@@ -210,8 +208,8 @@
     }
     start = this.before.length;
     text = this.toString();
-    this.textarea.value = value = this.before + text + this.after;
-    this.textarea.setSelectionRange(start + offset, start + text.length);
+    editor.value = value = this.before + text + this.after;
+    editor.setSelectionRange(start + offset, start + text.length);
     return value;
   };
 
@@ -287,13 +285,13 @@
         }
       } else if (keyCode === 189 && !/__$/.test(before)) {
         !text && /_$/.test(before) && /^_/.test(after)?
-          selection.textarea.setSelectionRange(position, position):
+          editor.setSelectionRange(position, position):
           emClick();
         event.preventDefault();
       }
     } else if (keyCode === 192) {
       !text && /`$/.test(before) && /^`/.test(after)?
-        selection.textarea.setSelectionRange(position, position):
+        editor.setSelectionRange(position, position):
         resolve(
           /^`.*`$/,
           /`$/, /^`/,
@@ -375,8 +373,8 @@
     }
     start = selection.before.length;
     text = selection.toString();
-    setValue(selection.textarea.value = selection.before + text + selection.after);
-    selection.textarea.setSelectionRange(start + offset, start + text.length);
+    setValue(editor.value = selection.before + text + selection.after);
+    editor.setSelectionRange(start + offset, start + text.length);
     return false;
   };
 
@@ -387,8 +385,8 @@
       start = before.length,
       text = selection.toString() === '- - -' ? '' : '- - -';
 
-    setValue(selection.textarea.value = before + text + selection.after);
-    selection.textarea.setSelectionRange(start, start + text.length);
+    setValue(editor.value = before + text + selection.after);
+    editor.setSelectionRange(start, start + text.length);
     return false;
   };
 
