@@ -346,10 +346,11 @@
     var
       selection = new Selection().blockify(),
       before = selection.before,
-      start = before.length;
+      start = before.length,
+      text = selection.toString() === '- - -' ? '' : '- - -';
 
-    setValue(selection.textarea.value = before + '- - -' + selection.after);
-    selection.textarea.setSelectionRange(start, start + 5);
+    setValue(selection.textarea.value = before + text + selection.after);
+    selection.textarea.setSelectionRange(start, start + text.length);
     return false;
   };
 
