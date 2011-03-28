@@ -121,6 +121,22 @@
     setValue = function (text) {
       $('markup').innerHTML = new Showdown().convert(text);
       return false;
+    },
+
+    strongClick = function () {
+      return resolve(
+        /^(__|\*\*).*\1$/,
+        /(__|\*\*)$/, /^(__|\*\*)/,
+        '**'
+      );
+    },
+
+    emClick = function () {
+      return resolve(
+        /^[_*].*[_*]$/,
+        /[_*]$/, /^[_*]/,
+        '_'
+      );
     };
 
   function Selection(re, prefix, prefix0) {
@@ -253,6 +269,40 @@
     }
   };
 
+  editor.onkeydown = function (event) {
+    event || (event = window.event);
+    var
+      keyCode = event.keyCode,
+      selection = new Selection(),
+      before = selection.before,
+      after = selection.after,
+      text = selection.toString(),
+      position = before.length + 1;
+
+    if (event.shiftKey) {
+      if (keyCode === 56) {
+        if (text || /\*\*$/.test(before) && /^\*\*/.test(after)) {
+          strongClick();
+          event.preventDefault();
+        }
+      } else if (keyCode === 189 && !/__$/.test(before)) {
+        !text && /_$/.test(before) && /^_/.test(after)?
+          selection.textarea.setSelectionRange(position, position):
+          emClick();
+        event.preventDefault();
+      }
+    } else if (keyCode === 192) {
+      !text && /`$/.test(before) && /^`/.test(after)?
+        selection.textarea.setSelectionRange(position, position):
+        resolve(
+          /^`.*`$/,
+          /`$/, /^`/,
+          '`'
+        );
+      event.preventDefault();
+    }
+  };
+
   editor.onkeyup = function () {
     if (shortUrlVisible) {
       shorten.style.display = 'block';
@@ -262,21 +312,9 @@
     setTitle();
   };
 
-  $('strong').onclick = function () {
-    return resolve(
-      /^(__|\*\*).*\1$/,
-      /(__|\*\*)$/, /^(__|\*\*)/,
-      '**'
-    );
-  };
+  $('strong').onclick = strongClick;
 
-  $('em').onclick = function () {
-    return resolve(
-      /^[_*].*[_*]$/,
-      /[_*]$/, /^[_*]/,
-      '_'
-    );
-  };
+  $('em').onclick = emClick;
 
   $('img').onclick = function () {
     return resolve(
