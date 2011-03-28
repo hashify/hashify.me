@@ -120,6 +120,7 @@
 
     setValue = function (text) {
       $('markup').innerHTML = new Showdown().convert(text);
+      return false;
     };
 
   function Selection(re, prefix, prefix0) {
@@ -307,30 +308,25 @@
   };
 
   $('blockquote').onclick = function () {
-    setValue(new Selection(' {0,3}>[ \\t]*', '> ').render());
-    return false;
+    return setValue(new Selection(' {0,3}>[ \\t]*', '> ').render());
   };
 
   $('pre-code').onclick = function () {
-    setValue(new Selection('( {4}|\t)', ____).render());
-    return false;
+    return setValue(new Selection('( {4}|\t)', ____).render());
   };
 
   $('ol').onclick = function () {
-    setValue(new Selection(' {0,3}\\d+[.][ \\t]*', ____, ' 1. ').render());
-    return false;
+    return setValue(new Selection(' {0,3}\\d+[.][ \\t]*', ____, ' 1. ').render());
   };
 
   $('ul').onclick = function () {
-    setValue(new Selection(' {0,3}[*+-][ \\t]*', ____, '  - ').render());
-    return false;
+    return setValue(new Selection(' {0,3}[*+-][ \\t]*', ____, '  - ').render());
   };
 
   $('h1').onclick = function () {
     var selection = new Selection('(#{1,6})[ \\t]*', '# ');
     selection.insertHeading = true;
-    setValue(selection.join().render());
-    return false;
+    return setValue(selection.join().render());
   };
 
   $('hr').onclick = function () {
