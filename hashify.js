@@ -176,11 +176,6 @@
     });
   };
 
-  Selection.prototype.join = function () {
-    this.lines = [this.lines.join(' ').replace(/\s+/g, ' ')];
-    return this;
-  };
-
   Selection.prototype.render = function () {
     var
       matches = this.beforeRegex.exec(this.before),
@@ -326,7 +321,8 @@
   $('h1').onclick = function () {
     var selection = new Selection('(#{1,6})[ \\t]*', '# ');
     selection.insertHeading = true;
-    return setValue(selection.join().render());
+    selection.lines = [selection.lines.join(' ').replace(/\s+/g, ' ')];
+    return setValue(selection.render());
   };
 
   $('hr').onclick = function () {
