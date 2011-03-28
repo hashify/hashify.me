@@ -65,12 +65,13 @@
 
       close || (close = open);
 
-      selection.textarea.value = (
-        reSelection.test(text)?
-          (len -= openLen + close.length, before + text.substr(openLen, len) + after):
-          reAfter.test(after) && reBefore.test(before)?
-            (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
-            (start += openLen, before + open + text + close + after));
+      setValue(
+        selection.textarea.value = (
+          reSelection.test(text)?
+            (len -= openLen + close.length, before + text.substr(openLen, len) + after):
+            reAfter.test(after) && reBefore.test(before)?
+              (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
+              (start += openLen, before + open + text + close + after)));
 
       selection.textarea.setSelectionRange(start, start + len);
       return false;
@@ -182,9 +183,7 @@
   Selection.prototype.render = function () {
     var
       matches = this.beforeRegex.exec(this.before),
-      offset = 0,
-      start,
-      text;
+      offset = 0, start, text, value;
 
     if (matches) {
       if (this.insertHeading) {
@@ -207,9 +206,9 @@
     }
     start = this.before.length;
     text = this.toString();
-    this.textarea.value = this.before + text + this.after;
+    this.textarea.value = value = this.before + text + this.after;
     this.textarea.setSelectionRange(start + offset, start + text.length);
-    return this;
+    return value;
   };
 
   Selection.prototype.toString = function () {
@@ -308,29 +307,29 @@
   };
 
   $('blockquote').onclick = function () {
-    new Selection(' {0,3}>[ \\t]*', '> ').render();
+    setValue(new Selection(' {0,3}>[ \\t]*', '> ').render());
     return false;
   };
 
   $('pre-code').onclick = function () {
-    new Selection('( {4}|\t)', ____).render();
+    setValue(new Selection('( {4}|\t)', ____).render());
     return false;
   };
 
   $('ol').onclick = function () {
-    new Selection(' {0,3}\\d+[.][ \\t]*', ____, ' 1. ').render();
+    setValue(new Selection(' {0,3}\\d+[.][ \\t]*', ____, ' 1. ').render());
     return false;
   };
 
   $('ul').onclick = function () {
-    new Selection(' {0,3}[*+-][ \\t]*', ____, '  - ').render();
+    setValue(new Selection(' {0,3}[*+-][ \\t]*', ____, '  - ').render());
     return false;
   };
 
   $('h1').onclick = function () {
     var selection = new Selection('(#{1,6})[ \\t]*', '# ');
     selection.insertHeading = true;
-    selection.join().render();
+    setValue(selection.join().render());
     return false;
   };
 
@@ -340,7 +339,7 @@
       before = selection.before,
       start = before.length;
 
-    selection.textarea.value = before + '- - -' + selection.after;
+    setValue(selection.textarea.value = before + '- - -' + selection.after);
     selection.textarea.setSelectionRange(start, start + 5);
     return false;
   };
