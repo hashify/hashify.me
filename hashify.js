@@ -18,6 +18,8 @@
 
     shortUrlVisible,
 
+    convert = new Showdown().convert,
+
     encode = function (text) {
       return unescape(encodeURIComponent(text));
     },
@@ -103,7 +105,7 @@
     setTitle = (function () {
       var div = document.createElement('div');
       return function () {
-        div.innerHTML = new Showdown().convert(editor.value.match(/^.*$/m)[0]);
+        div.innerHTML = convert(editor.value.match(/^.*$/m)[0]);
         document.title = div.textContent || 'Hashify';
       };
     }()),
@@ -119,7 +121,7 @@
     },
 
     setValue = function (text) {
-      $('markup').innerHTML = new Showdown().convert(text);
+      $('markup').innerHTML = convert(text);
       return false;
     },
 
