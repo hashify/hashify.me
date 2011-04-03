@@ -169,6 +169,19 @@
     return this;
   };
 
+  Selection.prototype.isInlineCode = function () {
+    var
+      match = (
+        convert(
+          (this.before + this.toString())
+            .replace('✪', '☺') + '✪` `` ' +
+          this.after
+            .replace('✪', '☺')
+        ).match(/<code>[^<]*✪(`?)<\/code>/)
+      );
+    return match && match[1] + '`';
+  };
+
   Selection.prototype.blockify = function () {
     var
       b = this.before,
@@ -272,6 +285,7 @@
   editor.onkeydown = function (event) {
     event || (event = window.event);
     var
+      backticks,
       keyCode = event.keyCode,
       selection = new Selection(),
       before = selection.before,
@@ -292,13 +306,25 @@
         event.preventDefault();
       }
     } else if (keyCode === 192) {
-      !text && /`$/.test(before) && /^`/.test(after)?
-        editor.setSelectionRange(position, position):
-        resolve(
+      if (text) {
+        return resolve(
           /^`.*`$/,
           /`$/, /^`/,
           '`'
         );
+      }
+      if (
+        backticks =
+          (backticks = selection.isInlineCode())?
+            /^`/.test(after)?null:backticks:
+            /^`/.test(after)?
+              /`$/.test(before)?
+                null:
+                /^(``)*(?!`)/.test(after)?'``':'`':
+              '``'
+      ) setValue(editor.value = before + backticks + after);
+
+      editor.setSelectionRange(position, position);
       event.preventDefault();
     }
   };
