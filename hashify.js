@@ -285,7 +285,6 @@
   editor.onkeydown = function (event) {
     event || (event = window.event);
     var
-      backticks,
       keyCode = event.keyCode,
       selection = new Selection(),
       before = selection.before,
@@ -314,15 +313,15 @@
         );
       }
       if (
-        backticks =
-          (backticks = selection.isInlineCode())?
-            /^`/.test(after)?null:backticks:
+        text =
+          (text = selection.isInlineCode())?
+            /^`/.test(after)?null:text:
             /^`/.test(after)?
               /`$/.test(before)?
                 null:
                 /^(``)*(?!`)/.test(after)?'``':'`':
               '``'
-      ) setValue(editor.value = before + backticks + after);
+      ) setValue(editor.value = before + text + after);
 
       editor.setSelectionRange(position, position);
       event.preventDefault();
