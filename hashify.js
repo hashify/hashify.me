@@ -309,7 +309,7 @@
           emClick();
         event.preventDefault();
       }
-    } else if (keyCode === 192) {
+    } else if (keyCode === 192 && !event.metaKey) {
       if (text) {
         return resolve(
           /^`.*`$/,
