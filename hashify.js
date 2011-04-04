@@ -289,7 +289,7 @@
 
   editor.onkeydown = function (event) {
     event || (event = window.event);
-    if (event.metaKey) return;
+    if (event.altKey || event.ctrlKey || event.metaKey) return;
     var
       keyCode = event.keyCode,
       selection = new Selection(),
