@@ -289,6 +289,7 @@
 
   editor.onkeydown = function (event) {
     event || (event = window.event);
+    if (event.metaKey) return;
     var
       keyCode = event.keyCode,
       selection = new Selection(),
@@ -309,7 +310,7 @@
           emClick();
         event.preventDefault();
       }
-    } else if (keyCode === 192 && !event.metaKey) {
+    } else if (keyCode === 192) {
       if (text) {
         return resolve(
           /^`.*`$/,
