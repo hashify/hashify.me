@@ -279,6 +279,11 @@
       window.setTimeout(function () {
         editor.setSelectionRange(2, 7);
       }, 0);
+      // We've changed the editor's contents, so we should
+      // update the view. The `onkeyup` handler already does
+      // exactly this. The "keyup" event fires when one tabs
+      // into the textarea, but not when one clicks into it.
+      editor.onkeyup();
     }
   };
 
