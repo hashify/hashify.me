@@ -427,7 +427,7 @@
 
   (function (hash) {
     var i, list;
-    if (/^[A-Za-z0-9+/=]*$/.test(hash)) {
+    if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
       // In browsers which don't provide `history.pushState`
       // we fall back to hashbangs. If `location.hash` is to be
       // the source of truth, `location.pathname` should be "/".
