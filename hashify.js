@@ -447,9 +447,11 @@
             while (i--) {
               list[i] = decode(atob(list[i].long_url.substr(18)));
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
-            setLocation(btoa(encode(list.join(''))));
-            // TODO: add event handlers to make this redundant
-            location.reload();
+            setValue(editor.value = list.join(''));
+            hash = btoa(encode(editor.value));
+            history && history.pushState?
+              setLocation(hash):
+              location.replace('/#!/' + hash);
           }
         );
       }
