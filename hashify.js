@@ -131,14 +131,6 @@
       );
     }()),
 
-    setTitle = (function () {
-      var div = document.createElement('div');
-      return function () {
-        div.innerHTML = convert(editor.value.match(/^.*$/m)[0]);
-        document.title = div.textContent || 'Hashify';
-      };
-    }()),
-
     setShortUrl = function (data) {
       wrapper.innerHTML = (
         ['<a id="shorturl" href="', '">', '</a>'].join(data.url)
@@ -149,11 +141,17 @@
       shortUrlVisible = true;
     },
 
-    setValue = function (text) {
-      $('markup').innerHTML = convert(text);
-      setTitle();
-      return false;
-    },
+    setValue = (function () {
+      var
+        div = document.createElement('div'),
+        markup = $('markup');
+      return function (text) {
+        markup.innerHTML = convert(text);
+        div.innerHTML = convert(text.match(/^.*$/m)[0]);
+        document.title = div.textContent || 'Hashify';
+        return false;
+      };
+    }()),
 
     strongClick = function () {
       return resolve(
