@@ -16,6 +16,8 @@
 
     hashifyMe = 'http://hashify.me/',
 
+    pushStateExists = window.history && history.pushState,
+
     shortUrlVisible,
 
     convert = new Showdown().convert,
@@ -97,7 +99,7 @@
 
     setLocation = (function () {
       return (
-        history && history.pushState?
+        pushStateExists?
           function (hash) { history.pushState(null, null, '/' + hash); }:
           function (hash) { location.hash = '#!/' + hash; });
     }()),
@@ -431,7 +433,7 @@
       // In browsers which don't provide `history.pushState`
       // we fall back to hashbangs. If `location.hash` is to be
       // the source of truth, `location.pathname` should be "/".
-      history && history.pushState || location.replace('/#!/' + hash);
+      pushStateExists || location.replace('/#!/' + hash);
       setValue(editor.value = decode(atob(hash)));
       setTitle();
     } else if (/^unpack:/.test(hash)) {
@@ -449,7 +451,7 @@
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
             setValue(editor.value = list.join(''));
             hash = btoa(encode(editor.value));
-            history && history.pushState?
+            pushStateExists?
               setLocation(hash):
               location.replace('/#!/' + hash);
           }
