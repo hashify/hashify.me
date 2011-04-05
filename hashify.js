@@ -105,7 +105,6 @@
         ].join('\n');
         setLocation(btoa(encode(text)), true);
         setValue(editor.value = text);
-        setTitle();
         return;
       }
       request.onreadystatechange = function () {
@@ -152,6 +151,7 @@
 
     setValue = function (text) {
       $('markup').innerHTML = convert(text);
+      setTitle();
       return false;
     },
 
@@ -370,7 +370,6 @@
     }
     setLocation(btoa(encode(this.value)));
     setValue(this.value);
-    setTitle();
   };
 
   $('strong').onclick = strongClick;
@@ -463,7 +462,6 @@
       // the source of truth, `location.pathname` should be "/".
       pushStateExists || location.replace('/#!/' + hash);
       setValue(editor.value = decode(atob(hash)));
-      setTitle();
     } else if (/^unpack:/.test(hash)) {
       list = hash.substr(7).split(',');
       // the maximum number of `hash` parameters is 15
