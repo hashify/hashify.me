@@ -83,7 +83,7 @@
 
     sendRequest = function (action, params, success) {
       var
-        hash,
+        text,
         request = new XMLHttpRequest();
 
       try {
@@ -94,20 +94,18 @@
       } catch (error) {
         if (error.code !== 1012) throw error;
         // NS_ERROR_DOM_BAD_URI
-        hash = (
-          btoa(
-            encode([
-              "# I'm sorry, Dave",
-              '',
-              'Your browser appears not to support',
-              '[cross-origin resource sharing][1].',
-              '',
-              '',
-              '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
-            ].join('\n'))
-          )
-        );
-        setLocation(hash, true);
+        text = [
+          "# I'm sorry, Dave",
+          '',
+          'Your browser appears not to support',
+          '[cross-origin resource sharing][1].',
+          '',
+          '',
+          '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
+        ].join('\n');
+        setLocation(btoa(encode(text)), true);
+        setValue(editor.value = text);
+        setTitle();
         return;
       }
       request.onreadystatechange = function () {
