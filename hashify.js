@@ -107,9 +107,7 @@
             ].join('\n'))
           )
         );
-        pushStateExists?
-          setLocation(hash):
-          location.replace('/#!/' + hash);
+        setLocation(hash, true);
         return;
       }
       request.onreadystatechange = function () {
@@ -125,8 +123,15 @@
     setLocation = (function () {
       return (
         pushStateExists?
-          function (hash) { history.pushState(null, null, '/' + hash); }:
-          function (hash) { location.hash = '#!/' + hash; });
+          function (hash) {
+            history.pushState(null, null, '/' + hash);
+          }:
+          function (hash, replace) {
+            replace?
+              location.replace('/#!/' + hash):
+              (location.hash = '#!/' + hash);
+          }
+      );
     }()),
 
     setTitle = (function () {
@@ -475,10 +480,7 @@
               list[i] = decode(atob(list[i].long_url.substr(18)));
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
             setValue(editor.value = list.join(''));
-            hash = btoa(encode(editor.value));
-            pushStateExists?
-              setLocation(hash):
-              location.replace('/#!/' + hash);
+            setLocation(btoa(encode(editor.value)), true);
           }
         );
       }
