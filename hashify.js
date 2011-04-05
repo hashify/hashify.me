@@ -82,11 +82,36 @@
     },
 
     sendRequest = function (action, params, success) {
-      var request = new XMLHttpRequest();
-      request.open('GET',
-        'http://api.bitly.com/v3/' + action + '?login=davidchambers&' +
-        'apiKey=R_20d23528ed6381ebb614a997de11c20a&' + params
-      );
+      var
+        hash,
+        request = new XMLHttpRequest();
+
+      try {
+        request.open('GET',
+          'http://api.bitly.com/v3/' + action + '?login=davidchambers&' +
+          'apiKey=R_20d23528ed6381ebb614a997de11c20a&' + params
+        );
+      } catch (error) {
+        if (error.code !== 1012) throw error;
+        // NS_ERROR_DOM_BAD_URI
+        hash = (
+          btoa(
+            encode([
+              "# I'm sorry, Dave",
+              '',
+              'Your browser appears not to support',
+              '[cross-origin resource sharing][1].',
+              '',
+              '',
+              '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
+            ].join('\n'))
+          )
+        );
+        pushStateExists?
+          setLocation(hash):
+          location.replace('/#!/' + hash);
+        return;
+      }
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
           if (request.status === 200) {
