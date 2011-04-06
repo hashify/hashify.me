@@ -332,10 +332,21 @@
           strongClick();
           event.preventDefault();
         }
-      } else if (keyCode === 189 && !/__$/.test(before)) {
-        !text && /_$/.test(before) && /^_/.test(after)?
-          editor.setSelectionRange(position, position):
-          emClick();
+      } else if (keyCode === 189) {
+        if (text) return emClick();
+        if (
+          text = (
+            (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
+              null:
+              /__$/.test(before)?
+                '_':
+                /(^|[^_])_[^_]+\b$/.test(before)?
+                  /^_/.test(after)?'':'_':
+                  /^\w/.test(after)?'_':'__'
+          )
+        ) setValue(editor.value = before + text + after);
+
+        editor.setSelectionRange(position, position);
         event.preventDefault();
       }
     } else if (keyCode === 192) {
