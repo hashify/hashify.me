@@ -70,12 +70,12 @@
       close || (close = open);
 
       setValue(
-        editor.value = (
+        editor.value =
           reSelection.test(text)?
             (len -= openLen + close.length, before + text.substr(openLen, len) + after):
             reAfter.test(after) && reBefore.test(before)?
               (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
-              (start += openLen, before + open + text + close + after)));
+              (start += openLen, before + open + text + close + after));
 
       editor.setSelectionRange(start, start + len);
       return false;
@@ -132,9 +132,8 @@
     }()),
 
     setShortUrl = function (data) {
-      wrapper.innerHTML = (
-        ['<a id="shorturl" href="', '">', '</a>'].join(data.url)
-      );
+      wrapper.innerHTML =
+        ['<a id="shorturl" href="', '">', '</a>'].join(data.url);
       selection = getSelection();
       selection.selectAllChildren(wrapper);
       shorten.style.display = 'none';
@@ -425,18 +424,14 @@
     selection.lines = [selection.lines.join(' ').replace(/\s+/g, ' ')];
 
     if (matches = selection.beforeRegex.exec(selection.before)) {
-      selection.before = (
+      selection.before =
         selection.before.replace(
-          selection.beforeRegex, matches[1].length < 4 ? '$1# ' : ''
-        )
-      );
+          selection.beforeRegex, matches[1].length < 4 ? '$1# ' : '');
     }
     else if (matches = selection.textRegex.exec(selection.lines[0])) {
-      selection.lines[0] = (
+      selection.lines[0] =
         selection.lines[0].replace(
-          selection.textRegex, matches[1].length < 4 ? '$1# ' : ''
-        )
-      );
+          selection.textRegex, matches[1].length < 4 ? '$1# ' : '');
     }
     else {
       selection.blockify().prefix();
