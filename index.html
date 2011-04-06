@@ -40,9 +40,17 @@
         Copyright 2011 <a href="http://twitter.com/davidchambers">David Chambers</a>.
       </p>
     </div>
-    <script src="/base64/base64.js"></script>
-    <script src="/showdown/showdown.js"></script>
-    <script src="/hashify.js"></script>
+    <script src="LAB.js"></script>
+    <script>
+      location.hostname === 'hashify.me'?
+        $LAB
+          .script('/concat.min.js'):
+        $LAB
+          .script('/base64/base64.js')
+          .script('/showdown/showdown.js')
+          .wait()
+          .script('/hashify.js');
+    </script>
     <script>
       var _gaq = _gaq || [];
       _gaq.push(['_setAccount', 'UA-22176121-1']);
