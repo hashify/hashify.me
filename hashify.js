@@ -263,8 +263,8 @@
 
   shorten.onclick = function (event) {
     var
-      hash = documentHash(), i, list,
-      selection, yetToReturn;
+      hash = documentHash(),
+      i, list, yetToReturn;
 
     if (18 + hash.length <= 2048) {
       sendRequest(
