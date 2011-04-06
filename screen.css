@@ -5,7 +5,7 @@ body {
   min-width: 900px;
   min-height: 600px;
   padding: 0;
-  font: 24px/1.5 "Helvetica Neue", Helvetica, sans-serif;
+  font: 24px/32px "Helvetica Neue", Helvetica, sans-serif;
 }
 
   #editor {
