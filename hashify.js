@@ -161,11 +161,24 @@
     },
 
     emClick = function () {
-      return resolve(
-        /^[_*].*[_*]$/,
-        /[_*]$/, /^[_*]/,
-        '_'
-      );
+      var
+        selection = new Selection(),
+        before = selection.before,
+        after = selection.after,
+        start = before.length,
+        text = selection.toString(),
+        len = text.length;
+
+      setValue(
+        editor.value =
+          /^([_*]).*\1$/.test(text)?
+            (len -= 2, before + text.substr(1, len) + after):
+            /([_*])✪\1/.test(before.replace('✪', '☺') + '✪' + after.replace('✪', '☺'))?
+              (--start, before.substr(0, start) + text + after.substr(1)):
+              (++start, [before, text, after].join('_')));
+
+      editor.setSelectionRange(start, start + len);
+      return false;
     };
 
   function Selection(re, prefix, prefix0) {
