@@ -331,7 +331,7 @@
           strongClick();
           event.preventDefault();
         }
-      } else if (keyCode === 189) {
+      } else if (keyCode === 0 || keyCode === 189) {
         if (text) return emClick();
         if (
           text = (
