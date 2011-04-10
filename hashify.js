@@ -330,11 +330,11 @@
     }
   };
 
-  editor.onkeydown = function (event) {
+  editor.onkeypress = function (event) {
     event || (event = window.event);
     if (event.altKey || event.ctrlKey || event.metaKey) return;
     var
-      keyCode = event.keyCode,
+      charCode = event.charCode,
       selection = new Selection(),
       before = selection.before,
       after = selection.after,
@@ -342,11 +342,9 @@
       position = before.length + 1;
 
     if (event.shiftKey) {
-      if (keyCode === 56 && text) {
+      if (charCode === 42 && text) {
         return setValue(selection.wrap('*'));
-      } else if (keyCode === 0 || keyCode === 189) {
-        // Firefox's `keyCode` for "`" is also 0, so
-        // this makes it impossible to type a tilde!
+      } else if (charCode === 95) {
         if (text) return setValue(selection.wrap('_'));
         if (
           text = (
@@ -363,7 +361,7 @@
         editor.setSelectionRange(position, position);
         event.preventDefault();
       }
-    } else if (keyCode === 192) {
+    } else if (charCode === 96) {
       if (text) return setValue(selection.wrap('`'));
       if (
         text =
