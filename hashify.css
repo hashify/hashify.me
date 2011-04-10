@@ -48,11 +48,12 @@ body {
       }
 
         #toolbar a {
+          position: relative;
           display: block;
           height: 100%;
           background-image: url(data:image/png;base64,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);
+          text-decoration: none;
           text-indent: -9999px;
-          overflow: hidden;
         }
 
         #toolbar a:focus,
@@ -70,6 +71,40 @@ body {
         #ul         { background-position: -168px; }
         #h1         { background-position: -192px; }
         #hr         { background-position: -216px; }
+
+          #toolbar a:after {
+            position: absolute;
+            left: 24px;
+            top: 0;
+            display: none;
+            -webkit-border-radius: 0 3px 3px 0;
+            -moz-border-radius: 0 3px 3px 0;
+            border-radius: 0 3px 3px 0;
+            border: 1px solid #ccc;
+            background: #ddd;
+            padding: 4px 8px 6px;
+            text-align: center;
+            font: 12px/1 "Lucida Grande", "Lucida Sans Unicode", sans-serif;
+            color: #666;
+            text-indent: 0;
+            z-index: 1;
+          }
+
+          #toolbar a:focus:after,
+          #toolbar a:hover:after {
+            display: block;
+          }
+
+          #strong:after     { content: "strong"; }
+          #em:after         { content: "emphasis"; }
+          #img:after        { content: "image"; }
+          #a:after          { content: "hyperlink"; }
+          #blockquote:after { content: "blockquote"; }
+          #pre-code:after   { content: "code sample"; }
+          #ol:after         { content: "numbered list"; }
+          #ul:after         { content: "bulleted list"; }
+          #h1:after         { content: "heading"; }
+          #hr:after         { content: "horizontal rule"; }
 
   #shorten,
   #shorturl {
