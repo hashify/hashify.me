@@ -6,6 +6,10 @@
       return document.getElementById(id);
     },
 
+    _ = function (text) {
+      return text.replace(/✪/g, '☺');
+    },
+
     ____ = '    ',
 
     editor = $('markdown'),
@@ -173,7 +177,7 @@
         editor.value =
           /^([_*]).*\1$/.test(text)?
             (len -= 2, before + text.substr(1, len) + after):
-            /([_*])✪\1/.test(before.replace('✪', '☺') + '✪' + after.replace('✪', '☺'))?
+            /([_*])✪\1/.test(_(before) + '✪' + _(after))?
               (--start, before.substr(0, start) + text + after.substr(1)):
               (++start, [before, text, after].join('_')));
 
@@ -213,10 +217,7 @@
     var
       match = (
         convert(
-          (this.before + this.toString())
-            .replace('✪', '☺') + '✪` `` ' +
-          this.after
-            .replace('✪', '☺')
+          _(this.before + this.toString()) + '✪` `` ' + _(this.after)
         ).match(/<code>[^<]*✪(`?)<\/code>/)
       );
     return match && match[1] + '`';
