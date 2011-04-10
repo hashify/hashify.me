@@ -127,8 +127,8 @@
     setLocation = (function () {
       return (
         pushStateExists?
-          function (hash) {
-            history.pushState(null, null, '/' + hash);
+          function (hash, replace) {
+            history[replace?'replaceState':'pushState'](null, null, '/' + hash);
           }:
           function (hash, replace) {
             replace?
@@ -144,7 +144,7 @@
       selection = getSelection();
       selection.selectAllChildren(wrapper);
       shorten.style.display = 'none';
-      lastSavedDocument = data.long_url.substr(18);
+      setLocation(lastSavedDocument = data.long_url.substr(18));
     },
 
     setValue = (function () {
@@ -385,7 +385,7 @@
   editor.onkeyup = function () {
     var hash = btoa(encode(this.value));
     shorten.style.display = hash === lastSavedDocument ? 'none' : 'block';
-    setLocation(hash);
+    setLocation(hash, true);
     setValue(this.value);
   };
 
@@ -491,6 +491,10 @@
     editor.setSelectionRange(start, start + text.length);
     editor.focus();
     return false;
+  };
+
+  window.onpopstate = function () {
+    setValue(editor.value = decode(atob(documentHash())));
   };
 
   // INITIALIZATION //
