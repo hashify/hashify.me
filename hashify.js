@@ -110,7 +110,7 @@
           '',
           '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
         ].join('\n');
-        setLocation(btoa(encode(text)), true);
+        setLocation(btoa(encode(text)));
         setValue(editor.value = text);
         return;
       }
@@ -127,13 +127,13 @@
     setLocation = (function () {
       return (
         pushStateExists?
-          function (hash, replace) {
-            history[replace?'replaceState':'pushState'](null, null, '/' + hash);
+          function (hash, save) {
+            history[save?'pushState':'replaceState'](null, null, '/' + hash);
           }:
-          function (hash, replace) {
-            replace?
-              location.replace('/#!/' + hash):
-              (location.hash = '#!/' + hash);
+          function (hash, save) {
+            save?
+              (location.hash = '#!/' + hash):
+              location.replace('/#!/' + hash);
           }
       );
     }()),
@@ -144,7 +144,7 @@
       selection = getSelection();
       selection.selectAllChildren(wrapper);
       shorten.style.display = 'none';
-      setLocation(lastSavedDocument = data.long_url.substr(18));
+      setLocation(lastSavedDocument = data.long_url.substr(18), true);
     },
 
     setValue = (function () {
@@ -385,7 +385,7 @@
   editor.onkeyup = function () {
     var hash = btoa(encode(this.value));
     shorten.style.display = hash === lastSavedDocument ? 'none' : 'block';
-    setLocation(hash, true);
+    setLocation(hash);
     setValue(this.value);
   };
 
@@ -521,7 +521,7 @@
               list[i] = decode(atob(list[i].long_url.substr(18)));
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
             setValue(editor.value = list.join(''));
-            setLocation(btoa(encode(editor.value)), true);
+            setLocation(btoa(encode(editor.value)));
           }
         );
       }
