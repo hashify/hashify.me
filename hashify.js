@@ -223,6 +223,33 @@
     return match && match[1] + '`';
   };
 
+  Selection.prototype.wrap = function (chr) {
+    var
+      text = this.toString(),
+      len = text.length,
+      position = this.before.length + 1,
+      value = editor.value = (
+        function () {
+          switch (/^(([_*]?)\2?).*\1$/.exec(text)[1].length) {
+            case 0:
+              switch (/(([_*]?)\2?)✪\1/.exec(_(this.before) + '✪' + _(this.after))[1].length) {
+                case 0:
+                case 1: return [this.before, text, this.after].join(chr);
+                case 2: return this.before.substr(0, position -= 3) + text + this.after.substr(2);
+              }
+            case 1:
+              len -= 2; position += 1;
+              return [this.before, text, this.after].join(chr);
+            case 2:
+              len -= 4; position -= 1;
+              return this.before + text.substr(2, len) + this.after;
+          }
+        }.call(this)
+      );
+    editor.setSelectionRange(position, position + len);
+    return value;
+  };
+
   Selection.prototype.blockify = function () {
     var
       b = this.before,
@@ -332,7 +359,6 @@
     event || (event = window.event);
     if (event.altKey || event.ctrlKey || event.metaKey) return;
     var
-      len,
       keyCode = event.keyCode,
       selection = new Selection(),
       before = selection.before,
@@ -347,33 +373,7 @@
           event.preventDefault();
         }
       } else if (keyCode === 0 || keyCode === 189) {
-        if (text) {
-          len = text.length;
-          setValue(
-            editor.value = (
-              function () {
-                var separator = /^(([_*]?)\2?).*\1$/.exec(text)[1];
-                switch (separator.length) {
-                  case 0:
-                    separator = /(([_*]?)\2?)✪\1/.exec(_(before) + '✪' + _(after))[1];
-                    switch (separator.length) {
-                      case 0: return [before, text, after].join('_');
-                      case 1: return [before, text, after].join(separator);
-                      case 2: return before.substr(0, position -= 3) + text + after.substr(2);
-                    }
-                  case 1:
-                    len -= 2; position += 1;
-                    return [before, text, after].join(separator);
-                  case 2:
-                    len -= 4; position -= 1;
-                    return before + text.substr(2, len) + after;
-                }
-              }()
-            )
-          );
-          editor.setSelectionRange(position, position + len);
-          return false;
-        }
+        if (text) return setValue(selection.wrap('_'));
         if (
           text = (
             (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
