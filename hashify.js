@@ -332,6 +332,7 @@
     event || (event = window.event);
     if (event.altKey || event.ctrlKey || event.metaKey) return;
     var
+      len,
       keyCode = event.keyCode,
       selection = new Selection(),
       before = selection.before,
@@ -346,7 +347,33 @@
           event.preventDefault();
         }
       } else if (keyCode === 0 || keyCode === 189) {
-        if (text) return emClick();
+        if (text) {
+          len = text.length;
+          setValue(
+            editor.value = (
+              function () {
+                var separator = /^(([_*]?)\2?).*\1$/.exec(text)[1];
+                switch (separator.length) {
+                  case 0:
+                    separator = /(([_*]?)\2?)✪\1/.exec(_(before) + '✪' + _(after))[1];
+                    switch (separator.length) {
+                      case 0: return [before, text, after].join('_');
+                      case 1: return [before, text, after].join(separator);
+                      case 2: return before.substr(0, position -= 3) + text + after.substr(2);
+                    }
+                  case 1:
+                    len -= 2; position += 1;
+                    return [before, text, after].join(separator);
+                  case 2:
+                    len -= 4; position -= 1;
+                    return before + text.substr(2, len) + after;
+                }
+              }()
+            )
+          );
+          editor.setSelectionRange(position, position + len);
+          return false;
+        }
         if (
           text = (
             (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
