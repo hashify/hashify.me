@@ -92,7 +92,7 @@ body {
 
           #toolbar a:focus:after,
           #toolbar a:hover:after {
-            display: block;
+            display: inline-block;
           }
 
           #strong:after     { content: "strong"; }
