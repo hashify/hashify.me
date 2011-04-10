@@ -230,9 +230,11 @@
       position = this.before.length + 1,
       value = editor.value = (
         function () {
-          switch (/^(([_*]?)\2?).*\1$/.exec(text)[1].length) {
+          var re = new RegExp('^([' + chr + ']{0,2}).*\\1$');
+          switch (re.exec(text)[1].length) {
             case 0:
-              switch (/(([_*]?)\2?)✪\1/.exec(_(this.before) + '✪' + _(this.after))[1].length) {
+              re = new RegExp('([' + chr + ']{0,2})✪\\1');
+              switch (re.exec(_(this.before) + '✪' + _(this.after))[1].length) {
                 case 0:
                 case 1: return [this.before, text, this.after].join(chr);
                 case 2: return this.before.substr(0, position -= 3) + text + this.after.substr(2);
@@ -387,13 +389,7 @@
         event.preventDefault();
       }
     } else if (keyCode === 192) {
-      if (text) {
-        return resolve(
-          /^`.*`$/,
-          /`$/, /^`/,
-          '`'
-        );
-      }
+      if (text) return setValue(selection.wrap('`'));
       if (
         text =
           (text = selection.isInlineCode())?
