@@ -345,6 +345,8 @@
       if (keyCode === 56 && text) {
         return setValue(selection.wrap('*'));
       } else if (keyCode === 0 || keyCode === 189) {
+        // Firefox's `keyCode` for "`" is also 0, so
+        // this makes it impossible to type a tilde!
         if (text) return setValue(selection.wrap('_'));
         if (
           text = (
