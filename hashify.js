@@ -154,36 +154,7 @@
         document.title = div.textContent || 'Hashify';
         return false;
       };
-    }()),
-
-    strongClick = function () {
-      return resolve(
-        /^(__|\*\*).*\1$/,
-        /(__|\*\*)$/, /^(__|\*\*)/,
-        '**'
-      );
-    },
-
-    emClick = function () {
-      var
-        selection = new Selection(),
-        before = selection.before,
-        after = selection.after,
-        start = before.length,
-        text = selection.toString(),
-        len = text.length;
-
-      setValue(
-        editor.value =
-          /^([_*]).*\1$/.test(text)?
-            (len -= 2, before + text.substr(1, len) + after):
-            /([_*])✪\1/.test(_(before) + '✪' + _(after))?
-              (--start, before.substr(0, start) + text + after.substr(1)):
-              (++start, [before, text, after].join('_')));
-
-      editor.setSelectionRange(start, start + len);
-      return false;
-    };
+    }());
 
   function Selection(re, prefix, prefix0) {
     var
@@ -414,9 +385,34 @@
     setValue(this.value);
   };
 
-  $('strong').onclick = strongClick;
+  $('strong').onclick = function () {
+    return resolve(
+      /^(__|\*\*).*\1$/,
+      /(__|\*\*)$/, /^(__|\*\*)/,
+      '**'
+    );
+  };
 
-  $('em').onclick = emClick;
+  $('em').onclick = function () {
+    var
+      selection = new Selection(),
+      before = selection.before,
+      after = selection.after,
+      start = before.length,
+      text = selection.toString(),
+      len = text.length;
+
+    setValue(
+      editor.value =
+        /^([_*]).*\1$/.test(text)?
+          (len -= 2, before + text.substr(1, len) + after):
+          /([_*])✪\1/.test(_(before) + '✪' + _(after))?
+            (--start, before.substr(0, start) + text + after.substr(1)):
+            (++start, [before, text, after].join('_')));
+
+    editor.setSelectionRange(start, start + len);
+    return false;
+  };
 
   $('img').onclick = function () {
     return resolve(
