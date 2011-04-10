@@ -20,9 +20,9 @@
 
     hashifyMe = 'http://hashify.me/',
 
-    pushStateExists = window.history && history.pushState,
+    lastSavedDocument,
 
-    shortUrlVisible,
+    pushStateExists = window.history && history.pushState,
 
     convert = new Showdown().convert,
 
@@ -142,7 +142,7 @@
       selection = getSelection();
       selection.selectAllChildren(wrapper);
       shorten.style.display = 'none';
-      shortUrlVisible = true;
+      lastSavedDocument = data.long_url.substr(18);
     },
 
     setValue = (function () {
@@ -374,10 +374,9 @@
   };
 
   editor.onkeyup = function () {
-    if (shortUrlVisible) {
-      shorten.style.display = 'block';
-    }
-    setLocation(btoa(encode(this.value)));
+    var hash = btoa(encode(this.value));
+    shorten.style.display = hash === lastSavedDocument ? 'none' : 'block';
+    setLocation(hash);
     setValue(this.value);
   };
 
