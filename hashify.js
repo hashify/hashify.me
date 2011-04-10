@@ -334,18 +334,28 @@
     event || (event = window.event);
     if (event.altKey || event.ctrlKey || event.metaKey) return;
     var
-      charCode = event.charCode,
+      chr = String.fromCharCode(event.charCode),
       selection = new Selection(),
       before = selection.before,
       after = selection.after,
       text = selection.toString(),
       position = before.length + 1;
 
-    if (event.shiftKey) {
-      if (charCode === 42 && text) {
-        return setValue(selection.wrap('*'));
-      } else if (charCode === 95) {
-        if (text) return setValue(selection.wrap('_'));
+    if (/[`_*]/.test(chr)) {
+      if (text) {
+        return setValue(selection.wrap(chr));
+      } else if (chr === '`') {
+        if (
+          text =
+            (text = selection.isInlineCode())?
+              /^`/.test(after)?null:text:
+              /^`/.test(after)?
+                /`$/.test(before)?
+                  null:
+                  /^(``)*(?!`)/.test(after)?'``':'`':
+                '``'
+        ) setValue(editor.value = before + text + after);
+      } else if (chr === '_') {
         if (
           text = (
             (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
@@ -357,23 +367,7 @@
                   /^\w/.test(after)?'_':'__'
           )
         ) setValue(editor.value = before + text + after);
-
-        editor.setSelectionRange(position, position);
-        event.preventDefault();
       }
-    } else if (charCode === 96) {
-      if (text) return setValue(selection.wrap('`'));
-      if (
-        text =
-          (text = selection.isInlineCode())?
-            /^`/.test(after)?null:text:
-            /^`/.test(after)?
-              /`$/.test(before)?
-                null:
-                /^(``)*(?!`)/.test(after)?'``':'`':
-              '``'
-      ) setValue(editor.value = before + text + after);
-
       editor.setSelectionRange(position, position);
       event.preventDefault();
     }
