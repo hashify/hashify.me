@@ -367,11 +367,8 @@
       position = before.length + 1;
 
     if (event.shiftKey) {
-      if (keyCode === 56) {
-        if (text || /\*\*$/.test(before) && /^\*\*/.test(after)) {
-          strongClick();
-          event.preventDefault();
-        }
+      if (keyCode === 56 && text) {
+        return setValue(selection.wrap('*'));
       } else if (keyCode === 0 || keyCode === 189) {
         if (text) return setValue(selection.wrap('_'));
         if (
