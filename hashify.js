@@ -18,6 +18,8 @@
 
     wrapper = $('wrapper'),
 
+    bitlyLimit = 15,
+
     hashifyMe = 'http://hashify.me/',
 
     lastSavedDocument,
@@ -292,23 +294,30 @@
       // 500 char chunks produce hashes <= 2000 chars
       list = editor.value.match(/[\s\S]{1,500}/g);
       i = yetToReturn = list.length;
-      while (i--) {
-        (function (item, index) {
-          sendRequest(
-            'shorten',
-            'longUrl=' + hashifyMe + btoa(encode(item)),
-            function (data) {
-              list[index] = data.hash;
-              if (!--yetToReturn) {
-                sendRequest(
-                  'shorten',
-                  'longUrl=' + hashifyMe + 'unpack:' + list.join(','),
-                  setShortUrl
-                );
+      if (yetToReturn > bitlyLimit) {
+        alert(
+          'Documents exceeding 7500 characters in length cannot be shortened.\n\n' +
+          'This document currently contains ' + editor.value.length + ' characters.'
+        );
+      } else {
+        while (i--) {
+          (function (item, index) {
+            sendRequest(
+              'shorten',
+              'longUrl=' + hashifyMe + btoa(encode(item)),
+              function (data) {
+                list[index] = data.hash;
+                if (!--yetToReturn) {
+                  sendRequest(
+                    'shorten',
+                    'longUrl=' + hashifyMe + 'unpack:' + list.join(','),
+                    setShortUrl
+                  );
+                }
               }
-            }
-          );
-        }(list[i], i));
+            );
+          }(list[i], i));
+        }
       }
     }
     (event || window.event).preventDefault();
@@ -497,7 +506,7 @@
     } else if (/^unpack:/.test(hash)) {
       list = hash.substr(7).split(',');
       // the maximum number of `hash` parameters is 15
-      if (list.length <= 15) {
+      if (list.length <= bitlyLimit) {
         sendRequest(
           'expand',
           'hash=' + list.join('&hash='),
