@@ -82,6 +82,7 @@
               (start += openLen, before + open + text + close + after));
 
       editor.setSelectionRange(start, start + len);
+      editor.focus();
       return false;
     },
 
@@ -266,6 +267,7 @@
     text = this.toString();
     editor.value = value = this.before + text + this.after;
     editor.setSelectionRange(start + offset, start + text.length);
+    editor.focus();
     return value;
   };
 
@@ -411,6 +413,7 @@
             (++start, [before, text, after].join('_')));
 
     editor.setSelectionRange(start, start + len);
+    editor.focus();
     return false;
   };
 
@@ -471,6 +474,7 @@
     text = selection.toString();
     setValue(editor.value = selection.before + text + selection.after);
     editor.setSelectionRange(start + offset, start + text.length);
+    editor.focus();
     return false;
   };
 
@@ -483,6 +487,7 @@
 
     setValue(editor.value = before + text + selection.after);
     editor.setSelectionRange(start, start + text.length);
+    editor.focus();
     return false;
   };
 
