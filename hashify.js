@@ -107,9 +107,14 @@
           'Your browser appears not to support',
           '[cross-origin resource sharing][1].',
           '',
+          '_Click "back" then reload the page to restore your document._',
+          '',
           '',
           '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
         ].join('\n');
+        // Save the current location to history, enabling the user to
+        // restore the document by going back then reloading the page.
+        setLocation(documentHash(), true);
         setLocation(btoa(encode(text)));
         setValue(editor.value = text);
         return;
@@ -131,9 +136,20 @@
             history[save?'pushState':'replaceState'](null, null, '/' + hash);
           }:
           function (hash, save) {
-            save?
-              (location.hash = '#!/' + hash):
+            // Since `location.replace` overwrites the current history entry,
+            // saving a location to history is not simply a matter of calling
+            // `location.assign`. Instead, we must create a new history entry
+            // and immediately overwrite it.
+
+            // update current history entry
+            location.replace('/#!/' + hash);
+
+            if (save) {
+              // create a new history entry (to save the current one)
+              location.hash = '#!/';
+              // update the new history entry (to reinstate the hash)
               location.replace('/#!/' + hash);
+            }
           }
       );
     }()),
