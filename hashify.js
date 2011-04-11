@@ -374,7 +374,7 @@
           if (
             text =
               (text = selection.isInlineCode())?
-                /^`/.test(after)?null:text:
+                /^`/.test(after)?null:/^\w/.test(after)?'`':text:
                 /^`/.test(after)?
                   /`$/.test(before)?
                     null:
