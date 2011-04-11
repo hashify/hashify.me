@@ -44,22 +44,22 @@
     </div>
     <script src="/LAB.js"></script>
     <script>
-      location.hostname === 'hashify.me'?
-        window.atob && window.btoa?
+      (function (twitter) {
+        location.hostname === 'hashify.me'?
+          window.atob && window.btoa?
+            $LAB
+              .script('/concat.min.js')
+              .script(twitter):
+            $LAB
+              .script('/base64/base64.min.js').wait()
+              .script('/concat.min.js')
+              .script(twitter):
           $LAB
-            .script('/concat.min.js')
-            .script('http://platform.twitter.com/widgets.js'):
-          $LAB
-            .script('/base64/base64.min.js')
-            .wait()
-            .script('/concat.min.js')
-            .script('http://platform.twitter.com/widgets.js'):
-        $LAB
-          .script('/base64/base64.js')
-          .script('/showdown/showdown.js')
-          .wait()
-          .script('/hashify.js')
-          .script('http://platform.twitter.com/widgets.js');
+            .script('/base64/base64.js')
+            .script('/showdown/showdown.js').wait()
+            .script('/hashify.js')
+            .script(twitter);
+      }('http://platform.twitter.com/widgets.js'));
     </script>
     <script>
       var _gaq = [
