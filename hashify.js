@@ -16,8 +16,6 @@
 
     shorten = $('shorten'),
 
-    wrapper = $('wrapper'),
-
     bitlyLimit = 15,
 
     hashifyMe = 'http://hashify.me/',
@@ -154,14 +152,17 @@
       );
     }()),
 
-    setShortUrl = function (data) {
-      wrapper.innerHTML =
-        ['<a id="shorturl" href="', '">', '</a>'].join(data.url);
-      selection = getSelection();
-      selection.selectAllChildren(wrapper);
-      shorten.style.display = 'none';
-      setLocation(lastSavedDocument = data.long_url.substr(18), true);
-    },
+    setShortUrl = (function (shorturl, textNode) {
+      shorturl.id = 'shorturl';
+      $('wrapper').appendChild(shorturl);
+      return function (data) {
+        if (textNode) shorturl.removeChild(textNode);
+        shorturl.appendChild(
+          textNode = document.createTextNode(shorturl.href = data.url));
+        shorten.style.display = 'none';
+        setLocation(lastSavedDocument = data.long_url.substr(18), true);
+      }
+    }(document.createElement('a'))),
 
     setValue = (function () {
       var

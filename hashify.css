@@ -107,35 +107,40 @@ body {
           #h1:after         { content: "heading"; }
           #hr:after         { content: "horizontal rule"; }
 
-  #shorten,
-  #shorturl {
+  #wrapper,
+  #shorten {
     position: fixed;
-    display: block;
     width: 448px;
+    height: 14px;
     border-width: 0 1px 1px;
     border-style: solid;
     border-color: #ddd;
     background: #e7e7e7;
-    padding: 10px 0 8px;
-    text-align: center;
+    padding: 9px 0;
+  }
+
+    a.twitter-share-button {
+      display: none;
+    }
+
+    iframe.twitter-share-button {
+      position: absolute;
+      left: 130px;
+      top: 6px;
+    }
+
+  #shorten,
+  #shorturl {
+    display: block;
     font-size: 14px;
     line-height: 1;
-    color: #666;
   }
 
   #shorten {
+    text-align: center;
     text-decoration: none;
     color: #999;
     cursor: default;
-  }
-
-  #shorten:focus,
-  #shorten:hover,
-  #shorturl:focus,
-  #shorturl:hover {
-    background: #ddd;
-    color: #333;
-    outline: none;
   }
 
   #shorten:focus,
@@ -143,7 +148,44 @@ body {
     border-color: #08f;
     background: #08f;
     color: #fff;
+    outline: none;
   }
+
+  #shorturl {
+    position: absolute;
+    left: 192px;
+    top: 6px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    border: 1px solid #cde;
+    background: #fff;
+    padding: 2px 4px;
+    text-decoration: none;
+    color: #369;
+  }
+
+  #shorturl:focus,
+  #shorturl:hover {
+    border-color: #5ad;
+    background: #def;
+    outline: none;
+  }
+
+    #shorturl:before {
+      position: absolute;
+      left: -5px;
+      top: 5px;
+      width: 5px;
+      height: 9px;
+      background: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAJCAYAAAALpr0TAAAAP0lEQVQY02P4//8/AzI+c/fdf3Sx0FV3MRWhKwQpQlGIpOgfuiKQMDZF/9AVgRViUfQPXRFpJpLkRpJ8TSgcARh2JIwJY6/zAAAAAElFTkSuQmCC);
+      content: "";
+    }
+
+    #shorturl:focus:before,
+    #shorturl:hover:before {
+      background-position: -5px;
+    }
 
   #markup {
     margin-left: 450px;

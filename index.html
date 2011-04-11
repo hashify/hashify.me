@@ -22,7 +22,9 @@
         <li><a href="#horizontal-rule" id="hr">Horizontal Rule</a></li>
       </ul>
     </div>
-    <div id="wrapper"></div>
+    <div id="wrapper">
+      <a href="http://twitter.com/share" class="twitter-share-button" data-count="none" data-related="hashify">Tweet</a>
+    </div>
     <a id="shorten" href="#shorten">Save to history and create bit.ly short URL</a>
     <div id="markup">
       <noscript>
@@ -44,12 +46,14 @@
     <script>
       location.hostname === 'hashify.me'?
         $LAB
-          .script('/concat.min.js'):
+          .script('/concat.min.js')
+          .script('http://platform.twitter.com/widgets.js'):
         $LAB
           .script('/base64/base64.js')
           .script('/showdown/showdown.js')
           .wait()
-          .script('/hashify.js');
+          .script('/hashify.js')
+          .script('http://platform.twitter.com/widgets.js');
     </script>
     <script>
       var _gaq = [
