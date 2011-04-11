@@ -297,10 +297,7 @@
   // EVENT HANDLERS //
 
   shorten.onclick = function (event) {
-    var
-      hash = documentHash(),
-      i, list, yetToReturn;
-
+    var hash = documentHash();
     if (18 + hash.length <= 2048) {
       sendRequest(
         'shorten',
@@ -308,8 +305,19 @@
         setShortUrl
       );
     } else {
-      // 500 char chunks produce hashes <= 2000 chars
-      list = editor.value.match(/[\s\S]{1,500}/g);
+      (function () {
+        var
+          charCode, i, len, list = [],
+          value = editor.value, yetToReturn;
+
+        // If the 500th "character" is the first half of a surrogate pair,
+        // we slice off the first 499 -- rather than 500 -- "characters".
+        while (value.length) {
+          len = 499;
+          charCode = value.charCodeAt(len);
+          list.push(value.substr(0, 0xD800 <= charCode && charCode < 0xDC00 ? len : ++len));
+          value = value.substr(len);
+        }
       i = yetToReturn = list.length;
       if (yetToReturn > bitlyLimit) {
         alert(
@@ -336,6 +344,7 @@
           }(list[i], i));
         }
       }
+      }());
     }
     (event || window.event).preventDefault();
   };
