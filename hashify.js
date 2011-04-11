@@ -318,32 +318,32 @@
           list.push(value.substr(0, 0xD800 <= charCode && charCode < 0xDC00 ? len : ++len));
           value = value.substr(len);
         }
-      i = yetToReturn = list.length;
-      if (yetToReturn > bitlyLimit) {
-        alert(
-          'Documents exceeding 7500 characters in length cannot be shortened.\n\n' +
-          'This document currently contains ' + editor.value.length + ' characters.'
-        );
-      } else {
-        while (i--) {
-          (function (item, index) {
-            sendRequest(
-              'shorten',
-              'longUrl=' + hashifyMe + encode(item),
-              function (data) {
-                list[index] = data.hash;
-                if (!--yetToReturn) {
-                  sendRequest(
-                    'shorten',
-                    'longUrl=' + hashifyMe + 'unpack:' + list.join(','),
-                    setShortUrl
-                  );
+        i = yetToReturn = list.length;
+        if (yetToReturn > bitlyLimit) {
+          alert(
+            'Documents exceeding 7500 characters in length cannot be shortened.\n\n' +
+            'This document currently contains ' + editor.value.length + ' characters.'
+          );
+        } else {
+          while (i--) {
+            (function (item, index) {
+              sendRequest(
+                'shorten',
+                'longUrl=' + hashifyMe + encode(item),
+                function (data) {
+                  list[index] = data.hash;
+                  if (!--yetToReturn) {
+                    sendRequest(
+                      'shorten',
+                      'longUrl=' + hashifyMe + 'unpack:' + list.join(','),
+                      setShortUrl
+                    );
+                  }
                 }
-              }
-            );
-          }(list[i], i));
+              );
+            }(list[i], i));
+          }
         }
-      }
       }());
     }
     (event || window.event).preventDefault();
