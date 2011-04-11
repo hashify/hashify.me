@@ -370,34 +370,34 @@
     if (/[`_*]/.test(chr)) {
       if (text) return setValue(selection.wrap(chr));
       switch (chr) {
-      case '`':
-        if (
-          text =
-            (text = selection.isInlineCode())?
-              /^`/.test(after)?null:text:
-              /^`/.test(after)?
-                /`$/.test(before)?
-                  null:
-                  /^(``)*(?!`)/.test(after)?'``':'`':
-                '``'
-        ) setValue(editor.value = before + text + after);
-      case '_':
-        if (
-          text = (
-            (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
-              null:
-              /__$/.test(before)?
-                '_':
-                /(^|[^_])_[^_]+\b$/.test(before)?
-                  /^_/.test(after)?'':'_':
-                  /^\w/.test(after)?'_':'__'
-          )
-        ) setValue(editor.value = before + text + after);
-      case '*':
-        break;
-      default:
-        editor.setSelectionRange(position, position);
-        event.preventDefault();
+        case '`':
+          if (
+            text =
+              (text = selection.isInlineCode())?
+                /^`/.test(after)?null:text:
+                /^`/.test(after)?
+                  /`$/.test(before)?
+                    null:
+                    /^(``)*(?!`)/.test(after)?'``':'`':
+                  '``'
+          ) setValue(editor.value = before + text + after);
+        case '_':
+          if (
+            text = (
+              (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
+                null:
+                /__$/.test(before)?
+                  '_':
+                  /(^|[^_])_[^_]+\b$/.test(before)?
+                    /^_/.test(after)?'':'_':
+                    /^\w/.test(after)?'_':'__'
+            )
+          ) setValue(editor.value = before + text + after);
+        case '*':
+          break;
+        default:
+          editor.setSelectionRange(position, position);
+          event.preventDefault();
       }
     }
   };
