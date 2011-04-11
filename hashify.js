@@ -74,13 +74,13 @@
       close || (close = open);
 
       setValue(
-        editor.value =
-          reSelection.test(text)?
-            (len -= openLen + close.length, before + text.substr(openLen, len) + after):
-            reAfter.test(after) && reBefore.test(before)?
-              (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
-              (start += openLen, before + open + text + close + after));
-
+        reSelection.test(text)?
+          (len -= openLen + close.length, before + text.substr(openLen, len) + after):
+          reAfter.test(after) && reBefore.test(before)?
+            (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
+            (start += openLen, before + open + text + close + after),
+        true
+      );
       editor.setSelectionRange(start, start + len);
       editor.focus();
       return false;
@@ -114,7 +114,7 @@
         // restore the document by going back then reloading the page.
         setLocation(documentHash(), true);
         setLocation(encode(text));
-        setValue(editor.value = text);
+        setValue(text, true);
         return;
       }
       request.onreadystatechange = function () {
@@ -168,10 +168,11 @@
       var
         div = document.createElement('div'),
         markup = $('markup');
-      return function (text) {
+      return function (text, setEditorValue) {
         markup.innerHTML = convert(text);
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
         document.title = div.textContent || 'Hashify';
+        if (setEditorValue) editor.value = text;
         return false;
       };
     }());
@@ -392,7 +393,7 @@
                     /^(``)*(?!`)/.test(after)?'``':'`':
                   /^\w/.test(after)?'`':'``'
             )
-          ) setValue(editor.value = before + text + after);
+          ) setValue(before + text + after, true);
           break;
         case '_':
           if (
@@ -405,7 +406,7 @@
                     /^_/.test(after)?'':'_':
                     /^\w/.test(after)?'_':'__'
             )
-          ) setValue(editor.value = before + text + after);
+          ) setValue(before + text + after, true);
           break;
         case '*':
           return;
@@ -440,13 +441,13 @@
       len = text.length;
 
     setValue(
-      editor.value =
-        /^([_*]).*\1$/.test(text)?
-          (len -= 2, before + text.substr(1, len) + after):
-          /([_*])✪\1/.test(_(before) + '✪' + _(after))?
-            (--start, before.substr(0, start) + text + after.substr(1)):
-            (++start, [before, text, after].join('_')));
-
+      /^([_*]).*\1$/.test(text)?
+        (len -= 2, before + text.substr(1, len) + after):
+        /([_*])✪\1/.test(_(before) + '✪' + _(after))?
+          (--start, before.substr(0, start) + text + after.substr(1)):
+          (++start, [before, text, after].join('_')),
+      true
+    );
     editor.setSelectionRange(start, start + len);
     editor.focus();
     return false;
@@ -507,7 +508,7 @@
     }
     start = selection.before.length;
     text = selection.toString();
-    setValue(editor.value = selection.before + text + selection.after);
+    setValue(selection.before + text + selection.after, true);
     editor.setSelectionRange(start + offset, start + text.length);
     editor.focus();
     return false;
@@ -520,14 +521,14 @@
       start = before.length,
       text = selection.toString() === '- - -' ? '' : '- - -';
 
-    setValue(editor.value = before + text + selection.after);
+    setValue(before + text + selection.after, true);
     editor.setSelectionRange(start, start + text.length);
     editor.focus();
     return false;
   };
 
   window.onpopstate = function () {
-    setValue(editor.value = decode(documentHash()));
+    setValue(decode(documentHash()), true);
   };
 
   // INITIALIZATION //
@@ -539,7 +540,7 @@
       // we fall back to hashbangs. If `location.hash` is to be
       // the source of truth, `location.pathname` should be "/".
       pushStateExists || location.replace('/#!/' + hash);
-      setValue(editor.value = decode(hash));
+      setValue(decode(hash), true);
     } else if (/^unpack:/.test(hash)) {
       list = hash.substr(7).split(',');
       // the maximum number of `hash` parameters is 15
@@ -553,7 +554,7 @@
             while (i--) {
               list[i] = decode(list[i].long_url.substr(18));
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
-            setValue(editor.value = list.join(''));
+            setValue(list.join(''), true);
             setLocation(encode(editor.value));
           }
         );
