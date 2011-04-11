@@ -45,9 +45,15 @@
     <script src="/LAB.js"></script>
     <script>
       location.hostname === 'hashify.me'?
-        $LAB
-          .script('/concat.min.js')
-          .script('http://platform.twitter.com/widgets.js'):
+        window.atob && window.btoa?
+          $LAB
+            .script('/concat.min.js')
+            .script('http://platform.twitter.com/widgets.js'):
+          $LAB
+            .script('/base64/base64.min.js')
+            .wait()
+            .script('/concat.min.js')
+            .script('http://platform.twitter.com/widgets.js'):
         $LAB
           .script('/base64/base64.js')
           .script('/showdown/showdown.js')
