@@ -27,11 +27,11 @@
     convert = new Showdown().convert,
 
     encode = function (text) {
-      return unescape(encodeURIComponent(text));
+      return btoa(unescape(encodeURIComponent(text)));
     },
 
     decode = function (text) {
-      return decodeURIComponent(escape(text));
+      return decodeURIComponent(escape(atob(text)));
     },
 
     documentHash = function () {
@@ -113,7 +113,7 @@
         // Save the current location to history, enabling the user to
         // restore the document by going back then reloading the page.
         setLocation(documentHash(), true);
-        setLocation(btoa(encode(text)));
+        setLocation(encode(text));
         setValue(editor.value = text);
         return;
       }
@@ -321,7 +321,7 @@
           (function (item, index) {
             sendRequest(
               'shorten',
-              'longUrl=' + hashifyMe + btoa(encode(item)),
+              'longUrl=' + hashifyMe + encode(item),
               function (data) {
                 list[index] = data.hash;
                 if (!--yetToReturn) {
@@ -404,7 +404,7 @@
   };
 
   editor.onkeyup = function () {
-    var hash = btoa(encode(this.value));
+    var hash = encode(this.value);
     shorten.style.display = hash === lastSavedDocument ? 'none' : 'block';
     setLocation(hash);
     setValue(this.value);
@@ -515,7 +515,7 @@
   };
 
   window.onpopstate = function () {
-    setValue(editor.value = decode(atob(documentHash())));
+    setValue(editor.value = decode(documentHash()));
   };
 
   // INITIALIZATION //
@@ -527,7 +527,7 @@
       // we fall back to hashbangs. If `location.hash` is to be
       // the source of truth, `location.pathname` should be "/".
       pushStateExists || location.replace('/#!/' + hash);
-      setValue(editor.value = decode(atob(hash)));
+      setValue(editor.value = decode(hash));
     } else if (/^unpack:/.test(hash)) {
       list = hash.substr(7).split(',');
       // the maximum number of `hash` parameters is 15
@@ -539,10 +539,10 @@
             list = data.expand;
             i = list.length;
             while (i--) {
-              list[i] = decode(atob(list[i].long_url.substr(18)));
+              list[i] = decode(list[i].long_url.substr(18));
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
             setValue(editor.value = list.join(''));
-            setLocation(btoa(encode(editor.value)));
+            setLocation(encode(editor.value));
           }
         );
       }
