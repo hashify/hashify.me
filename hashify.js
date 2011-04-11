@@ -169,6 +169,16 @@
         div = document.createElement('div'),
         markup = $('markup');
       return function (text, setEditorValue) {
+        var
+          position = text.length - 1,
+          charCode = text.charCodeAt(position);
+        if (0xD800 <= charCode && charCode < 0xDC00) {
+          // In Chrome, if one attempts to delete a surrogate
+          // pair character, only half of the pair is deleted.
+          // We strip the orphan to avoid `encodeURIComponent`
+          // throwing a `URIError`.
+          text = text.substr(0, position);
+        }
         markup.innerHTML = convert(text);
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
         document.title = div.textContent || 'Hashify';
@@ -417,10 +427,11 @@
   };
 
   editor.onkeyup = function () {
+    // normalize `editor.value`
+    setValue(this.value, true);
     var hash = encode(this.value);
     shorten.style.display = hash === lastSavedDocument ? 'none' : 'block';
     setLocation(hash);
-    setValue(this.value);
   };
 
   $('strong').onclick = function () {
