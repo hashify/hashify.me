@@ -379,7 +379,7 @@
                   /`$/.test(before)?
                     null:
                     /^(``)*(?!`)/.test(after)?'``':'`':
-                  '``'
+                  /^\w/.test(after)?'`':'``'
           ) setValue(editor.value = before + text + after);
           break;
         case '_':
