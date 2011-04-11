@@ -372,14 +372,17 @@
       switch (chr) {
         case '`':
           if (
-            text =
+            text = (
               (text = selection.isInlineCode())?
-                /^`/.test(after)?null:/^\w/.test(after)?'`':text:
+                /^`/.test(after)?
+                  null:
+                  /^\w/.test(after)?'`':text:
                 /^`/.test(after)?
                   /`$/.test(before)?
                     null:
                     /^(``)*(?!`)/.test(after)?'``':'`':
                   /^\w/.test(after)?'`':'``'
+            )
           ) setValue(editor.value = before + text + after);
           break;
         case '_':
