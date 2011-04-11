@@ -368,9 +368,9 @@
       position = before.length + 1;
 
     if (/[`_*]/.test(chr)) {
-      if (text) {
-        return setValue(selection.wrap(chr));
-      } else if (chr === '`') {
+      if (text) return setValue(selection.wrap(chr));
+      switch (chr) {
+      case '`':
         if (
           text =
             (text = selection.isInlineCode())?
@@ -381,7 +381,7 @@
                   /^(``)*(?!`)/.test(after)?'``':'`':
                 '``'
         ) setValue(editor.value = before + text + after);
-      } else if (chr === '_') {
+      case '_':
         if (
           text = (
             (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
@@ -393,9 +393,12 @@
                   /^\w/.test(after)?'_':'__'
           )
         ) setValue(editor.value = before + text + after);
+      case '*':
+        break;
+      default:
+        editor.setSelectionRange(position, position);
+        event.preventDefault();
       }
-      editor.setSelectionRange(position, position);
-      event.preventDefault();
     }
   };
 
