@@ -381,6 +381,7 @@
                     /^(``)*(?!`)/.test(after)?'``':'`':
                   '``'
           ) setValue(editor.value = before + text + after);
+          break;
         case '_':
           if (
             text = (
@@ -393,12 +394,12 @@
                     /^\w/.test(after)?'_':'__'
             )
           ) setValue(editor.value = before + text + after);
-        case '*':
           break;
-        default:
-          editor.setSelectionRange(position, position);
-          event.preventDefault();
+        case '*':
+          return;
       }
+      editor.setSelectionRange(position, position);
+      event.preventDefault();
     }
   };
 
