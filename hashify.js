@@ -22,6 +22,8 @@
 
     lastSavedDocument,
 
+    maxHashLength = 2048 - hashifyMe.length,
+
     pushStateExists = window.history && history.pushState,
 
     convert = new Showdown().convert,
@@ -309,7 +311,7 @@
 
   shorten.onclick = function (event) {
     var hash = documentHash();
-    if (18 + hash.length <= 2048) {
+    if (hash.length <= maxHashLength) {
       sendRequest(
         'shorten',
         'longUrl=' + hashifyMe + hash,
@@ -318,21 +320,46 @@
     } else {
       (function () {
         var
-          charCode, i, len, list = [],
+          chars, chunk, i, lastChar, list = [],
+          maxChunkLength = Math.floor(maxHashLength * 3/4),
           value = editor.value, yetToReturn;
 
-        // If the 500th "character" is the first half of a surrogate pair,
-        // we slice off the first 499 -- rather than 500 -- "characters".
-        while (value.length) {
-          len = 499;
-          charCode = value.charCodeAt(len);
-          list.push(value.substr(0, 0xD800 <= charCode && charCode < 0xDC00 ? len : ++len));
-          value = value.substr(len);
+        function queueChar() {
+          chars.push(lastChar);
+          chunk = chunk.substr(0, i);
+          lastChar = chunk.charAt(--i);
+          return chunk;
         }
+
+        function safeEncode() {
+          // If `lastChar` is the first half of a surrogate pair, drop it
+          // from the chunk and queue it for inclusion in the next chunk.
+          /[\uD800-\uDBFF]/.test(lastChar) && queueChar();
+          return encode(chunk);
+        }
+
+        while (value.length) {
+          // The hash is too long to pass to bit.ly in a single URL; multiple
+          // shorter hashes are required. We take the largest chunk of `value`
+          // that may have an acceptable hash, then drop characters while the
+          // length of the chunk's hash exceeds `maxHashLength`.
+          i = maxChunkLength;
+          chars = [];
+          chunk = value.substr(0, i);
+          value = value.substr(i);
+          lastChar = chunk.charAt(--i);
+
+          while (safeEncode().length > maxHashLength) queueChar();
+
+          list.push(chunk);
+          value = chars.reverse().join('') + value;
+        }
+
         i = yetToReturn = list.length;
         if (yetToReturn > bitlyLimit) {
           alert(
-            'Documents exceeding 7500 characters in length cannot be shortened.\n\n' +
+            'Documents exceeding ' + bitlyLimit * maxChunkLength + ' characters in ' +
+            'length cannot be shortened.\n\n' +
             'This document currently contains ' + editor.value.length + ' characters.'
           );
         } else {
