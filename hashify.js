@@ -310,7 +310,7 @@
   // EVENT HANDLERS //
 
   shorten.onclick = function (event) {
-    var hash = documentHash();
+    var hash = documentHash().replace(/[+]/g, '%2B');
     if (hash.length <= maxHashLength) {
       sendRequest(
         'shorten',
@@ -335,7 +335,7 @@
           // If `lastChar` is the first half of a surrogate pair, drop it
           // from the chunk and queue it for inclusion in the next chunk.
           /[\uD800-\uDBFF]/.test(lastChar) && queueChar();
-          return encode(chunk);
+          return encode(chunk).replace(/[+]/g, '%2B');
         }
 
         while (value.length) {
