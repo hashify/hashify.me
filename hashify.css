@@ -119,14 +119,12 @@ body {
     padding: 9px 0;
   }
 
-    a.twitter-share-button {
-      display: none;
-    }
-
-    iframe.twitter-share-button {
+    #tweet {
       position: absolute;
       left: 130px;
       top: 6px;
+      width: 55px;
+      height: 20px;
     }
 
   #shorten,

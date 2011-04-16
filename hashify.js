@@ -16,6 +16,8 @@
 
     shorten = $('shorten'),
 
+    tweet = $('tweet'),
+
     bitlyLimit = 15,
 
     hashifyMe = 'http://hashify.me/',
@@ -160,7 +162,15 @@
       return function (data) {
         if (textNode) shorturl.removeChild(textNode);
         shorturl.appendChild(
-          textNode = document.createTextNode(shorturl.href = data.url));
+          textNode = document.createTextNode(shorturl.href = data.url)
+        );
+        // set default tweet text
+        tweet.src = (
+          tweet.src.replace(
+            /text=.*/,
+            'text=' + encodeURIComponent(document.title + ' ' + data.url)
+          )
+        );
         shorten.style.display = 'none';
         setLocation(lastSavedDocument = data.long_url.substr(18), true);
       }
@@ -573,6 +583,12 @@
 
   (function (hash) {
     var i, list;
+    // Twitter insists on shortening _every_ URL passed to it,
+    // so we are forced to sneak in bit.ly URLs via the `text`
+    // parameter. Additionally, we give the `url` parameter an
+    // invalid value: this value is not displayed, but prevents
+    // Twitter from including the long URL in the tweet text.
+    tweet.src += '?count=none&related=hashify&url=foo&text=';
     if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
       // In browsers which don't provide `history.pushState`
       // we fall back to hashbangs. If `location.hash` is to be
