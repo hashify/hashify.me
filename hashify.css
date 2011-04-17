@@ -205,6 +205,10 @@ body {
       color: #00c;
     }
 
+    #markup img {
+      max-width: 100%;
+    }
+
   #credits {
     position: fixed;
     top: 67.5%;
