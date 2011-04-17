@@ -166,15 +166,20 @@
       shorturl.id = 'shorturl';
       wrapper.appendChild(shorturl);
       return function (data) {
+        var tweetText;
         if (textNode) shorturl.removeChild(textNode);
         shorturl.appendChild(
           textNode = document.createTextNode(shorturl.href = data.url)
         );
         // set default tweet text
+        tweetText = ' ' + data.url;
+        tweetText = (
+          document.title.substr(0, 140 - tweetText.length) + tweetText
+        );
         tweet.src = (
           tweet.src.replace(
             /text=.*/,
-            'text=' + encodeURIComponent(document.title + ' ' + data.url)
+            'text=' + encodeURIComponent(tweetText)
           )
         );
         setLocation(lastSavedDocument = data.long_url.substr(18), true);
