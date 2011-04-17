@@ -496,6 +496,10 @@
       editor.setSelectionRange(position, position);
       event.preventDefault();
     }
+    else if (text && chr === '#') {
+      heading();
+      event.preventDefault();
+    }
   };
 
   editor.onkeyup = function () {
@@ -568,7 +572,7 @@
     return render(new Selection(' {0,3}[*+-][ \\t]*', ____, '  - ').render());
   };
 
-  $('h1').onclick = function () {
+  function heading() {
     var
       matches, offset = 0, start, text,
       selection = new Selection('(#{1,6})[ \\t]*', '# ');
@@ -595,7 +599,9 @@
     editor.setSelectionRange(start + offset, start + text.length);
     editor.focus();
     return false;
-  };
+  }
+
+  $('h1').onclick = heading;
 
   $('hr').onclick = function () {
     var
