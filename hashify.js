@@ -78,7 +78,7 @@
         before = selection.before,
         after = selection.after,
         start = before.length,
-        text = selection.toString(),
+        text = selection.text,
         len = text.length;
 
       close || (close = open);
@@ -241,25 +241,14 @@
 
     this.before = value.substr(0, start);
     this.after = value.substr(end);
-    this.lines = value.substring(start, end).split(/\r?\n/g);
+    this.text = value.substring(start, end);
   }
-
-  Selection.prototype.each = function (iterator) {
-    var
-      lines = this.lines,
-      i = lines.length;
-
-    while (i--) {
-      iterator.call(this, lines[i], i, lines);
-    }
-    return this;
-  };
 
   Selection.prototype.isInlineCode = function () {
     var
       match = (
         convert(
-          _(this.before + this.toString()) + '✪` `` ' + _(this.after)
+          _(this.before + this.text) + '✪` `` ' + _(this.after)
         ).match(/<code>[^<]*✪(`?)<\/code>/)
       );
     return match && match[1] + '`';
@@ -267,7 +256,7 @@
 
   Selection.prototype.wrap = function (chr) {
     var
-      text = this.toString(),
+      text = this.text,
       len = text.length,
       position = this.before.length + 1,
       value = (
@@ -307,15 +296,27 @@
   };
 
   Selection.prototype.prefix = function () {
-    return this.each(function (line, index, lines) {
-      lines[index] = (index ? this.prefix_ : this.prefix0) + line;
-    });
+    var index = 0, that = this;
+    this.text = (
+      this.text.replace(
+        /^.*$/gm,
+        function (match) {
+          return (index++? that.prefix_: that.prefix0) + match;
+        }
+      )
+    );
   };
 
   Selection.prototype.unprefix = function () {
-    return this.each(function (line, index, lines) {
-      lines[index] = line.replace(index ? this.prefix_ : this.prefix0, '');
-    });
+    var index = 0, that = this;
+    this.text = (
+      this.text.replace(
+        /^.*$/gm,
+        function (match) {
+          return match.replace(index++? that.prefix_: that.prefix0, '');
+        }
+      )
+    );
   };
 
   Selection.prototype.render = function () {
@@ -327,7 +328,7 @@
       this.before = this.before.replace(this.beforeRegex, '');
       this.unprefix();
     }
-    else if (matches = this.textRegex.exec(this.lines[0])) {
+    else if (matches = this.textRegex.exec(/^.*$/m.exec(this.text)[0])) {
       this.unprefix();
     }
     else {
@@ -335,15 +336,11 @@
       offset = this.prefix0.length;
     }
     start = this.before.length;
-    text = this.toString();
+    text = this.text;
     setValue(value = this.before + text + this.after);
     editor.setSelectionRange(start + offset, start + text.length);
     editor.focus();
     return value;
-  };
-
-  Selection.prototype.toString = function () {
-    return this.lines.join('\n');
   };
 
   // EVENT HANDLERS //
@@ -459,7 +456,7 @@
       selection = new Selection(),
       before = selection.before,
       after = selection.after,
-      text = selection.toString(),
+      text = selection.text,
       position = before.length + 1;
 
     if (/[`_*]/.test(chr)) {
@@ -523,7 +520,7 @@
       before = selection.before,
       after = selection.after,
       start = before.length,
-      text = selection.toString(),
+      text = selection.text,
       len = text.length;
 
     render(
@@ -576,16 +573,16 @@
       matches, offset = 0, start, text,
       selection = new Selection('(#{1,6})[ \\t]*', '# ');
 
-    selection.lines = [selection.lines.join(' ').replace(/\s+/g, ' ')];
+    selection.text = selection.text.replace(/\s+/g, ' ');
 
     if (matches = selection.beforeRegex.exec(selection.before)) {
       selection.before =
         selection.before.replace(
           selection.beforeRegex, matches[1].length < 4 ? '$1# ' : '');
     }
-    else if (matches = selection.textRegex.exec(selection.lines[0])) {
-      selection.lines[0] =
-        selection.lines[0].replace(
+    else if (matches = selection.textRegex.exec(/^.*$/m.exec(selection.text)[0])) {
+      selection.text =
+        selection.text.replace(
           selection.textRegex, matches[1].length < 4 ? '$1# ' : '');
     }
     else {
@@ -593,7 +590,7 @@
       offset = selection.prefix0.length;
     }
     start = selection.before.length;
-    text = selection.toString();
+    text = selection.text;
     render(selection.before + text + selection.after, true);
     editor.setSelectionRange(start + offset, start + text.length);
     editor.focus();
@@ -605,7 +602,7 @@
       selection = new Selection().blockify(),
       before = selection.before,
       start = before.length,
-      text = selection.toString() === '- - -' ? '' : '- - -';
+      text = selection.text === '- - -' ? '' : '- - -';
 
     render(before + text + selection.after, true);
     editor.setSelectionRange(start, start + text.length);
