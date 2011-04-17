@@ -138,28 +138,36 @@
     },
 
     setLocation = (function () {
-      return (
-        pushStateExists?
-          function (hash, save) {
-            history[save?'pushState':'replaceState'](null, null, '/' + hash);
-          }:
-          function (hash, save) {
-            // Since `location.replace` overwrites the current history entry,
-            // saving a location to history is not simply a matter of calling
-            // `location.assign`. Instead, we must create a new history entry
-            // and immediately overwrite it.
+      var
+        counter = $('counter'),
+        caution = maxHashLength,
+        danger = 2083 - (hashifyMe + '#!/').length;
+      return function (hash, save) {
+        var len = hash.length;
+        counter.innerHTML = len;
+        counter.className =
+          len > danger? 'danger': // too long for old versions of IE
+          len > caution? 'caution': // too long to send to bit.ly
+          '';
+        if (pushStateExists) {
+          history[save?'pushState':'replaceState'](null, null, '/' + hash);
+        } else {
+          // Since `location.replace` overwrites the current history entry,
+          // saving a location to history is not simply a matter of calling
+          // `location.assign`. Instead, we must create a new history entry
+          // and immediately overwrite it.
 
-            // update current history entry
+          // update current history entry
+          location.replace('/#!/' + hash);
+
+          if (save) {
+            // create a new history entry (to save the current one)
+            location.hash = '#!/';
+            // update the new history entry (to reinstate the hash)
             location.replace('/#!/' + hash);
-
-            if (save) {
-              // create a new history entry (to save the current one)
-              location.hash = '#!/';
-              // update the new history entry (to reinstate the hash)
-              location.replace('/#!/' + hash);
-            }
           }
-      );
+        }
+      };
     }()),
 
     setShortUrl = (function (shorturl, textNode) {
@@ -603,6 +611,9 @@
 
   (function (hash) {
     var i, list;
+    // initialize `#counter`
+    setLocation(hash);
+
     // Twitter insists on shortening _every_ URL passed to it,
     // so we are forced to sneak in bit.ly URLs via the `text`
     // parameter. Additionally, we give the `url` parameter an

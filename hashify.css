@@ -33,7 +33,7 @@ body {
     #toolbar {
       position: fixed;
       margin: 45px 0 0;
-      padding: 0 0 0 56px;
+      padding: 0;
     }
 
       #toolbar>li {
@@ -106,6 +106,25 @@ body {
           #ul:after         { content: "bulleted list"; }
           #h1:after         { content: "heading"; }
           #hr:after         { content: "horizontal rule"; }
+
+    #counter {
+      position: fixed;
+      left: 325px;
+      top: 33px;
+      width: 100px;
+      text-align: right;
+      line-height: 2em;
+      color: #bbb;
+      text-shadow: 0 1px 0 #fff;
+    }
+
+    #counter.caution {
+      color: #f60;
+    }
+
+    #counter.danger {
+      color: #c00;
+    }
 
   #wrapper,
   #shorten {
