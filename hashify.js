@@ -18,6 +18,8 @@
 
     tweet = $('tweet'),
 
+    wrapper = $('wrapper'),
+
     bitlyLimit = 15,
 
     hashifyMe = 'http://hashify.me/',
@@ -158,7 +160,7 @@
 
     setShortUrl = (function (shorturl, textNode) {
       shorturl.id = 'shorturl';
-      $('wrapper').appendChild(shorturl);
+      wrapper.appendChild(shorturl);
       return function (data) {
         if (textNode) shorturl.removeChild(textNode);
         shorturl.appendChild(
@@ -171,8 +173,8 @@
             'text=' + encodeURIComponent(document.title + ' ' + data.url)
           )
         );
-        shorten.style.display = 'none';
         setLocation(lastSavedDocument = data.long_url.substr(18), true);
+        wrapper.className = '';
       }
     }(document.createElement('a'))),
 
@@ -394,6 +396,8 @@
         }
       }());
     }
+    wrapper.className = 'loading';
+    shorten.style.display = 'none';
     (event || window.event).preventDefault();
   };
 
