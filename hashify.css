@@ -134,6 +134,7 @@ body {
       top: 6px;
       width: 55px;
       height: 20px;
+      background: url(http://platform.twitter.com/widgets/images/tweet.png);
     }
 
   #shorten,
