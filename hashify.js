@@ -592,7 +592,10 @@
     // parameter. Additionally, we give the `url` parameter an
     // invalid value: this value is not displayed, but prevents
     // Twitter from including the long URL in the tweet text.
-    tweet.src += '?count=none&related=hashify&url=foo&text=';
+    tweet.src = (
+      'http://platform.twitter.com/widgets/tweet_button.html' +
+      '?count=none&related=hashify&url=foo&text='
+    );
     if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
       // In browsers which don't provide `history.pushState`
       // we fall back to hashbangs. If `location.hash` is to be
