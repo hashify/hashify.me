@@ -195,6 +195,15 @@
       }
     }(document.createElement('a'))),
 
+    setValue = function (text) {
+      // Firefox and its ilk reset `scrollTop` whenever we assign
+      // to `editor.value`. To preserve scroll position we record
+      // the offset before assignment and reinstate it afterwards.
+      var scrollTop = editor.scrollTop;
+      editor.value = text;
+      editor.scrollTop = scrollTop;
+    },
+
     render = (function () {
       var
         div = document.createElement('div'),
@@ -213,7 +222,7 @@
         markup.innerHTML = convert(text);
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
         document.title = div.textContent || 'Hashify';
-        if (setEditorValue) editor.value = text;
+        if (setEditorValue) setValue(text);
         return false;
       };
     }());
@@ -261,7 +270,7 @@
       text = this.toString(),
       len = text.length,
       position = this.before.length + 1,
-      value = editor.value = (
+      value = (
         function () {
           var re = new RegExp('^([' + chr + ']{0,2}).*\\1$');
           switch (re.exec(text)[1].length) {
@@ -281,6 +290,7 @@
           }
         }.call(this)
       );
+    setValue(value);
     editor.setSelectionRange(position, position + len);
     return value;
   };
@@ -326,7 +336,7 @@
     }
     start = this.before.length;
     text = this.toString();
-    editor.value = value = this.before + text + this.after;
+    setValue(value = this.before + text + this.after);
     editor.setSelectionRange(start + offset, start + text.length);
     editor.focus();
     return value;
