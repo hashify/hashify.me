@@ -574,7 +574,7 @@
 
   function heading() {
     var
-      matches, offset = 0, start, text,
+      increment, len, matches, offset = 0, start, text,
       selection = new Selection('(#{1,6})[ \\t]*', '# ');
 
     selection.text = selection.text.replace(/\s+/g, ' ');
@@ -582,12 +582,15 @@
     if (matches = selection.beforeRegex.exec(selection.before)) {
       selection.before =
         selection.before.replace(
-          selection.beforeRegex, matches[1].length < 4 ? '$1# ' : '');
+          selection.beforeRegex, matches[1].length < 4? '$1# ': '');
     }
     else if (matches = selection.textRegex.exec(/^.*$/m.exec(selection.text)[0])) {
+      len = matches[1].length;
+      if (increment = len < 4) {
+        offset = len + 2; // '# '.length === 2
+      }
       selection.text =
-        selection.text.replace(
-          selection.textRegex, matches[1].length < 4 ? '$1# ' : '');
+        selection.text.replace(selection.textRegex, increment? '$1# ': '');
     }
     else {
       selection.blockify().prefix();
