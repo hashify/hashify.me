@@ -575,7 +575,7 @@
   function heading() {
     var
       increment, len, matches, offset = 0, start, text,
-      selection = new Selection('(#{1,6})[ \\t]*', '# ');
+      selection = new Selection('(#+)[ \\t]*', '# ');
 
     selection.text = selection.text.replace(/\s+/g, ' ');
 
