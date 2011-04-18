@@ -10,7 +10,7 @@ body {
 
   #editor {
     position: fixed;
-    width: 400px;
+    width: 432px;
     height: 100%;
     border-width: 0 1px;
     border-style: solid;
@@ -22,7 +22,7 @@ body {
     #markdown {
       position: fixed;
       margin: 81px 0 0;
-      width: 386px;
+      width: 418px;
       height: 67.5%;
       border: 1px solid #ddd;
       background: #f7f7f7;
@@ -109,7 +109,7 @@ body {
 
     #counter {
       position: fixed;
-      left: 325px;
+      left: 357px;
       top: 33px;
       width: 100px;
       text-align: right;
@@ -129,7 +129,7 @@ body {
   #wrapper,
   #shorten {
     position: fixed;
-    width: 448px;
+    width: 480px;
     height: 14px;
     border-width: 0 1px 1px;
     border-style: solid;
@@ -150,7 +150,7 @@ body {
 
     #tweet {
       position: absolute;
-      left: 130px;
+      left: 142px;
       top: 6px;
       width: 55px;
       height: 20px;
@@ -180,7 +180,7 @@ body {
 
   #shorturl {
     position: absolute;
-    left: 192px;
+    left: 204px;
     top: 6px;
     -webkit-border-radius: 3px;
     -moz-border-radius: 3px;
@@ -215,7 +215,7 @@ body {
     }
 
   #markup {
-    margin-left: 450px;
+    margin-left: 482px;
     max-width: 32em;
     padding: 1em 2em 2em;
   }
@@ -232,7 +232,7 @@ body {
     position: fixed;
     top: 67.5%;
     margin: 95px 0 0 1px;
-    width: 400px;
+    width: 432px;
     padding: 6px 24px;
     font: italic 12px/1.5 Georgia, serif;
     color: #666;
