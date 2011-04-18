@@ -626,7 +626,7 @@
   // INITIALIZATION //
 
   (function (hash) {
-    var i, list;
+    var i, list, mask = $('mask');
     // initialize `#counter`
     setLocation(hash);
 
@@ -645,6 +645,7 @@
       // the source of truth, `location.pathname` should be "/".
       pushStateExists || location.replace('/#!/' + hash);
       render(decode(hash), true);
+      document.body.removeChild(mask);
     } else if (/^unpack:/.test(hash)) {
       list = hash.substr(7).split(',');
       // the maximum number of `hash` parameters is 15
@@ -660,6 +661,7 @@
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
             render(list.join(''), true);
             setLocation(encode(editor.value));
+            document.body.removeChild(mask);
           }
         );
       }
