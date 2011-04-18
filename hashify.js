@@ -16,8 +16,6 @@
 
     shorten = $('shorten'),
 
-    tweet = $('tweet'),
-
     wrapper = $('wrapper'),
 
     bitlyLimit = 15,
@@ -170,7 +168,7 @@
       };
     }()),
 
-    setShortUrl = (function (shorturl, textNode) {
+    setShortUrl = (function (shorturl, textNode, tweet) {
       shorturl.id = 'shorturl';
       wrapper.appendChild(shorturl);
       return function (data) {
@@ -183,12 +181,31 @@
         tweetText = (
           document.title.substr(0, 140 - tweetText.length) + tweetText
         );
+        // Updating the `src` attribute of an `iframe` creates a
+        // history entry which interferes with navigation. Instead,
+        // we create a new `iframe` as per [Nir Levy's suggestion][1].
+        // 
+        // [1]: http://nirlevy.blogspot.com/2007/09/avoding-browser-history-when-changing.html
+
+        if (tweet && tweet.parentNode) {
+          wrapper.removeChild(tweet);
+        }
+        tweet = document.createElement('iframe');
+        tweet.id = 'tweet';
+        tweet.frameBorder = 0;
+        tweet.scrolling = 'no';
+        // Twitter insists on shortening _every_ URL passed to it,
+        // so we are forced to sneak in bit.ly URLs via the `text`
+        // parameter. Additionally, we give the `url` parameter an
+        // invalid value: this value is not displayed, but prevents
+        // Twitter from including the long URL in the tweet text.
         tweet.src = (
-          tweet.src.replace(
-            /text=.*/,
-            'text=' + encodeURIComponent(tweetText)
-          )
+          'http://platform.twitter.com/widgets/tweet_button.html' +
+          '?count=none&related=hashify&url=foo&text=' +
+          encodeURIComponent(tweetText)
         );
+        wrapper.insertBefore(tweet, shorturl);
+
         url = data.long_url.substr(18);
         if (!/^unpack:/.test(url)) {
           lastSavedDocument = url;
@@ -642,15 +659,6 @@
     // initialize `#counter`
     setLocation(hash);
 
-    // Twitter insists on shortening _every_ URL passed to it,
-    // so we are forced to sneak in bit.ly URLs via the `text`
-    // parameter. Additionally, we give the `url` parameter an
-    // invalid value: this value is not displayed, but prevents
-    // Twitter from including the long URL in the tweet text.
-    tweet.src = (
-      'http://platform.twitter.com/widgets/tweet_button.html' +
-      '?count=none&related=hashify&url=foo&text='
-    );
     if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
       // In browsers which don't provide `history.pushState`
       // we fall back to hashbangs. If `location.hash` is to be
