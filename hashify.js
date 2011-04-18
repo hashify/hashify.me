@@ -345,7 +345,7 @@
 
   // EVENT HANDLERS //
 
-  shorten.onclick = function (event) {
+  function shortenUrl() {
     var
       commandArray = ['_trackEvent', 'shorten', editor.value.length],
       hash = documentHash().replace(/[+]/g, '%2B');
@@ -429,6 +429,10 @@
     }
     wrapper.className = 'loading';
     shorten.style.display = 'none';
+  }
+
+  shorten.onclick = function (event) {
+    shortenUrl();
     (event || window.event).preventDefault();
   };
 
@@ -646,6 +650,7 @@
       pushStateExists || location.replace('/#!/' + hash);
       render(decode(hash), true);
       document.body.removeChild(mask);
+      shortenUrl();
     } else if (/^unpack:/.test(hash)) {
       list = hash.substr(7).split(',');
       // the maximum number of `hash` parameters is 15
@@ -662,11 +667,13 @@
             render(list.join(''), true);
             setLocation(encode(editor.value));
             document.body.removeChild(mask);
+            shortenUrl();
           }
         );
       }
     } else {
       document.body.removeChild(mask);
+      shortenUrl();
     }
   }(documentHash()));
 
