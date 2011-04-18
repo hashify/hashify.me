@@ -665,6 +665,8 @@
           }
         );
       }
+    } else {
+      document.body.removeChild(mask);
     }
   }(documentHash()));
 
