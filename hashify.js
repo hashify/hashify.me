@@ -394,7 +394,7 @@
 
           while (safeEncode().length > maxHashLength) queueChar();
 
-          list.push(chunk);
+          list.push(safeEncode());
           value = chars.reverse().join('') + value;
         }
 
@@ -410,7 +410,7 @@
             (function (item, index) {
               sendRequest(
                 'shorten',
-                'longUrl=' + hashifyMe + encode(item),
+                'longUrl=' + hashifyMe + item,
                 function (data) {
                   list[index] = data.hash;
                   if (!--yetToReturn) {
