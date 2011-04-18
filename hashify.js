@@ -174,13 +174,12 @@
       shorturl.id = 'shorturl';
       wrapper.appendChild(shorturl);
       return function (data) {
-        var tweetText;
+        var tweetText, url = data.url;
         if (textNode) shorturl.removeChild(textNode);
-        shorturl.appendChild(
-          textNode = document.createTextNode(shorturl.href = data.url)
-        );
+        shorturl.appendChild(textNode = document.createTextNode(url));
+        shorturl.href = url;
         // set default tweet text
-        tweetText = ' ' + data.url;
+        tweetText = ' ' + url;
         tweetText = (
           document.title.substr(0, 140 - tweetText.length) + tweetText
         );
@@ -190,7 +189,11 @@
             'text=' + encodeURIComponent(tweetText)
           )
         );
-        setLocation(lastSavedDocument = data.long_url.substr(18), true);
+        url = data.long_url.substr(18);
+        if (!/^unpack:/.test(url)) {
+          lastSavedDocument = url;
+          setLocation(url, true);
+        }
         wrapper.className = '';
       }
     }(document.createElement('a'))),
