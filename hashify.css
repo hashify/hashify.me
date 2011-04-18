@@ -30,6 +30,11 @@ body {
       padding: 6px;
     }
 
+    #markdown:focus {
+      /* fake outer glow for Firefox */
+      -moz-box-shadow: -1px -1px 3px #6ae, 1px -1px 3px #6ae, 1px 1px 3px #6ae, -1px 1px 3px #6ae;
+    }
+
     #toolbar {
       position: fixed;
       margin: 45px 0 0;
