@@ -262,8 +262,8 @@ a                   { color: inherit; }
 a:focus, a:hover    { color: #333; }
 
 @media print {
-  #credits, #editor, #shorten {
-    display: none;
+  #credits, #editor, #shorten, #wrapper {
+    display: none !important;
   }
   #markup {
     margin: 0;
