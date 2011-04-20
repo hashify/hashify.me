@@ -96,7 +96,7 @@
 
     sendRequest = function (action, params, success) {
       var
-        text,
+        json, text,
         request = new XMLHttpRequest();
 
       try {
@@ -128,7 +128,15 @@
       request.onreadystatechange = function () {
         if (request.readyState === 4) {
           if (request.status === 200) {
-            success.call(null, parseJSON(request.responseText).data);
+            json = parseJSON(request.responseText);
+            if (json.status_code === 200) {
+              success.call(null, json.data);
+            } else {
+              wrapper.className = '';
+              wrapper.innerHTML =
+                'bit.ly – "' + json.status_txt.toLowerCase().replace(/_/g, ' ') + '" :\\';
+              shorten.parentNode.removeChild(shorten);
+            }
           }
         }
       };
