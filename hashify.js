@@ -94,54 +94,62 @@
       return false;
     },
 
-    sendRequest = function (action, params, success) {
+    sendRequest = (function () {
       var
-        json, text,
-        request = new XMLHttpRequest();
-
-      try {
-        request.open('GET',
-          'http://api.bitly.com/v3/' + action + '?login=davidchambers&' +
-          'apiKey=R_20d23528ed6381ebb614a997de11c20a&' + params
-        );
-      } catch (error) {
-        if (error.code !== 1012) throw error;
-        // NS_ERROR_DOM_BAD_URI
         text = [
           "# I'm sorry, Dave",
           '',
           'Your browser appears not to support',
           '[cross-origin resource sharing][1].',
           '',
-          '_Click "back" then reload the page to restore your document._',
-          '',
           '',
           '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
-        ].join('\n');
-        // Save the current location to history, enabling the user to
-        // restore the document by going back then reloading the page.
-        setLocation(documentHash(), true);
-        setLocation(encode(text));
-        render(text, true);
-        return;
-      }
-      request.onreadystatechange = function () {
-        if (request.readyState === 4) {
-          if (request.status === 200) {
-            json = parseJSON(request.responseText);
-            if (json.status_code === 200) {
-              success.call(null, json.data);
-            } else {
-              wrapper.className = '';
-              wrapper.innerHTML =
-                'bit.ly – "' + json.status_txt.toLowerCase().replace(/_/g, ' ') + '" :\\';
-              shorten.parentNode.removeChild(shorten);
+        ].join('\n'),
+        corsNotSupported = function () {
+          setLocation(encode(text));
+          render(text, true);
+        };
+
+      return function (action, params, success) {
+        var
+          json,
+          request = new XMLHttpRequest();
+
+        try {
+          request.open('GET',
+            'http://api.bitly.com/v3/' + action + '?login=davidchambers&' +
+            'apiKey=R_20d23528ed6381ebb614a997de11c20a&' + params
+          );
+        } catch (error) {
+          if (error.code !== 1012) throw error;
+          // NS_ERROR_DOM_BAD_URI
+          corsNotSupported();
+          return;
+        }
+        request.onreadystatechange = function () {
+          if (request.readyState === 4) {
+            if (request.status === 200) {
+              json = parseJSON(request.responseText);
+              if (json.status_code === 200) {
+                success.call(null, json.data);
+              } else {
+                wrapper.className = '';
+                wrapper.innerHTML =
+                  'bit.ly – "' + json.status_txt.toLowerCase().replace(/_/g, ' ') + '" :\\';
+                shorten.parentNode.removeChild(shorten);
+              }
             }
           }
+        };
+        try {
+          request.send();
+        } catch (error) {
+          if (error.message !== 'Security violation') throw error;
+          // Opera
+          corsNotSupported();
         }
       };
-      request.send();
-    },
+    }()),
 
     setLocation = (function () {
       var
