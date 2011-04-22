@@ -131,7 +131,7 @@
             if (request.status === 200) {
               json = parseJSON(request.responseText);
               if (json.status_code === 200) {
-                success.call(null, json.data);
+                success(json.data);
               } else {
                 wrapper.className = '';
                 wrapper.innerHTML =
