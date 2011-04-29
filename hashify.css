@@ -8,8 +8,19 @@ body {
   font: 24px/32px "Helvetica Neue", Helvetica, sans-serif;
 }
 
-  #editor {
+  #sidebar {
     position: fixed;
+    left: 0; /* Firefox requires that this be included */
+    width: 482px;
+    height: 100%;
+  }
+
+  #sidebar.concealed {
+    left: -482px;
+  }
+
+  #editor {
+    position: absolute;
     width: 432px;
     height: 100%;
     border-width: 0 1px;
@@ -20,7 +31,7 @@ body {
   }
 
     #markdown {
-      position: fixed;
+      position: absolute;
       margin: 81px 0 0;
       width: 418px;
       height: 67.5%;
@@ -36,7 +47,6 @@ body {
     }
 
     #toolbar {
-      position: fixed;
       margin: 45px 0 0;
       padding: 0 0 0 72px;
     }
@@ -112,7 +122,7 @@ body {
           #hr:after         { content: "horizontal rule"; }
 
     #counter {
-      position: fixed;
+      position: absolute;
       left: 397px;
       top: 48px;
       width: 60px;
@@ -133,7 +143,7 @@ body {
 
   #wrapper,
   #shorten {
-    position: fixed;
+    position: absolute;
     width: 480px;
     height: 14px;
     border-width: 0 1px 1px;
@@ -225,6 +235,10 @@ body {
     padding: 1em 2em 2em;
   }
 
+  #sidebar.concealed+#markup {
+    margin-left: 0;
+  }
+
     #markup a {
       color: #00c;
     }
@@ -239,7 +253,7 @@ body {
     }
 
   #credits {
-    position: fixed;
+    position: absolute;
     top: 67.5%;
     margin: 95px 0 0 1px;
     width: 432px;

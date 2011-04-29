@@ -16,6 +16,8 @@
 
     shorten = $('shorten'),
 
+    sidebar = $('sidebar'),
+
     wrapper = $('wrapper'),
 
     bitlyLimit = 15,
@@ -240,10 +242,21 @@
       editor.scrollTop = scrollTop;
     },
 
-    render = (function () {
+    render = (function (undef) {
       var
         div = document.createElement('div'),
-        markup = $('markup');
+        markup = $('markup'),
+        style = markup.style,
+        properties = ['MozTransition', 'OTransition', 'WebkitTransition'],
+        property;
+
+      // We define the transition property here rather than in the style
+      // sheet to avoid having animation occur during initial rendering.
+      while (property = properties.pop()) {
+        if (style[property] !== undef) {
+          style[property] = sidebar.style[property] = 'all 0.5s ease-out';
+        }
+      }
       return function (text, setEditorValue) {
         var
           position = text.length - 1,
@@ -657,6 +670,18 @@
     editor.setSelectionRange(start, start + text.length);
     editor.focus();
     return false;
+  };
+
+  document.onkeydown = function (event) {
+    event || (event = window.event);
+    if ((event.target || event.srcElement) !== editor) {
+      switch (event.keyCode) {
+        case 37: // left arrow
+          sidebar.className = 'concealed'; break;
+        case 39: // right arrow
+          sidebar.className = '';
+      }
+    }
   };
 
   window.onpopstate = function () {
