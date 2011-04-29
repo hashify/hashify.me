@@ -22,11 +22,7 @@
 
     bitlyLimit = 15,
 
-    domain = 'hashify.me',
-
-    debug = location.hostname !== domain,
-
-    hashifyMe = 'http://' + domain + '/',
+    hashifyMe = 'http://hashify.me/',
 
     lastSavedDocument,
 
@@ -395,14 +391,7 @@
   // EVENT HANDLERS //
 
   function shortenUrl() {
-    var
-      commandArray = ['_trackEvent', 'shorten', editor.value.length],
-      hash = documentHash().replace(/[+]/g, '%2B');
-
-    debug?
-      console.log(commandArray):
-      _gaq.push(commandArray);
-
+    var hash = documentHash().replace(/[+]/g, '%2B');
     if (hash.length <= maxHashLength) {
       sendRequest(
         'shorten',
