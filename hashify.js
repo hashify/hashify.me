@@ -119,10 +119,13 @@
             'apiKey=R_20d23528ed6381ebb614a997de11c20a&' + params
           );
         } catch (error) {
-          if (error.code !== 1012) throw error;
-          // NS_ERROR_DOM_BAD_URI
-          corsNotSupported();
-          return;
+          if (
+            error.code === 1012 || // NS_ERROR_DOM_BAD_URI
+            /^Access is denied\.\r\n$/.test(error.message)) {
+            corsNotSupported();
+            return;
+          }
+          throw error;
         }
         request.onreadystatechange = function () {
           if (request.readyState === 4) {
