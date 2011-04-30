@@ -474,7 +474,7 @@
 
   shorten.onclick = function (event) {
     shortenUrl();
-    (event || window.event).preventDefault();
+    return false;
   };
 
   // improve discoverability
@@ -539,11 +539,11 @@
           return;
       }
       editor.setSelectionRange(position, position);
-      event.preventDefault();
+      return false;
     }
     else if (text && chr === '#') {
       heading();
-      event.preventDefault();
+      return false;
     }
   };
 
