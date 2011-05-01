@@ -378,7 +378,9 @@
     // initialize `#counter`
     setLocation(hash);
 
-    Hashify.editor('markdown', false);
+    Hashify.editor(
+      'markdown', false, function () { setLocation(encode(this.value)); }
+    );
 
     if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
       // In browsers which don't provide `history.pushState`
