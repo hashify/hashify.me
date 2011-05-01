@@ -3,6 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <title>Hashify</title>
+    <link rel="stylesheet" href="/hashify-editor/hashify-editor.css" />
     <link rel="stylesheet" href="/hashify.css" />
     <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVQ4y2P4//8/AyUYwQAygfgfCONUDJVnAGsbNQCvAUDcgAMTbcBfHJhOBoxG40AZQC4GAGFDLqEWPyCLAAAAAElFTkSuQmCC" />
   </head>
@@ -10,18 +11,6 @@
     <div id="sidebar">
       <div id="editor">
         <textarea id="markdown"></textarea>
-        <ul id="toolbar">
-          <li><a href="#strong" id="strong">Strong</a></li>
-          <li><a href="#emphasis" id="em">Emphasis</a></li>
-          <li><a href="#image" id="img">Image</a></li>
-          <li><a href="#hyperlink" id="a">Hyperlink</a></li>
-          <li><a href="#blockquote" id="blockquote">Blockquote</a></li>
-          <li><a href="#code-sample" id="pre-code">Code Sample</a></li>
-          <li><a href="#numbered-list" id="ol">Numbered List</a></li>
-          <li><a href="#bulleted-list" id="ul">Bulleted List</a></li>
-          <li><a href="#heading" id="h1">Heading</a></li>
-          <li><a href="#horizontal-rule" id="hr">Horizontal Rule</a></li>
-        </ul>
         <div id="counter"></div>
       </div>
       <div id="wrapper"></div>
@@ -58,7 +47,8 @@
         $LAB
           .script('/ga.js')
           .script('/base64/base64.js')
-          .script('/showdown/showdown.js').wait()
+          .script('/showdown/showdown.js')
+          .script('/hashify-editor/hashify-editor.js').wait()
           .script('/hashify.js');
     </script>
   </body>

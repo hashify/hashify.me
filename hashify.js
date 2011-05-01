@@ -6,12 +6,6 @@
       return document.getElementById(id);
     },
 
-    _ = function (text) {
-      return text.replace(/✪/g, '☺');
-    },
-
-    ____ = '    ',
-
     editor = $('markdown'),
 
     shorten = $('shorten'),
@@ -32,13 +26,9 @@
 
     convert = new Showdown().convert,
 
-    encode = function (text) {
-      return btoa(unescape(encodeURIComponent(text)));
-    },
+    encode = Hashify.encode,
 
-    decode = function (text) {
-      return decodeURIComponent(escape(atob(text)));
-    },
+    decode = Hashify.decode,
 
     documentHash = function () {
       return location.pathname.substr(1) || location.hash.substr(3);
@@ -65,31 +55,6 @@
           new Function('return ' + data)()
       );
       throw 'SyntaxError';
-    },
-
-    resolve = function (reSelection, reBefore, reAfter, open, close) {
-      var
-        openLen = open.length,
-        selection = new Selection(),
-        before = selection.before,
-        after = selection.after,
-        start = before.length,
-        text = selection.text,
-        len = text.length;
-
-      close || (close = open);
-
-      render(
-        reSelection.test(text)?
-          (len -= openLen + close.length, before + text.substr(openLen, len) + after):
-          reAfter.test(after) && reBefore.test(before)?
-            (start -= openLen, before.substr(0, start) + text + after.substr(close.length)):
-            (start += openLen, before + open + text + close + after),
-        true
-      );
-      editor.setSelectionRange(start, start + len);
-      editor.focus();
-      return false;
     },
 
     sendRequest = (function () {
@@ -229,7 +194,7 @@
           setLocation(url, true);
         }
         wrapper.className = '';
-      }
+      };
     }(document.createElement('a'))),
 
     setValue = function (text) {
@@ -274,122 +239,6 @@
         return false;
       };
     }());
-
-  function Selection(re, prefix, prefix0) {
-    var
-      value = (this.value = editor.value),
-      start = (this.start = editor.selectionStart),
-      end   = (this.end   = editor.selectionEnd);
-
-    this.textRegex   = new RegExp('^' + re);
-    this.beforeRegex = new RegExp('^' + re + '$', 'm');
-
-    this.prefix_ = prefix;
-    this.prefix0 = prefix0 || prefix;
-
-    this.before = value.substr(0, start);
-    this.after = value.substr(end);
-    this.text = value.substring(start, end);
-  }
-
-  Selection.prototype.isInlineCode = function () {
-    var
-      match = (
-        convert(
-          _(this.before + this.text) + '✪` `` ' + _(this.after)
-        ).match(/<code>[^<]*✪(`?)<\/code>/)
-      );
-    return match && match[1] + '`';
-  };
-
-  Selection.prototype.wrap = function (chr) {
-    var
-      text = this.text,
-      len = text.length,
-      position = this.before.length + 1,
-      value = (
-        function () {
-          var re = new RegExp('^([' + chr + ']{0,2}).*\\1$');
-          switch (re.exec(text)[1].length) {
-            case 0:
-              re = new RegExp('([' + chr + ']{0,2})✪\\1');
-              switch (re.exec(_(this.before) + '✪' + _(this.after))[1].length) {
-                case 0:
-                case 1: return [this.before, text, this.after].join(chr);
-                case 2: return this.before.substr(0, position -= 3) + text + this.after.substr(2);
-              }
-            case 1:
-              len -= 2; position += 1;
-              return [this.before, text, this.after].join(chr);
-            case 2:
-              len -= 4; position -= 1;
-              return this.before + text.substr(2, len) + this.after;
-          }
-        }.call(this)
-      );
-    setValue(value);
-    editor.setSelectionRange(position, position + len);
-    return value;
-  };
-
-  Selection.prototype.blockify = function () {
-    var
-      b = this.before,
-      a = this.after;
-
-    /((\r?\n){2}|^\s*)$/.test(b) || (this.before = b.replace(/\s*$/, '\n\n'));
-    /^((\r?\n){2}|\s*$)/.test(a) || (this.after  = a.replace(/^\s*/, '\n\n'));
-
-    return this;
-  };
-
-  Selection.prototype.prefix = function () {
-    var index = 0, that = this;
-    this.text = (
-      this.text.replace(
-        /^.*$/gm,
-        function (match) {
-          return (index++? that.prefix_: that.prefix0) + match;
-        }
-      )
-    );
-  };
-
-  Selection.prototype.unprefix = function () {
-    var index = 0, that = this;
-    this.text = (
-      this.text.replace(
-        /^.*$/gm,
-        function (match) {
-          return match.replace(index++? that.prefix_: that.prefix0, '');
-        }
-      )
-    );
-  };
-
-  Selection.prototype.render = function () {
-    var
-      matches = this.beforeRegex.exec(this.before),
-      offset = 0, start, text, value;
-
-    if (matches) {
-      this.before = this.before.replace(this.beforeRegex, '');
-      this.unprefix();
-    }
-    else if (matches = this.textRegex.exec(/^.*$/m.exec(this.text)[0])) {
-      this.unprefix();
-    }
-    else {
-      this.blockify().prefix();
-      offset = this.prefix0.length;
-    }
-    start = this.before.length;
-    text = this.text;
-    setValue(value = this.before + text + this.after);
-    editor.setSelectionRange(start + offset, start + text.length);
-    editor.focus();
-    return value;
-  };
 
   // EVENT HANDLERS //
 
@@ -472,7 +321,7 @@
     shorten.style.display = 'none';
   }
 
-  shorten.onclick = function (event) {
+  shorten.onclick = function () {
     shortenUrl();
     return false;
   };
@@ -493,175 +342,12 @@
     }
   };
 
-  editor.onkeypress = function (event) {
-    event || (event = window.event);
-    if (event.altKey || event.ctrlKey || event.metaKey) return;
-    var
-      chr = String.fromCharCode(event.charCode),
-      selection = new Selection(),
-      before = selection.before,
-      after = selection.after,
-      text = selection.text,
-      position = before.length + 1;
-
-    if (/[`_*]/.test(chr)) {
-      if (text) return render(selection.wrap(chr));
-      switch (chr) {
-        case '`':
-          if (
-            text = (
-              (text = selection.isInlineCode())?
-                /^`/.test(after)?
-                  null:
-                  /^\w/.test(after)?'`':text:
-                /^`/.test(after)?
-                  /`$/.test(before)?
-                    null:
-                    /^(``)*(?!`)/.test(after)?'``':'`':
-                  /^\w/.test(after)?'`':'``'
-            )
-          ) render(before + text + after, true);
-          break;
-        case '_':
-          if (
-            text = (
-              (/^__/.test(after) || /^_/.test(after) && /_$/.test(before))?
-                null:
-                /__$/.test(before)?
-                  '_':
-                  /(^|[^_])_[^_]+\b$/.test(before)?
-                    /^_/.test(after)?'':'_':
-                    /^\w/.test(after)?'_':'__'
-            )
-          ) render(before + text + after, true);
-          break;
-        case '*':
-          return;
-      }
-      editor.setSelectionRange(position, position);
-      return false;
-    }
-    else if (text && chr === '#') {
-      heading();
-      return false;
-    }
-  };
-
   editor.onkeyup = function () {
     // normalize `editor.value`
     render(this.value, true);
     var hash = encode(this.value);
     shorten.style.display = hash === lastSavedDocument ? 'none' : 'block';
     setLocation(hash);
-  };
-
-  $('strong').onclick = function () {
-    return resolve(
-      /^(__|\*\*).*\1$/,
-      /(__|\*\*)$/, /^(__|\*\*)/,
-      '**'
-    );
-  };
-
-  $('em').onclick = function () {
-    var
-      selection = new Selection(),
-      before = selection.before,
-      after = selection.after,
-      start = before.length,
-      text = selection.text,
-      len = text.length;
-
-    render(
-      /^([_*]).*\1$/.test(text)?
-        (len -= 2, before + text.substr(1, len) + after):
-        /([_*])✪\1/.test(_(before) + '✪' + _(after))?
-          (--start, before.substr(0, start) + text + after.substr(1)):
-          (++start, [before, text, after].join('_')),
-      true
-    );
-    editor.setSelectionRange(start, start + len);
-    editor.focus();
-    return false;
-  };
-
-  $('img').onclick = function () {
-    return resolve(
-      /^!\[.*\]\(http:\/\/\)$/,
-      /!\[$/, /^\]\(http:\/\/\)/,
-      '![', '](http://)'
-    );
-  };
-
-  $('a').onclick = function () {
-    return resolve(
-      /^\[.*\]\(http:\/\/\)$/,
-      /\[$/, /^\]\(http:\/\/\)/,
-      '[', '](http://)'
-    );
-  };
-
-  $('blockquote').onclick = function () {
-    return render(new Selection(' {0,3}>[ \\t]*', '> ').render());
-  };
-
-  $('pre-code').onclick = function () {
-    return render(new Selection('( {4}|\t)', ____).render());
-  };
-
-  $('ol').onclick = function () {
-    return render(new Selection(' {0,3}\\d+[.][ \\t]*', ____, ' 1. ').render());
-  };
-
-  $('ul').onclick = function () {
-    return render(new Selection(' {0,3}[*+-][ \\t]*', ____, '  - ').render());
-  };
-
-  function heading() {
-    var
-      increment, len, matches, offset = 0, start, text,
-      selection = new Selection('(#+)[ \\t]*', '# ');
-
-    selection.text = selection.text.replace(/\s+/g, ' ');
-
-    if (matches = selection.beforeRegex.exec(selection.before)) {
-      selection.before =
-        selection.before.replace(
-          selection.beforeRegex, matches[1].length < 4? '$1# ': '');
-    }
-    else if (matches = selection.textRegex.exec(/^.*$/m.exec(selection.text)[0])) {
-      len = matches[1].length;
-      if (increment = len < 4) {
-        offset = len + 2; // '# '.length === 2
-      }
-      selection.text =
-        selection.text.replace(selection.textRegex, increment? '$1# ': '');
-    }
-    else {
-      selection.blockify().prefix();
-      offset = selection.prefix0.length;
-    }
-    start = selection.before.length;
-    text = selection.text;
-    render(selection.before + text + selection.after, true);
-    editor.setSelectionRange(start + offset, start + text.length);
-    editor.focus();
-    return false;
-  }
-
-  $('h1').onclick = heading;
-
-  $('hr').onclick = function () {
-    var
-      selection = new Selection().blockify(),
-      before = selection.before,
-      start = before.length,
-      text = selection.text === '- - -' ? '' : '- - -';
-
-    render(before + text + selection.after, true);
-    editor.setSelectionRange(start, start + text.length);
-    editor.focus();
-    return false;
   };
 
   document.onkeydown = function (event) {
@@ -691,6 +377,8 @@
     }
     // initialize `#counter`
     setLocation(hash);
+
+    Hashify.editor('markdown', false);
 
     if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
       // In browsers which don't provide `history.pushState`
