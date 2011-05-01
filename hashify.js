@@ -129,6 +129,8 @@
           len > danger? 'danger': // too long for old versions of IE
           len > caution? 'caution': // too long to send to bit.ly
           '';
+        shorten.style.display = hash === lastSavedDocument? 'none': 'block';
+
         if (pushStateExists) {
           history[save?'pushState':'replaceState'](null, null, '/' + hash);
         } else {
@@ -346,7 +348,6 @@
     // normalize `editor.value`
     render(this.value, true);
     var hash = encode(this.value);
-    shorten.style.display = hash === lastSavedDocument ? 'none' : 'block';
     setLocation(hash);
   };
 
