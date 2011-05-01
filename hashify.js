@@ -24,6 +24,8 @@
 
     pushStateExists = window.history && history.pushState,
 
+    returnFalse = function () { return false; },
+
     convert = new Showdown().convert,
 
     encode = Hashify.encode,
@@ -360,6 +362,26 @@
         case 39: // right arrow
           sidebar.className = '';
       }
+    }
+  };
+
+  editor.ondragenter = returnFalse;
+  editor.ondragover = returnFalse;
+  editor.ondrop = function (event) {
+    var
+      file = event.dataTransfer.files[0],
+      reader;
+    if (typeof FileReader === 'function' && file && /^image\//.test(file.type)) {
+      reader = new FileReader();
+      reader.onload = function (event) {
+        var start = editor.value.length + 2; // '!['.length === 2
+        editor.value += '![alt](' + event.target.result + ')';
+        editor.focus();
+        editor.setSelectionRange(start, start + 3); // 'alt'.length === 3
+        editor.onkeyup();
+      };
+      reader.readAsDataURL(file);
+      return false;
     }
   };
 
