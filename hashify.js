@@ -369,19 +369,31 @@
   editor.ondragover = returnFalse;
   editor.ondrop = function (event) {
     var
-      file = event.dataTransfer.files[0],
-      reader;
-    if (typeof FileReader === 'function' && file && /^image\//.test(file.type)) {
-      reader = new FileReader();
-      reader.onload = function (event) {
+      dataTransfer = event.dataTransfer,
+      url = dataTransfer.getData('URL'),
+      file, reader,
+      insertImage = function (uri) {
         var start = editor.value.length + 2; // '!['.length === 2
-        editor.value += '![alt](' + event.target.result + ')';
+        editor.value += '![alt](' + uri + ')';
         editor.focus();
         editor.setSelectionRange(start, start + 3); // 'alt'.length === 3
         editor.onkeyup();
       };
-      reader.readAsDataURL(file);
-      return false;
+
+    if (url) {
+      // image from the Web
+      insertImage(url);
+    } else if (typeof FileReader === 'function') {
+      file = dataTransfer.files[0];
+      if (file && /^image\//.test(file.type)) {
+        // image from the local file system
+        reader = new FileReader();
+        reader.onload = function (event) {
+          insertImage(event.target.result);
+        };
+        reader.readAsDataURL(file);
+        return false;
+      }
     }
   };
 
