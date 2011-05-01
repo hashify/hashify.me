@@ -402,7 +402,7 @@
     setLocation(hash);
 
     Hashify.editor(
-      'markdown', false, function () { setLocation(encode(this.value)); }
+      editor, false, function () { setLocation(encode(this.value)); }
     );
 
     if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
