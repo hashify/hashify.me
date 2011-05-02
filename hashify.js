@@ -373,10 +373,19 @@
       url = dataTransfer.getData('URL'),
       file, reader,
       insertImage = function (uri) {
-        var start = editor.value.length + 2; // '!['.length === 2
-        editor.value += '![alt](' + uri + ')';
+        var
+          value = editor.value,
+          start = editor.selectionStart,
+          end = editor.selectionEnd,
+          alt = value.substring(start, end) || 'alt';
+
+        editor.value =
+          value.substr(0, start) +
+          '![' + alt + '](' + uri + ')' +
+          value.substr(end);
+        start += 2; // '!['.length === 2
         editor.focus();
-        editor.setSelectionRange(start, start + 3); // 'alt'.length === 3
+        editor.setSelectionRange(start, start + alt.length);
         editor.onkeyup();
       };
 
