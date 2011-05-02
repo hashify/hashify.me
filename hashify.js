@@ -371,7 +371,7 @@
     var
       dataTransfer = event.dataTransfer,
       url = dataTransfer.getData('URL'),
-      file, reader,
+      file, match, reader,
       insertImage = function (uri) {
         var
           value = editor.value,
@@ -387,22 +387,43 @@
         editor.focus();
         editor.setSelectionRange(start, start + alt.length);
         editor.onkeyup();
+      },
+      insertText = function (text) {
+        var
+          value = editor.value,
+          start = editor.selectionStart;
+
+        editor.value =
+          value.substr(0, start) + text +
+          value.substr(editor.selectionEnd);
+        editor.focus();
+        editor.setSelectionRange(start, start + text.length);
+        editor.onkeyup();
       };
 
     if (url) {
-      // image from the Web
+      // FIXME: `url` does not necessarily identify an _image_.
       insertImage(url);
-    } else if (typeof FileReader === 'function') {
-      file = dataTransfer.files[0];
-      if (file && /^image\//.test(file.type)) {
-        // image from the local file system
-        reader = new FileReader();
+    } else if (
+      // Avert your eyes, Douglas. I'd prefer
+      // to avoid three levels of nesting here.
+      typeof FileReader === 'function' &&
+      (file = dataTransfer.files[0]) &&
+      (match = /^(image|text)\//.exec(file.type))) {
+
+      reader = new FileReader();
+      if (match[1] === 'image') {
         reader.onload = function (event) {
           insertImage(event.target.result);
         };
         reader.readAsDataURL(file);
-        return false;
+      } else {
+        reader.onload = function (event) {
+          insertText(event.target.result);
+        };
+        reader.readAsText(file);
       }
+      return false;
     }
   };
 
