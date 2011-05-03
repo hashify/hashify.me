@@ -211,6 +211,7 @@ h3                  { font-size: 30px; margin-top: 24px; }
 hr                  { margin: 18px 0 12px; border: none; border-top: 1px solid #ccc; }
 p, ol, ul           { margin: 12px 0; }
 ul                  { padding: 0; list-style: disc outside; }
+li li               { margin-left: 32px; }
 blockquote          { margin: 12px 0; font-style: italic; font-family: Georgia, serif; color: #407; }
 blockquote em       { font-style: normal; }
 pre                 { margin: 24px 0; border: 1px solid #ccc; padding: 1px; white-space: pre-wrap; }
