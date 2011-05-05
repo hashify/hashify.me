@@ -18,6 +18,8 @@
 
     hashifyMe = 'http://hashify.me/',
 
+    hashifyMeLen = hashifyMe.length,
+
     lastSavedDocument,
 
     maxHashLength = 2048 - hashifyMe.length,
@@ -192,7 +194,7 @@
         );
         wrapper.insertBefore(tweet, shorturl);
 
-        url = data.long_url.substr(18);
+        url = data.long_url.substr(hashifyMeLen);
         if (!/^unpack:/.test(url)) {
           lastSavedDocument = url;
           setLocation(url, true);
@@ -465,7 +467,7 @@
             list = data.expand;
             i = list.length;
             while (i--) {
-              list[i] = decode(list[i].long_url.substr(18));
+              list[i] = decode(list[i].long_url.substr(hashifyMeLen));
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
             render(list.join(''), true);
             setLocation(encode(editor.value));
