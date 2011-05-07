@@ -239,4 +239,11 @@ a:focus, a:hover    { color: #333; }
   #markup a[href^="/"]:after {
     content: " [http://hashify.me" attr(href) "]";
   }
+  #markup h1, #markup h2, #markup h3,
+  #markup h4, #markup h5, #markup h6 {
+    page-break-after: avoid;
+  }
+  #markup pre {
+    page-break-inside: avoid;
+  }
 }
