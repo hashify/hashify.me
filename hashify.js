@@ -8,6 +8,8 @@
 
     editor = $('markdown'),
 
+    qrcode = $('qrcode'),
+
     shorten = $('shorten'),
 
     sidebar = $('sidebar'),
@@ -158,12 +160,13 @@
 
     setShortUrl = (function (shorturl, textNode, tweet) {
       shorturl.id = 'shorturl';
-      wrapper.appendChild(shorturl);
+      wrapper.insertBefore(shorturl, qrcode);
       return function (data) {
         var tweetText, url = data.url;
         if (textNode) shorturl.removeChild(textNode);
         shorturl.appendChild(textNode = document.createTextNode(url));
         shorturl.href = url;
+        qrcode.href = url + '.qrcode';
         // set default tweet text
         tweetText = ' ' + url;
         tweetText = (

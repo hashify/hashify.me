@@ -75,12 +75,12 @@ body {
     #shorten {
       position: absolute;
       width: 480px;
-      height: 14px;
+      height: 20px;
       border-width: 0 1px 1px;
       border-style: solid;
       border-color: #ddd;
       background: #e7e7e7;
-      padding: 9px 0;
+      padding: 6px 0;
     }
 
     #wrapper.loading,
@@ -89,16 +89,17 @@ body {
     }
 
       #wrapper.loading>#tweet,
-      #wrapper.loading>#shorturl {
+      #wrapper.loading>#shorturl,
+      #wrapper.loading>#qrcode {
         display: none;
       }
 
       #tweet {
-        position: absolute;
-        left: 142px;
-        top: 6px;
+        float: left;
+        margin: 0 7px 0 132px;
         width: 55px;
         height: 20px;
+        border: none;
       }
 
     #wrapper,
@@ -116,6 +117,11 @@ body {
       cursor: default;
     }
 
+    #shorten {
+      height: 14px;
+      padding: 9px 0;
+    }
+
     #shorten:focus,
     #shorten:hover {
       border-color: #08f;
@@ -125,22 +131,36 @@ body {
     }
 
     #shorturl {
-      position: absolute;
-      left: 204px;
-      top: 6px;
+      position: relative;
       -webkit-border-radius: 3px;
       -moz-border-radius: 3px;
       border-radius: 3px;
-      border: 1px solid #cde;
-      background: #fff;
       padding: 2px 4px;
       color: #369;
     }
 
+    #shorturl,
+    #qrcode {
+      float: left;
+      border: 1px solid #cde;
+      background: #fff;
+    }
+
+    #qrcode {
+      display: block;
+      margin-left: 4px;
+      width: 18px;
+      height: 18px;
+      background-image: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAWElEQVQ4y2P8//8/AzUAI9UNMkmfhctERiiNVf7MzDRGDINgglA+TDOyQYxANQxIav7jNAjJZYzYDIK5DKaWtgYhaWJA04zOhsvjMojywB5NR6PpaFilIwCy363dZ3YWXgAAAABJRU5ErkJggg==);
+      text-indent: -9999px;
+    }
+
     #shorturl:focus,
-    #shorturl:hover {
+    #shorturl:hover,
+    #qrcode:focus,
+    #qrcode:hover {
       border-color: #5ad;
-      background: #def;
+      background-color: #def;
       outline: none;
     }
 
