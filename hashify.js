@@ -240,6 +240,8 @@
           // We strip the orphan to avoid `encodeURIComponent`
           // throwing a `URIError`.
           text = text.substr(0, position);
+          // normalize `editor.value`
+          setEditorValue = true;
         }
         markup.innerHTML = convert(text);
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
@@ -352,8 +354,7 @@
   };
 
   editor.onkeyup = function () {
-    // normalize `editor.value`
-    render(this.value, true);
+    render(this.value);
     var hash = encode(this.value);
     setLocation(hash);
   };
