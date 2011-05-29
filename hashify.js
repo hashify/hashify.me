@@ -355,8 +355,7 @@
 
   editor.onkeyup = function () {
     render(this.value);
-    var hash = encode(this.value);
-    setLocation(hash);
+    setLocation(encode(this.value));
   };
 
   document.onkeydown = function (event) {
