@@ -336,7 +336,7 @@ a                   { color: inherit; text-decoration: none; }
 a:focus, a:hover    { color: #333; }
 
 @media print {
-  #credits, #editor, #shorten, #wrapper {
+  #sidebar {
     display: none !important;
   }
   #markup {
