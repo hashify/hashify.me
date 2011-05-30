@@ -8,6 +8,8 @@
 
     editor = $('markdown'),
 
+    kbdShortcuts = $('kbd-shortcuts'),
+
     qrcode = $('qrcode'),
 
     shorten = $('shorten'),
@@ -362,10 +364,19 @@
     event || (event = window.event);
     if ((event.target || event.srcElement) !== editor) {
       switch (event.keyCode) {
+        case 27: // escape
+          kbdShortcuts.className = '';
+          break;
         case 37: // left arrow
-          sidebar.className = 'concealed'; break;
+          sidebar.className = 'concealed';
+          break;
         case 39: // right arrow
           sidebar.className = '';
+          break;
+        case 191: // "/" or "?"
+        case 0:  // Firefox reports `keyCode` of `0` for "?"
+          if (event.shiftKey) kbdShortcuts.className = 'active';
+          break;
       }
     }
   };

@@ -216,11 +216,85 @@ body {
       max-width: 100%;
     }
 
-  #mask {
+  #mask,
+  #kbd-shortcuts {
     position: fixed;
     left: 0; right: 0;
     top: 0; bottom: 0;
   }
+
+  #kbd-shortcuts {
+    display: none;
+    background: #ccc;
+    background: rgba(0, 0, 0, 0.25);
+  }
+
+  #kbd-shortcuts.active {
+    display: block;
+  }
+
+    #kbd-shortcuts div {
+      margin: 80px auto 0;
+      width: 528px;
+      border: 2px solid #ccc;
+      background: #fff;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+      padding: 0 24px 12px;
+    }
+
+      #kbd-shortcuts h1 {
+        margin: 0 -24px 12px;
+        border-bottom: 2px solid #ccc;
+        padding: 12px 24px;
+        font-size: 32px;
+        line-height: 1.5;
+      }
+
+      #kbd-shortcuts h2 {
+        margin: 4px 0 12px;
+        border-bottom: 2px solid #eee;
+        font-size: 18px;
+      }
+
+      #kbd-shortcuts dl {
+        margin: 0;
+        font-size: 18px;
+        line-height: 24px;
+        overflow: auto;
+      }
+
+        #kbd-shortcuts dt {
+          float: left;
+        }
+
+          #kbd-shortcuts kbd {
+            display: block;
+            float: left;
+            margin: 0 4px 0 0;
+            width: 22px;
+            -webkit-border-radius: 5px;
+            -moz-border-radius: 5px;
+            border-radius: 5px;
+            border: 1px solid #111;
+            background: #333;
+            background: -webkit-gradient(linear, 0 0, 0 100%, from(#555), to(#111));
+            background: -webkit-linear-gradient(#555, #111);
+            background: -moz-linear-gradient(top, #555, #111);
+            text-align: center;
+            font: inherit;
+            line-height: 22px;
+            color: #fff;
+          }
+
+        #kbd-shortcuts dd {
+          float: left;
+          margin: 0 0 12px 4px;
+          width: 232px;
+        }
+
+        #kbd-shortcuts dt[data-keys="2"]+dd {
+          width: 204px;
+        }
 
 /* content styling */
 
