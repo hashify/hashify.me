@@ -12,6 +12,10 @@ body.dragging {
   cursor: ew-resize;
 }
 
+  body.dragging ::-moz-selection {
+    background: none;
+  }
+
   #sidebar {
     position: fixed;
     left: 0; /* Firefox requires that this be included */
