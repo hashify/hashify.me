@@ -8,32 +8,30 @@ body {
   font: 24px/32px "Helvetica Neue", Helvetica, sans-serif;
 }
 
+body.dragging {
+  cursor: ew-resize;
+}
+
   #sidebar {
     position: fixed;
     left: 0; /* Firefox requires that this be included */
-    width: 482px;
+    width: 480px;
     height: 100%;
-  }
-
-  #sidebar.concealed {
-    left: -482px;
+    background: #eee;
   }
 
     #editor {
       position: absolute;
-      width: 432px;
+      left: 31px;
+      right: 31px;
       height: 100%;
-      border-width: 0 1px;
-      border-style: solid;
-      border-color: #ddd;
-      background: #eee;
-      padding: 0 1em;
+      padding: 0;
     }
 
       #markdown {
         position: absolute;
-        margin: 81px 0 0;
-        width: 418px;
+        margin: 81px 0 0 -7px;
+        width: 100%;
         height: 67.5%;
         border: 1px solid #ddd;
         background: #f7f7f7;
@@ -47,13 +45,16 @@ body {
       }
 
       .hashify-editor-toolbar {
-        left: 96px;
+        position: relative;
+        left: 0;
         top: 45px;
+        margin: 0 auto;
+        width: 288px;
       }
 
       #counter {
         position: absolute;
-        left: 397px;
+        right: -8px;
         top: 48px;
         width: 60px;
         text-align: right;
@@ -74,11 +75,10 @@ body {
     #wrapper,
     #shorten {
       position: absolute;
-      width: 480px;
+      left: 0;
+      right: 0;
       height: 20px;
-      border-width: 0 1px 1px;
-      border-style: solid;
-      border-color: #ddd;
+      border-bottom: 1px solid #ddd;
       background: #e7e7e7;
       padding: 6px 0;
     }
@@ -95,8 +95,10 @@ body {
       }
 
       #tweet {
+        position: relative;
+        left: -108px;
         float: left;
-        margin: 0 7px 0 132px;
+        margin: 0 -101px 0 50%;
         width: 55px;
         height: 20px;
         border: none;
@@ -124,7 +126,7 @@ body {
 
     #shorten:focus,
     #shorten:hover {
-      border-color: #08f;
+      border-bottom-color: #08f;
       background: #08f;
       color: #fff;
       outline: none;
@@ -181,9 +183,10 @@ body {
 
     #credits {
       position: absolute;
+      left: 0;
+      right: 0;
       top: 67.5%;
-      margin: 95px 0 0 1px;
-      width: 432px;
+      margin: 95px 0 0;
       padding: 6px 24px;
       font: italic 12px/1.5 Georgia, serif;
       color: #666;
@@ -193,10 +196,23 @@ body {
         text-decoration: underline;
       }
 
+    #dragger {
+      position: absolute;
+      right: -4px;
+      top: 0;
+      bottom: 0;
+      width: 2px;
+      border-width: 0 1px;
+      border-style: solid;
+      border-color: #ccc;
+      background: #ddd;
+      cursor: ew-resize;
+    }
+
   #markup {
-    margin-left: 482px;
+    margin-left: 480px;
     max-width: 32em;
-    padding: 1em 2em 2em;
+    padding: 1em 2em 2em 2.167em;
   }
 
   #sidebar.concealed+#markup {

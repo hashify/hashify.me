@@ -6,9 +6,15 @@
       return document.getElementById(id);
     },
 
+    body = document.body,
+
+    dragger = $('dragger'),
+
     editor = $('markdown'),
 
     kbdShortcuts = $('kbd-shortcuts'),
+
+    markup = $('markup'),
 
     qrcode = $('qrcode'),
 
@@ -19,6 +25,10 @@
     wrapper = $('wrapper'),
 
     bitlyLimit = 15,
+
+    draggerPosition,
+
+    dragging,
 
     hashifyMe = 'http://hashify.me/',
 
@@ -31,6 +41,11 @@
     pushStateExists = window.history && history.pushState,
 
     returnFalse = function () { return false; },
+
+    sidebarInitialWidth =
+      parseInt(window.getComputedStyle(sidebar).getPropertyValue('width'), 10),
+
+    sidebarVisibleWidth = sidebarInitialWidth,
 
     convert = new Showdown().convert,
 
@@ -64,6 +79,28 @@
       );
       throw 'SyntaxError';
     },
+
+    resizeSidebar = (function () {
+      var
+        px = 'px',
+        markupStyle = markup.style,
+        sidebarStyle = sidebar.style;
+
+      return function (width) {
+        // We could return immediately if `width === sidebarVisibleWidth`.
+        // Since we expect horizontal dragging, though, the optimization
+        // isn't worth its bytes.
+        if (width < sidebarInitialWidth) {
+          sidebarStyle.left = width - sidebarInitialWidth + px;
+          sidebarStyle.width = sidebarInitialWidth + px;
+        } else {
+          sidebarStyle.left = 0;
+          sidebarStyle.width = width + px;
+        }
+        markupStyle.marginLeft = width + px;
+        sidebarVisibleWidth = width;
+      };
+    }()),
 
     sendRequest = (function () {
       var
@@ -217,21 +254,8 @@
       editor.scrollTop = scrollTop;
     },
 
-    render = (function (undef) {
-      var
-        div = document.createElement('div'),
-        markup = $('markup'),
-        style = markup.style,
-        properties = ['MozTransition', 'OTransition', 'WebkitTransition'],
-        property;
-
-      // We define the transition property here rather than in the style
-      // sheet to avoid having animation occur during initial rendering.
-      while (property = properties.pop()) {
-        if (style[property] !== undef) {
-          style[property] = sidebar.style[property] = 'all 0.5s ease-out';
-        }
-      }
+    render = (function () {
+      var div = document.createElement('div');
       return function (text, setEditorValue) {
         var
           position = text.length - 1,
@@ -368,10 +392,12 @@
           kbdShortcuts.className = '';
           break;
         case 37: // left arrow
-          sidebar.className = 'concealed';
+          resizeSidebar(0);
           break;
         case 39: // right arrow
-          sidebar.className = '';
+          if (sidebarVisibleWidth < sidebarInitialWidth) {
+            resizeSidebar(sidebarInitialWidth);
+          }
           break;
         case 191: // "/" or "?"
         case 0:  // Firefox reports `keyCode` of `0` for "?"
@@ -451,13 +477,34 @@
     render(decode(documentHash()), true);
   };
 
+  dragger.onselectstart = returnFalse; // prevent text selection
+
+  dragger.onmousedown = function (event) {
+    body.className = 'dragging';
+    draggerPosition = (event || window.event).pageX;
+    dragging = true;
+  };
+
+  document.onmousemove = function (event) {
+    if (!dragging) return;
+    var x = (event || window.event).pageX;
+    resizeSidebar(Math.max(0, sidebarVisibleWidth + x - draggerPosition));
+    draggerPosition = x;
+  };
+
+  document.onmouseup = function () {
+    if (!dragging) return;
+    body.className = '';
+    dragging = false;
+  };
+
   // INITIALIZATION //
 
   (function (hash) {
     var i, list, mask = $('mask');
 
     function ready() {
-      document.body.removeChild(mask);
+      body.removeChild(mask);
       shortenUrl();
     }
     // initialize `#counter`
