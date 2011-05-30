@@ -381,6 +381,10 @@
     }
   };
 
+  document.onclick = function () {
+    kbdShortcuts.className = '';
+  };
+
   editor.ondragenter = returnFalse;
   editor.ondragover = returnFalse;
   editor.ondrop = function (event) {
