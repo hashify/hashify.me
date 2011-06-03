@@ -335,6 +335,18 @@ code                { background: #eee; padding: 0 0.25em; line-height: 1; }
 a                   { color: inherit; text-decoration: none; }
 a:focus, a:hover    { color: #333; }
 
+/* syntax highlighting */
+
+@media screen {
+.kwd,.tag           { color: #008; }
+.atv,.str           { color: #080; }
+.com                { color: #800; }
+.clo,.opn,.pun      { color: #660; }
+.atn,.dec,.typ,.var { color: #606; }
+.lit                { color: #066; }
+.fun                { color: red; }
+}
+
 @media print {
   #sidebar {
     display: none !important;

@@ -62,6 +62,15 @@
       return location.pathname.substr(1) || location.hash.substr(3);
     },
 
+    highlight = (function (prettyPrint, nodeList) {
+      nodeList = document.getElementsByTagName('pre');
+      return function () {
+        var i = nodeList.length;
+        while (i--) nodeList[i].className = 'prettyprint';
+        prettyPrint();
+      };
+    }(prettyPrint)),
+
     // logic borrowed from https://github.com/jquery/jquery
     parseJSON = function (data) {
       if (typeof data !== 'string' || !data) {
@@ -278,6 +287,7 @@
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
         document.title = div.textContent || 'Hashify';
         if (setEditorValue) setValue(text);
+        highlight();
         return false;
       };
     }());
