@@ -38,6 +38,11 @@
 
     maxHashLength = 2048 - hashifyMe.length,
 
+    preferredWidth = (function (match) {
+      match = /(?:^|; )w=(\d+?)(?:;|$)/.exec(document.cookie);
+      return match? +match[1]: -1;
+    }()),
+
     pushStateExists = window.history && history.pushState,
 
     returnFalse = function () { return false; },
@@ -397,6 +402,8 @@
         case 39: // right arrow
           if (sidebarVisibleWidth < sidebarInitialWidth) {
             resizeSidebar(sidebarInitialWidth);
+          } else if (sidebarVisibleWidth < preferredWidth) {
+            resizeSidebar(preferredWidth);
           }
           break;
         case 191: // "/" or "?"
@@ -487,8 +494,15 @@
 
   document.onmousemove = function (event) {
     if (!dragging) return;
-    var x = (event || window.event).pageX;
-    resizeSidebar(Math.max(0, sidebarVisibleWidth + x - draggerPosition));
+    var
+      x = (event || window.event).pageX,
+      w = Math.max(0, sidebarVisibleWidth + x - draggerPosition);
+
+    resizeSidebar(preferredWidth = w);
+
+    document.cookie =
+      'w=' + w + '; expires=Fri, 01 Feb 3456 07:08:09 UTC; path=/';
+
     draggerPosition = x;
   };
 
@@ -504,6 +518,9 @@
     var i, list, mask = $('mask');
 
     function ready() {
+      if (preferredWidth > sidebarInitialWidth) {
+        resizeSidebar(preferredWidth);
+      }
       body.removeChild(mask);
       shortenUrl();
     }
