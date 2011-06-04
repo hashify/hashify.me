@@ -1,4 +1,4 @@
-(function () {
+(function (document, window, JSON, Math) {
 
   var
 
@@ -85,12 +85,7 @@
               .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/g, ']')
               .replace(/(?:^|:|,)(?:\s*\[)+/g, '')
           )
-      )
-      return (
-        window.JSON && window.JSON.parse?
-          window.JSON.parse(data):
-          new Function('return ' + data)()
-      );
+      ) return JSON && JSON.parse? JSON.parse(data): new Function('return ' + data)();
       throw 'SyntaxError';
     },
 
@@ -570,4 +565,4 @@
     }
   }(documentHash()));
 
-}());
+}(document, window, window.JSON, Math));
