@@ -99,7 +99,7 @@
               .replace(/(?:^|:|,)(?:\s*\[)+/g, '')
           )
       ) return JSON && JSON.parse? JSON.parse(data): new Function('return ' + data)();
-      throw 'SyntaxError';
+      throw new SyntaxError('Invalid JSON');
     },
 
     resizeSidebar = (function () {
