@@ -47,10 +47,10 @@
 
     returnFalse = function () { return false; },
 
-    sidebarInitialWidth =
+    sidebarMinimumWidth =
       parseInt(window.getComputedStyle(sidebar).getPropertyValue('width'), 10),
 
-    sidebarVisibleWidth = sidebarInitialWidth,
+    sidebarVisibleWidth = sidebarMinimumWidth,
 
     convert = new Showdown().convert,
 
@@ -99,9 +99,9 @@
         // We could return immediately if `width === sidebarVisibleWidth`.
         // Since we expect horizontal dragging, though, the optimization
         // isn't worth its bytes.
-        if (width < sidebarInitialWidth) {
-          sidebarStyle.left = width - sidebarInitialWidth + px;
-          sidebarStyle.width = sidebarInitialWidth + px;
+        if (width < sidebarMinimumWidth) {
+          sidebarStyle.left = width - sidebarMinimumWidth + px;
+          sidebarStyle.width = sidebarMinimumWidth + px;
         } else {
           sidebarStyle.left = 0;
           sidebarStyle.width = width + px;
@@ -405,11 +405,8 @@
           resizeSidebar(0);
           break;
         case 39: // right arrow
-          if (sidebarVisibleWidth < sidebarInitialWidth) {
-            resizeSidebar(sidebarInitialWidth);
-          } else if (sidebarVisibleWidth < preferredWidth) {
-            resizeSidebar(preferredWidth);
-          }
+          var width = Math.max(sidebarMinimumWidth, preferredWidth);
+          if (width > sidebarVisibleWidth) resizeSidebar(width);
           break;
         case 191: // "/" or "?"
         case 0:  // Firefox reports `keyCode` of `0` for "?"
@@ -523,7 +520,7 @@
     var i, list, mask = $('mask');
 
     function ready() {
-      if (preferredWidth > sidebarInitialWidth) {
+      if (preferredWidth > sidebarMinimumWidth) {
         resizeSidebar(preferredWidth);
       }
       body.removeChild(mask);
