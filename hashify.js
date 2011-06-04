@@ -62,7 +62,14 @@
 
     encode = Hashify.encode,
 
-    decode = Hashify.decode,
+    decode = function (text) {
+      try {
+        return Hashify.decode(text);
+      } catch (error) {
+        if (error instanceof URIError) return '# ' + error;
+        else throw error;
+      }
+    },
 
     documentHash = function () {
       return location.pathname.substr(1) || location.hash.substr(3);
