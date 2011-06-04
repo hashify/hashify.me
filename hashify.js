@@ -48,7 +48,13 @@
     returnFalse = function () { return false; },
 
     sidebarMinimumWidth =
-      parseInt(window.getComputedStyle(sidebar).getPropertyValue('width'), 10),
+      // From [https://developer.mozilla.org/en/DOM:window.getComputedStyle]:
+      // 
+      // > Prior to Gecko 2.0 (Firefox 4 / Thunderbird 3.3 / SeaMonkey 2.1),
+      // > the `pseudoElt` parameter was required. No other major browser
+      // > required this parameter be specified if null. Gecko has been
+      // > changed to match the behavior of other browsers.
+      parseInt(window.getComputedStyle(sidebar, null).getPropertyValue('width'), 10),
 
     sidebarVisibleWidth = sidebarMinimumWidth,
 
