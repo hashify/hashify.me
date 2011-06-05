@@ -344,57 +344,56 @@
   // EVENT HANDLERS //
 
   function shortenUrl() {
-    var hash = documentHash().replace(/[+]/g, '%2B');
+    var
+      chars, chunk, i, lastChar, list,
+      maxChunkLength, queueChar, safeEncode, value,
+      hash = documentHash().replace(/[+]/g, '%2B');
+
     if (hash.length <= maxHashLength) {
       sendShortenRequests(hash);
     } else {
-      (function () {
-        var
-          chars, chunk, i, lastChar, list = [],
-          maxChunkLength = Math.floor(maxHashLength * 3/4),
-          value = editor.value;
+      queueChar = function () {
+        chars.push(lastChar);
+        chunk = chunk.substr(0, i);
+        lastChar = chunk.charAt(--i);
+        return chunk;
+      };
+      safeEncode = function () {
+        // If `lastChar` is the first half of a surrogate pair, drop it
+        // from the chunk and queue it for inclusion in the next chunk.
+        /[\uD800-\uDBFF]/.test(lastChar) && queueChar();
+        return encode(chunk).replace(/[+]/g, '%2B');
+      };
+      maxChunkLength = Math.floor(maxHashLength * 3/4);
+      value = editor.value;
+      list = [];
 
-        function queueChar() {
-          chars.push(lastChar);
-          chunk = chunk.substr(0, i);
-          lastChar = chunk.charAt(--i);
-          return chunk;
-        }
+      while (value.length) {
+        // The hash is too long to pass to bit.ly in a single URL; multiple
+        // shorter hashes are required. We take the largest chunk of `value`
+        // that may have an acceptable hash, then drop characters while the
+        // length of the chunk's hash exceeds `maxHashLength`.
+        i = maxChunkLength;
+        chars = [];
+        chunk = value.substr(0, i);
+        value = value.substr(i);
+        lastChar = chunk.charAt(--i);
 
-        function safeEncode() {
-          // If `lastChar` is the first half of a surrogate pair, drop it
-          // from the chunk and queue it for inclusion in the next chunk.
-          /[\uD800-\uDBFF]/.test(lastChar) && queueChar();
-          return encode(chunk).replace(/[+]/g, '%2B');
-        }
+        while (safeEncode().length > maxHashLength) queueChar();
 
-        while (value.length) {
-          // The hash is too long to pass to bit.ly in a single URL; multiple
-          // shorter hashes are required. We take the largest chunk of `value`
-          // that may have an acceptable hash, then drop characters while the
-          // length of the chunk's hash exceeds `maxHashLength`.
-          i = maxChunkLength;
-          chars = [];
-          chunk = value.substr(0, i);
-          value = value.substr(i);
-          lastChar = chunk.charAt(--i);
+        list.push(safeEncode());
+        value = chars.reverse().join('') + value;
+      }
 
-          while (safeEncode().length > maxHashLength) queueChar();
-
-          list.push(safeEncode());
-          value = chars.reverse().join('') + value;
-        }
-
-        if (list.length > bitlyLimit) {
-          alert(
-            'Documents exceeding ' + bitlyLimit * maxChunkLength + ' characters in ' +
-            'length cannot be shortened.\n\n' +
-            'This document currently contains ' + editor.value.length + ' characters.'
-          );
-        } else {
-          sendShortenRequests(list);
-        }
-      }());
+      if (list.length > bitlyLimit) {
+        alert(
+          'Documents exceeding ' + bitlyLimit * maxChunkLength + ' characters in ' +
+          'length cannot be shortened.\n\n' +
+          'This document currently contains ' + editor.value.length + ' characters.'
+        );
+      } else {
+        sendShortenRequests(list);
+      }
     }
     wrapper.className = 'loading';
     shorten.style.display = 'none';
