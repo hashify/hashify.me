@@ -44,8 +44,9 @@ body.dragging {
       }
 
       #markdown:focus {
-        /* fake outer glow for Firefox */
-        -moz-box-shadow: -1px -1px 3px #6ae, 1px -1px 3px #6ae, 1px 1px 3px #6ae, -1px 1px 3px #6ae;
+        margin: 80px 0 0 -8px;
+        border: 2px solid #08f;
+        outline: none;
       }
 
       .hashify-editor-toolbar {
