@@ -60,6 +60,8 @@
 
     sidebarVisibleWidth = sidebarMinimumWidth,
 
+    windowWidth,
+
     convert = new Showdown().convert,
 
     encode = Hashify.encode,
@@ -504,6 +506,7 @@
   dragger.onselectstart = returnFalse; // prevent text selection
 
   dragger.onmousedown = function (event) {
+    windowWidth = window.innerWidth || Infinity;
     body.className = 'dragging';
     draggerPosition = (event || window.event).pageX;
     dragging = true;
@@ -515,12 +518,14 @@
       x = (event || window.event).pageX,
       w = Math.max(0, sidebarVisibleWidth + x - draggerPosition);
 
-    resizeSidebar(preferredWidth = w);
-
-    document.cookie =
-      'w=' + w + '; expires=Fri, 01 Feb 3456 07:08:09 UTC; path=/';
-
-    draggerPosition = x;
+    // Restrict maximum width to `windowWidth` - 15 (scrollbar width)
+    // - 4 (`#dragger` width + borders).
+    if (w < windowWidth - 18) {
+      resizeSidebar(preferredWidth = w);
+      document.cookie =
+        'w=' + w + '; expires=Fri, 01 Feb 3456 07:08:09 UTC; path=/';
+      draggerPosition = x;
+    }
   };
 
   document.onmouseup = function () {
