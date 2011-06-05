@@ -193,10 +193,40 @@ body.dragging {
       right: 0;
       top: 67.5%;
       margin: 95px 0 0;
-      padding: 6px 24px;
+      padding: 18px 24px;
       font: italic 12px/1.5 Georgia, serif;
       color: #666;
     }
+
+      #credits>h4 {
+        display: inline;
+        font: inherit;
+      }
+
+      #credits>h4:after {
+        content: ":";
+      }
+
+      #credits>ul {
+        display: inline;
+        list-style: none;
+      }
+
+      #credits>ul>li {
+        display: inline;
+      }
+
+      #credits>ul>li:after {
+        content: ",";
+      }
+
+      #credits>ul>li+li+li+li:after {
+        content: ".";
+      }
+
+      #credits>p {
+        margin: 6px 0;
+      }
 
       #credits a {
         text-decoration: underline;
