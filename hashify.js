@@ -43,6 +43,8 @@
       return match? +match[1]: -1;
     }()),
 
+    presentationModeSpecifier = '?mode:presentation',
+
     pushStateExists = window.history && history.pushState,
 
     returnFalse = function () { return false; },
@@ -71,8 +73,13 @@
       }
     },
 
+    documentComponents = function () {
+      var match = /^#!\/([^?]*)(\?.*)?$/.exec(location.hash);
+      return match? match: [null, location.pathname.substr(1), location.search];
+    },
+
     documentHash = function () {
-      return location.pathname.substr(1) || location.hash.substr(3);
+      return documentComponents()[1];
     },
 
     highlight = (function (prettyPrint, nodeList) {
@@ -184,13 +191,46 @@
       };
     }()),
 
+    sendShortenRequests = function (arg) {
+      var
+        pms = presentationModeSpecifier,
+        lastRequests = typeof arg === 'string',
+        paths = lastRequests? [arg, arg + pms]: arg,
+        yetToReturn = paths.length,
+        i = yetToReturn,
+        list = [],
+        bind = function (index) {
+          return function (data) {
+            list[index] = lastRequests? data: data.hash;
+            if (!--yetToReturn) {
+              lastRequests?
+                // Select the document's presentation mode short URL
+                // if its canonical URL contains "?mode:presentation".
+                setShortUrl(list[+(documentComponents()[2] === pms)]):
+                sendShortenRequests('unpack:' + list.join(','));
+            }
+          };
+        };
+
+      while (i--) {
+        sendRequest('shorten', 'longUrl=' + hashifyMe + paths[i], bind(i));
+      }
+    },
+
     setLocation = (function () {
       var
         counter = $('counter'),
         caution = maxHashLength,
-        danger = 2083 - (hashifyMe + '#!/').length;
-      return function (hash, save) {
-        var len = hash.length;
+        danger = 2083 - (hashifyMe + '#!/' + presentationModeSpecifier).length;
+
+      return function (hash, arg) {
+        var
+          len = hash.length,
+          path = '/' + hash,
+          save = arg === true;
+
+        if (typeof arg === 'string') path += arg;
+
         counter.innerHTML = len;
         counter.className =
           len > danger? 'danger': // too long for old versions of IE
@@ -199,21 +239,22 @@
         shorten.style.display = hash === lastSavedDocument? 'none': 'block';
 
         if (pushStateExists) {
-          history[save?'pushState':'replaceState'](null, null, '/' + hash);
+          history[save?'pushState':'replaceState'](null, null, path);
         } else {
+          path = '/#!' + path;
           // Since `location.replace` overwrites the current history entry,
           // saving a location to history is not simply a matter of calling
           // `location.assign`. Instead, we must create a new history entry
           // and immediately overwrite it.
 
           // update current history entry
-          location.replace('/#!/' + hash);
+          location.replace(path);
 
           if (save) {
             // create a new history entry (to save the current one)
             location.hash = '#!/';
             // update the new history entry (to reinstate the hash)
-            location.replace('/#!/' + hash);
+            location.replace(path);
           }
         }
       };
@@ -305,17 +346,13 @@
   function shortenUrl() {
     var hash = documentHash().replace(/[+]/g, '%2B');
     if (hash.length <= maxHashLength) {
-      sendRequest(
-        'shorten',
-        'longUrl=' + hashifyMe + hash,
-        setShortUrl
-      );
+      sendShortenRequests(hash);
     } else {
       (function () {
         var
           chars, chunk, i, lastChar, list = [],
           maxChunkLength = Math.floor(maxHashLength * 3/4),
-          value = editor.value, yetToReturn;
+          value = editor.value;
 
         function queueChar() {
           chars.push(lastChar);
@@ -348,32 +385,14 @@
           value = chars.reverse().join('') + value;
         }
 
-        i = yetToReturn = list.length;
-        if (yetToReturn > bitlyLimit) {
+        if (list.length > bitlyLimit) {
           alert(
             'Documents exceeding ' + bitlyLimit * maxChunkLength + ' characters in ' +
             'length cannot be shortened.\n\n' +
             'This document currently contains ' + editor.value.length + ' characters.'
           );
         } else {
-          while (i--) {
-            (function (item, index) {
-              sendRequest(
-                'shorten',
-                'longUrl=' + hashifyMe + item,
-                function (data) {
-                  list[index] = data.hash;
-                  if (!--yetToReturn) {
-                    sendRequest(
-                      'shorten',
-                      'longUrl=' + hashifyMe + 'unpack:' + list.join(','),
-                      setShortUrl
-                    );
-                  }
-                }
-              );
-            }(list[i], i));
-          }
+          sendShortenRequests(list);
         }
       }());
     }
@@ -529,26 +548,36 @@
 
   // INITIALIZATION //
 
-  (function (hash) {
-    var i, list, mask = $('mask');
+  (function () {
+    var
+      list,
+      mask = $('mask'),
+      components = documentComponents(),
+      hash = components[1],
+      search = components[2],
+      presentationMode = search === presentationModeSpecifier;
 
     function ready() {
-      if (preferredWidth > sidebarMinimumWidth) {
+      if (presentationMode) {
+        resizeSidebar(0);
+      } else if (preferredWidth > sidebarMinimumWidth) {
         resizeSidebar(preferredWidth);
       }
       body.removeChild(mask);
       shortenUrl();
     }
     // initialize `#counter`
-    setLocation(hash);
+    setLocation(hash, search);
 
     Hashify.editor(editor, false, editor.onkeyup);
 
     if (/^[A-Za-z0-9+/=]+$/.test(hash)) {
-      // In browsers which don't provide `history.pushState`
-      // we fall back to hashbangs. If `location.hash` is to be
-      // the source of truth, `location.pathname` should be "/".
-      pushStateExists || location.replace('/#!/' + hash);
+      if (!pushStateExists && location.pathname !== '/') {
+        // In browsers which don't provide `history.pushState`
+        // we fall back to hashbangs. If `location.hash` is to be
+        // the source of truth, `location.pathname` should be "/".
+        location.replace('/#!/' + hash + search);
+      }
       render(decode(hash), true);
       ready();
     } else if (/^unpack:/.test(hash)) {
@@ -560,12 +589,12 @@
           'hash=' + list.join('&hash='),
           function (data) {
             list = data.expand;
-            i = list.length;
+            var i = list.length;
             while (i--) {
               list[i] = decode(list[i].long_url.substr(hashifyMeLen));
             } // canonicalize: btoa('x') + btoa('y') != btoa('xy')
             render(list.join(''), true);
-            setLocation(encode(editor.value));
+            setLocation(encode(editor.value), search);
             ready();
           }
         );
@@ -573,6 +602,6 @@
     } else {
       ready();
     }
-  }(documentHash()));
+  }());
 
 }(document, window, window.JSON, Math));
