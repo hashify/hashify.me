@@ -404,22 +404,6 @@
     return false;
   };
 
-  // improve discoverability
-  editor.onfocus = function () {
-    if (!this.value) {
-      this.value = '# Title';
-      // don't ask me why this is required
-      window.setTimeout(function () {
-        editor.setSelectionRange(2, 7);
-      }, 0);
-      // We've changed the editor's contents, so we should
-      // update the view. The `onkeyup` handler already does
-      // exactly this. The "keyup" event fires when one tabs
-      // into the textarea, but not when one clicks into it.
-      editor.onkeyup();
-    }
-  };
-
   editor.onkeyup = function () {
     render(this.value);
     setLocation(encode(this.value));
@@ -559,8 +543,20 @@
     function ready() {
       if (presentationMode) {
         resizeSidebar(0);
-      } else if (preferredWidth > sidebarMinimumWidth) {
-        resizeSidebar(preferredWidth);
+      } else {
+        if (preferredWidth > sidebarMinimumWidth) {
+          resizeSidebar(preferredWidth);
+        }
+        if (!editor.value) {
+          editor.focus();
+          editor.value = '# Title';
+          editor.setSelectionRange(2, 7);
+          // We've changed the editor's contents, so we should
+          // update the view. The `onkeyup` handler already does
+          // exactly this. The "keyup" event fires when one tabs
+          // into the textarea, but not when one clicks into it.
+          editor.onkeyup();
+        }
       }
       body.removeChild(mask);
       shortenUrl();
