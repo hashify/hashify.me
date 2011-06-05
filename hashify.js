@@ -85,7 +85,7 @@
     },
 
     highlight = (function (prettyPrint, nodeList) {
-      nodeList = document.getElementsByTagName('pre');
+      nodeList = document.getElementsByTagName('code');
       return function () {
         var i = nodeList.length;
         while (i--) nodeList[i].className = 'prettyprint';
