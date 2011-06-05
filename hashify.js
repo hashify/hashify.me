@@ -131,21 +131,20 @@
       };
     }()),
 
-    sendRequest = (function () {
-      var
-        text = [
-          "# I'm sorry, Dave",
-          '',
-          'Your browser appears not to support',
-          '[cross-origin resource sharing][1].',
-          '',
-          '',
-          '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
-        ].join('\n'),
-        corsNotSupported = function () {
-          setLocation(encode(text));
-          render(text, true);
-        };
+    sendRequest = (function (corsNotSupported, text) {
+      corsNotSupported = function () {
+        setLocation(encode(text));
+        render(text, true);
+      };
+      text = [
+        "# I'm sorry, Dave",
+        '',
+        'Your browser appears not to support',
+        '[cross-origin resource sharing][1].',
+        '',
+        '',
+        '[1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing'
+      ].join('\n');
 
       return function (action, params, success) {
         var
@@ -261,6 +260,7 @@
     }()),
 
     setShortUrl = (function (shorturl, textNode, tweet) {
+      shorturl = document.createElement('a');
       shorturl.id = 'shorturl';
       wrapper.insertBefore(shorturl, qrcode);
       return function (data) {
@@ -306,7 +306,7 @@
         }
         wrapper.className = '';
       };
-    }(document.createElement('a'))),
+    }()),
 
     setValue = function (text) {
       // Firefox and its ilk reset `scrollTop` whenever we assign
@@ -317,8 +317,8 @@
       editor.scrollTop = scrollTop;
     },
 
-    render = (function () {
-      var div = document.createElement('div');
+    render = (function (div) {
+      div = document.createElement('div');
       return function (text, setEditorValue) {
         var
           position = text.length - 1,
