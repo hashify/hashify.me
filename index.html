@@ -81,7 +81,8 @@
           .script('/ga.js')
           .script('/prettify.js')
           .script('/base64/base64.js')
-          .script('/showdown/showdown.js')
+          .script('/showdown/lib/showdown.js').wait()
+          .script('/showdown/lib/abbreviations.js')
           .script('/hashify-editor/hashify-editor.js').wait()
           .script('/hashify.js');
     </script>

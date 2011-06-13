@@ -62,7 +62,7 @@
 
     windowWidth,
 
-    convert = new Showdown().convert,
+    convert = new Showdown('abbreviations').convert,
 
     encode = Hashify.encode,
 
