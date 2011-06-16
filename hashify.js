@@ -34,6 +34,8 @@
 
     hashifyMeLen = hashifyMe.length,
 
+    lastEditorValue,
+
     lastSavedDocument,
 
     maxHashLength = 2048 - hashifyMe.length,
@@ -310,13 +312,19 @@
       };
     }()),
 
-    setValue = function (text) {
+    setValue = function (text, start, end) {
       // Firefox and its ilk reset `scrollTop` whenever we assign
       // to `editor.value`. To preserve scroll position we record
       // the offset before assignment and reinstate it afterwards.
       var scrollTop = editor.scrollTop;
-      editor.value = text;
+      editor.value = lastEditorValue = text;
       editor.scrollTop = scrollTop;
+
+      if (start != null) {
+        editor.focus();
+        editor.setSelectionRange(start, end);
+        updateView(text);
+      }
     },
 
     render = (function (div) {
@@ -341,7 +349,12 @@
         highlight();
         return false;
       };
-    }());
+    }()),
+
+    updateView = function (value) {
+      render(value);
+      setLocation(encode(value));
+    };
 
   // EVENT HANDLERS //
 
@@ -407,8 +420,18 @@
   };
 
   editor.onkeyup = function () {
-    render(this.value);
-    setLocation(encode(this.value));
+    // In Chrome, if `editor` has focus, this function is invoked when
+    // one hits "enter" in the location bar! Without this check, if one
+    // were to type "twitter.com" into the location bar and hit "enter",
+    // the ensuing chain of events would result in the current location
+    // replacing "twitter.com" in the location bar, and no Twitter. >.<
+
+    // If `editor.value` has changed since last we checked, we go ahead
+    // and update the view. If it has _not_ changed, as will be the case
+    // when one hits "enter" in the location bar, we needn't do anything.
+    if (lastEditorValue !== (lastEditorValue = this.value)) {
+      updateView(lastEditorValue);
+    }
   };
 
   document.onkeydown = function (event) {
@@ -451,26 +474,23 @@
           end = editor.selectionEnd,
           alt = value.substring(start, end) || 'alt';
 
-        editor.value =
+        value =
           value.substr(0, start) +
           '![' + alt + '](' + uri + ')' +
           value.substr(end);
-        start += 2; // '!['.length === 2
-        editor.focus();
-        editor.setSelectionRange(start, start + alt.length);
-        editor.onkeyup();
+
+        setValue(value, start += 2, start + alt.length); // '!['.length === 2
       },
       insertText = function (text) {
         var
           value = editor.value,
           start = editor.selectionStart;
 
-        editor.value =
+        value =
           value.substr(0, start) + text +
           value.substr(editor.selectionEnd);
-        editor.focus();
-        editor.setSelectionRange(start, start + text.length);
-        editor.onkeyup();
+
+        setValue(value, start, start + text.length);
       };
 
     if (url) {
@@ -552,16 +572,7 @@
         if (preferredWidth > sidebarMinimumWidth) {
           resizeSidebar(preferredWidth);
         }
-        if (!editor.value) {
-          editor.focus();
-          editor.value = '# Title';
-          editor.setSelectionRange(2, 7);
-          // We've changed the editor's contents, so we should
-          // update the view. The `onkeyup` handler already does
-          // exactly this. The "keyup" event fires when one tabs
-          // into the textarea, but not when one clicks into it.
-          editor.onkeyup();
-        }
+        if (!editor.value) setValue('# Title', 2, 7);
       }
       body.removeChild(mask);
       shortenUrl();
