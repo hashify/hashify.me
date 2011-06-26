@@ -64,7 +64,7 @@
 
     windowWidth,
 
-    convert = new Showdown('abbreviations').convert,
+    convert = new Showdown('datetimes', 'abbreviations').convert,
 
     encode = Hashify.encode,
 
