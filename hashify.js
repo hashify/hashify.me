@@ -53,6 +53,10 @@
 
     returnFalse = function () { return false; },
 
+    selectionEnd,
+
+    selectionStart,
+
     sidebarMinimumWidth =
       // From [https://developer.mozilla.org/en/DOM:window.getComputedStyle]:
       // 
@@ -434,6 +438,21 @@
     shortenUrl();
     return false;
   };
+
+  editor.onblur = function () {
+    // Cache the selection range (or caret position).
+    selectionStart = this.selectionStart;
+    selectionEnd = this.selectionEnd;
+  },
+
+  editor.onfocus = function () {
+    // Restore the previous selection (or caret position).
+    if (editor.setSelectionRange) {
+      setTimeout(function () {
+        editor.setSelectionRange(selectionStart || 0, selectionEnd || 0);
+      }, 0);
+    }
+  },
 
   editor.onkeyup = function () {
     // In Chrome, if `editor` has focus, this function is invoked when
