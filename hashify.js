@@ -45,7 +45,9 @@
       return match? +match[1]: -1;
     }()),
 
-    presentationModeSpecifier = '?mode:presentation',
+    presentationModeSpecified = function () {
+      return /[?;]mode:presentation(;|$)/.test(documentComponents()[2]);
+    },
 
     pushStateExists = window.history && history.pushState,
 
@@ -79,7 +81,7 @@
 
     documentComponents = function () {
       var match = /^#!\/([^?]*)(\?.*)?$/.exec(location.hash);
-      return match? match: [null, location.pathname.substr(1), location.search];
+      return match || [null, location.pathname.substr(1), location.search];
     },
 
     documentHash = function () {
@@ -111,6 +113,20 @@
           )
       ) return JSON && JSON.parse? JSON.parse(data): new Function('return ' + data)();
       throw new SyntaxError('Invalid JSON');
+    },
+
+    prettifyInUse = function () {
+      return !/[?;]prettify:no(;|$)/.test(documentComponents()[2]);
+    },
+
+    queryString = function (presentationMode) {
+      var pairs = [], text;
+
+      if (presentationMode) pairs.push('mode:presentation');
+      if (!prettifyInUse()) pairs.push('prettify:no');
+
+      text = pairs.join(';');
+      return text? '?' + text: text;
     },
 
     resizeSidebar = (function () {
@@ -196,9 +212,8 @@
 
     sendShortenRequests = function (arg) {
       var
-        pms = presentationModeSpecifier,
         lastRequests = typeof arg === 'string',
-        paths = lastRequests? [arg, arg + pms]: arg,
+        paths = lastRequests? [arg + queryString(), arg + queryString(true)]: arg,
         yetToReturn = paths.length,
         i = yetToReturn,
         list = [],
@@ -209,8 +224,8 @@
               lastRequests?
                 // Select the document's presentation mode short URL
                 // if its canonical URL contains "?mode:presentation".
-                setShortUrl(list[+(documentComponents()[2] === pms)]):
-                sendShortenRequests('unpack:' + list.join(','));
+                setShortUrl(list[+presentationModeSpecified()]):
+                sendShortenRequests('unpack:' + list.join());
             }
           };
         };
@@ -224,7 +239,7 @@
       var
         counter = $('counter'),
         caution = maxHashLength,
-        danger = 2083 - (hashifyMe + '#!/' + presentationModeSpecifier).length;
+        danger = 2083 - (hashifyMe + '#!/' + queryString(true)).length;
 
       return function (hash, arg) {
         var
@@ -346,7 +361,8 @@
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
         document.title = div.textContent || 'Hashify';
         if (setEditorValue) setValue(text);
-        highlight();
+        // Apply syntax highlighting unless instructed otherwise.
+        if (prettifyInUse()) highlight();
         return false;
       };
     }()),
@@ -560,10 +576,9 @@
     var
       list,
       mask = $('mask'),
-      components = documentComponents(),
-      hash = components[1],
-      search = components[2],
-      presentationMode = search === presentationModeSpecifier;
+      hash = documentHash(),
+      presentationMode = presentationModeSpecified(),
+      search = queryString(presentationMode);
 
     function ready() {
       if (presentationMode) {
