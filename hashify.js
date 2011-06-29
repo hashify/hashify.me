@@ -516,6 +516,20 @@
 
         setValue(value, start += 2, start + alt.length); // '!['.length === 2
       },
+      insertLink = function (uri) {
+        var
+          value = editor.value,
+          start = editor.selectionStart,
+          end = editor.selectionEnd,
+          text = value.substring(start, end);
+
+        value =
+          value.substr(0, start) +
+          '[' + text + '](' + uri + ')' +
+          value.substr(end);
+
+        setValue(value, start += 1, start + text.length); // '['.length === 1
+      },
       insertText = function (text) {
         var
           value = editor.value,
@@ -528,9 +542,10 @@
         setValue(value, start, start + text.length);
       };
 
-    if (url) {
-      // FIXME: `url` does not necessarily identify an _image_.
+    if (/\.(gif|jpe?g|png)$/i.test(url)) {
       insertImage(url);
+    } else if (url) {
+      insertLink(url);
     } else if (
       // Avert your eyes, Douglas. I'd prefer
       // to avoid three levels of nesting here.
