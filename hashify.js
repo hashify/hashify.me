@@ -501,7 +501,7 @@
     var
       dataTransfer = event.dataTransfer,
       url = dataTransfer.getData('URL'),
-      file, match, reader,
+      file, reader,
       insertImage = function (uri) {
         var
           value = editor.value,
@@ -536,10 +536,10 @@
       // to avoid three levels of nesting here.
       typeof FileReader === 'function' &&
       (file = dataTransfer.files[0]) &&
-      (match = /^(image|text)\//.exec(file.type))) {
+      /^(image|text)\//.test(file.type)) {
 
       reader = new FileReader();
-      if (match[1] === 'image') {
+      if (file.type === 'image') {
         reader.onload = function (event) {
           insertImage(event.target.result);
         };
