@@ -53,9 +53,9 @@
 
     returnFalse = function () { return false; },
 
-    selectionEnd,
+    selectionEnd = 0,
 
-    selectionStart,
+    selectionStart = 0,
 
     sidebarMinimumWidth =
       // From [https://developer.mozilla.org/en/DOM:window.getComputedStyle]:
@@ -449,7 +449,7 @@
     // Restore the previous selection (or caret position).
     if (editor.setSelectionRange) {
       setTimeout(function () {
-        editor.setSelectionRange(selectionStart || 0, selectionEnd || 0);
+        editor.setSelectionRange(selectionStart, selectionEnd);
       }, 0);
     }
   },
@@ -505,8 +505,8 @@
       insertImage = function (uri) {
         var
           value = editor.value,
-          start = editor.selectionStart,
-          end = editor.selectionEnd,
+          start = selectionStart,
+          end = selectionEnd,
           alt = value.substring(start, end) || 'alt';
 
         value =
@@ -519,8 +519,8 @@
       insertLink = function (uri) {
         var
           value = editor.value,
-          start = editor.selectionStart,
-          end = editor.selectionEnd,
+          start = selectionStart,
+          end = selectionEnd,
           text = value.substring(start, end);
 
         value =
@@ -533,11 +533,11 @@
       insertText = function (text) {
         var
           value = editor.value,
-          start = editor.selectionStart;
+          start = selectionStart;
 
         value =
           value.substr(0, start) + text +
-          value.substr(editor.selectionEnd);
+          value.substr(selectionEnd);
 
         setValue(value, start, start + text.length);
       };
