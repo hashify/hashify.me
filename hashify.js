@@ -539,7 +539,7 @@
       /^(image|text)\//.test(file.type)) {
 
       reader = new FileReader();
-      if (file.type === 'image') {
+      if (/^image/.test(file.type)) {
         reader.onload = function (event) {
           insertImage(event.target.result);
         };
