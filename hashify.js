@@ -341,7 +341,7 @@
 
       if (start != null) {
         editor.focus();
-        editor.setSelectionRange(start, end);
+        editor.setSelectionRange(selectionStart = start, selectionEnd = end);
         updateView(text);
       }
     },
