@@ -41,7 +41,7 @@
     maxHashLength = 2048 - hashifyMe.length,
 
     preferredWidth = (function (match) {
-      match = /(?:^|; )w=(\d+?)(?:;|$)/.exec(document.cookie);
+      match = /(?:^|; )w=(\d+?)(?:;|$)/(document.cookie);
       return match? +match[1]: -1;
     }()),
 
@@ -84,7 +84,7 @@
     },
 
     documentComponents = function () {
-      var match = /^#!\/([^?]*)(\?.*)?$/.exec(location.hash);
+      var match = /^#!\/([^?]*)(\?.*)?$/(location.hash);
       return match || [null, location.pathname.substr(1), location.search];
     },
 
@@ -229,7 +229,7 @@
                 // Select the document's presentation mode short URL
                 // if its canonical URL contains "?mode:presentation".
                 setShortUrl(list[+presentationModeSpecified()]):
-                sendShortenRequests('unpack:' + list.join());
+                sendShortenRequests('unpack:' + list);
             }
           };
         };
