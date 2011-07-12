@@ -41,7 +41,7 @@
     maxHashLength = 2048 - hashifyMe.length,
 
     preferredWidth = (function (match) {
-      match = /(?:^|; )w=(\d+?)(?:;|$)/(document.cookie);
+      match = /(?:^|; )w=(\d+?)(?:;|$)/.exec(document.cookie);
       return match? +match[1]: -1;
     }()),
 
@@ -84,7 +84,7 @@
     },
 
     documentComponents = function () {
-      var match = /^#!\/([^?]*)(\?.*)?$/(location.hash);
+      var match = /^#!\/([^?]*)(\?.*)?$/.exec(location.hash);
       return match || [null, location.pathname.substr(1), location.search];
     },
 
