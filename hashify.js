@@ -53,10 +53,6 @@
 
     returnFalse = function () { return false; },
 
-    selectionEnd = 0,
-
-    selectionStart = 0,
-
     sidebarMinimumWidth =
       // From [https://developer.mozilla.org/en/DOM:window.getComputedStyle]:
       // 
@@ -341,7 +337,7 @@
 
       if (start != null) {
         editor.focus();
-        editor.setSelectionRange(selectionStart = start, selectionEnd = end);
+        editor.setSelectionRange(start, end);
         updateView(text);
       }
     },
@@ -439,21 +435,6 @@
     return false;
   };
 
-  editor.onblur = function () {
-    // Cache the selection range (or caret position).
-    selectionStart = this.selectionStart;
-    selectionEnd = this.selectionEnd;
-  },
-
-  editor.onfocus = function () {
-    // Restore the previous selection (or caret position).
-    if (editor.setSelectionRange) {
-      setTimeout(function () {
-        editor.setSelectionRange(selectionStart, selectionEnd);
-      }, 0);
-    }
-  },
-
   editor.onkeyup = function () {
     // In Chrome, if `editor` has focus, this function is invoked when
     // one hits "enter" in the location bar! Without this check, if one
@@ -536,11 +517,11 @@
       insertText = function (text) {
         var
           value = editor.value,
-          start = selectionStart;
+          start = editor.selectionStart;
 
         value =
           value.substr(0, start) + text +
-          value.substr(selectionEnd);
+          value.substr(editor.selectionEnd);
 
         setValue(value, start, start + text.length);
       };
