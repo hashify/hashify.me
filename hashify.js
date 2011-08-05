@@ -507,7 +507,10 @@
           value = editor.value,
           start = selectionStart,
           end = selectionEnd,
-          alt = value.substring(start, end) || 'alt';
+          files = dataTransfer.files,
+          name = files && files[0] && files[0].name,
+          index = name && name.lastIndexOf('.'),
+          alt = value.substring(start, end) || index && name.substr(0, index) || 'alt';
 
         value =
           value.substr(0, start) +
