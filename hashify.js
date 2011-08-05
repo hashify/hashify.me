@@ -505,8 +505,8 @@
       insertImage = function (uri) {
         var
           value = editor.value,
-          start = selectionStart,
-          end = selectionEnd,
+          start = editor.selectionStart,
+          end = editor.selectionEnd,
           files = dataTransfer.files,
           name = files && files[0] && files[0].name,
           index = name && name.lastIndexOf('.'),
@@ -522,8 +522,8 @@
       insertLink = function (uri) {
         var
           value = editor.value,
-          start = selectionStart,
-          end = selectionEnd,
+          start = editor.selectionStart,
+          end = editor.selectionEnd,
           text = value.substring(start, end);
 
         value =
