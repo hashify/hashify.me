@@ -1,52 +1,52 @@
 <!doctype html>
 <html>
   <head>
-    <meta charset="utf-8" />
+    <meta charset=utf-8 />
     <title>Hashify</title>
-    <link rel="stylesheet" href="/hashify-editor/hashify-editor.css" />
-    <link rel="stylesheet" href="/hashify.css" />
-    <link rel="shortcut icon" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVQ4y2P4//8/AyUYwQAygfgfCONUDJVnAGsbNQCvAUDcgAMTbcBfHJhOBoxG40AZQC4GAGFDLqEWPyCLAAAAAElFTkSuQmCC" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon-57x57.png" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon-72x72.png" sizes="72x72" />
-    <link rel="apple-touch-icon" href="/apple-touch-icon-114x114.png" sizes="114x114" />
-    <link rel="author" href="/humans.txt" />
+    <link rel=stylesheet href=/hashify-editor/hashify-editor.css />
+    <link rel=stylesheet href=/hashify.css />
+    <link rel="shortcut icon" href=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVQ4y2P4//8/AyUYwQAygfgfCONUDJVnAGsbNQCvAUDcgAMTbcBfHJhOBoxG40AZQC4GAGFDLqEWPyCLAAAAAElFTkSuQmCC />
+    <link rel=apple-touch-icon href=/apple-touch-icon-57x57.png />
+    <link rel=apple-touch-icon href=/apple-touch-icon-72x72.png sizes=72x72 />
+    <link rel=apple-touch-icon href=/apple-touch-icon-114x114.png sizes=114x114 />
+    <link rel=author href=/humans.txt />
   </head>
   <body>
-    <div id="sidebar">
-      <div id="editor">
-        <textarea id="markdown"></textarea>
-        <div id="counter"></div>
+    <div id=sidebar>
+      <div id=editor>
+        <textarea id=markdown></textarea>
+        <div id=counter></div>
       </div>
-      <div id="wrapper">
-        <a id="qrcode">QR code</a>
+      <div id=wrapper>
+        <a id=qrcode>QR code</a>
       </div>
-      <a id="shorten" href="#shorten">Save. Shorten. Share.</a>
-      <div id="credits">
+      <a id=shorten href=#shorten>Save. Shorten. Share.</a>
+      <div id=credits>
         <h4>Source</h4>
         <ul>
-          <li><a href="https://bitbucket.org/davidchambers/base64.js">Base64</a></li>
-          <li><a href="https://bitbucket.org/davidchambers/hashify.me">Hashify</a></li>
-          <li><a href="https://bitbucket.org/davidchambers/hashify-editor">Hashify Editor</a></li>
-          <li><a href="http://code.google.com/p/google-code-prettify/">Prettify</a></li>
-          <li><a href="http://davidchambers.bitbucket.org/showdown/">Showdown</a></li>
+          <li><a href=https://bitbucket.org/davidchambers/base64.js>Base64</a></li>
+          <li><a href=https://bitbucket.org/davidchambers/hashify.me>Hashify</a></li>
+          <li><a href=https://bitbucket.org/davidchambers/hashify-editor>Hashify Editor</a></li>
+          <li><a href=http://code.google.com/p/google-code-prettify/>Prettify</a></li>
+          <li><a href=http://davidchambers.bitbucket.org/showdown/>Showdown</a></li>
         </ul>
-        <p>Copyright 2011 <a href="http://twitter.com/davidchambers">David Chambers</a>.</p>
+        <p>Copyright 2011 <a href=http://twitter.com/davidchambers>David Chambers</a>.</p>
       </div>
-      <div id="dragger"></div>
+      <div id=dragger></div>
     </div>
-    <div id="markup">
+    <div id=markup>
       <noscript>
         <h1>Hashify requires JavaScript</h1>
         <p>Enable JavaScript and reload this page to get hashing.</p>
         <style>#mask{display:none}</style>
       </noscript>
     </div>
-    <div id="kbd-shortcuts">
+    <div id=kbd-shortcuts>
       <div>
         <h1>Keyboard shortcuts</h1>
         <h2>General shortcuts</h2>
         <dl>
-          <dt><kbd title="escape">⎋</kbd></dt>
+          <dt><kbd title=escape>⎋</kbd></dt>
           <dd>Dismiss this dialog</dd>
           <dt><kbd>?</kbd></dt>
           <dd>Invoke this dialog</dd>
@@ -67,13 +67,13 @@
           <dd>Toggle “strong”</dd>
           <dt><kbd>`</kbd></dt>
           <dd>Toggle “code”</dd>
-          <dt data-keys="2"><kbd title="alt">⌥</kbd><kbd title="tab">⇥</kbd></dt>
+          <dt data-keys=2><kbd title=alt>⌥</kbd><kbd title=tab>⇥</kbd></dt>
           <dd>Insert four spaces</dd>
         </dl>
       </div>
     </div>
-    <div id="mask"></div>
-    <script src="/LAB.js"></script>
+    <div id=mask></div>
+    <script src=/LAB.js></script>
     <script>
       location.hostname === 'hashify.me'?
         window.atob && window.btoa?
