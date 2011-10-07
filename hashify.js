@@ -38,12 +38,11 @@
 
     lastSavedDocument,
 
+    localStorage = window.localStorage || {},
+
     maxHashLength = 2048 - hashifyMe.length,
 
-    preferredWidth = (function (match) {
-      match = /(?:^|; )w=(\d+?)(?:;|$)/.exec(document.cookie);
-      return match? +match[1]: -1;
-    }()),
+    preferredWidth = +localStorage.w || 0,
 
     presentationModeSpecified = function () {
       return /[?;]mode:presentation(;|$)/.test(documentComponents()[2]);
@@ -575,9 +574,7 @@
     // Restrict maximum width to `windowWidth` - 15 (scrollbar width)
     // - 4 (`#dragger` width + borders).
     if (w < windowWidth - 18) {
-      resizeSidebar(preferredWidth = w);
-      document.cookie =
-        'w=' + w + '; expires=Fri, 01 Feb 3456 07:08:09 UTC; path=/';
+      resizeSidebar(localStorage.w = preferredWidth = w);
       draggerPosition = x;
     }
   };
