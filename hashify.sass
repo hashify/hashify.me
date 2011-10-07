@@ -1,6 +1,7 @@
 @import compass/css3/border-radius
 @import compass/css3/box-shadow
 @import compass/css3/images
+@import compass/css3/user-interface
 
 // structure
 
@@ -12,6 +13,7 @@ body
   font: 24px/32px "Helvetica Neue", Helvetica, sans-serif
   &.dragging
     cursor: ew-resize
+    +user-select(none)
     ::-moz-selection
       background: none
 
