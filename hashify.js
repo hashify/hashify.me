@@ -30,7 +30,7 @@
 
     dragging,
 
-    hashifyMe = 'http://hashify.me/',
+    hashifyMe = location.protocol + '//' + location.hostname + '/',
 
     hashifyMeLen = hashifyMe.length,
 
