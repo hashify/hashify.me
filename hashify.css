@@ -131,7 +131,6 @@ body.dragging ::-moz-selection {
   border-bottom-color: #0088ff;
   background: #0088ff;
   color: white;
-  outline: none;
 }
 
 #shorturl {
@@ -169,7 +168,6 @@ body.dragging ::-moz-selection {
 #qrcode:hover {
   border-color: #55aadd;
   background-color: #ddeeff;
-  outline: none;
 }
 
 #qrcode {
@@ -413,6 +411,7 @@ a {
 }
 a:focus, a:hover {
   color: #333333;
+  outline: none;
 }
 
 @media screen {
