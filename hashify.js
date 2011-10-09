@@ -456,7 +456,8 @@
 
   document.onkeydown = function (event) {
     event || (event = window.event);
-    if ((event.target || event.srcElement) !== editor) {
+    if ((event.target || event.srcElement) !== editor &&
+        !event.ctrlKey && !event.altKey && !event.metaKey) {
       switch (event.keyCode) {
         case 27: // escape
           kbdShortcuts.className = '';
