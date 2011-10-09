@@ -356,12 +356,10 @@
           // normalize `editor.value`
           setEditorValue = true;
         }
-        markup.innerHTML = convert(text);
+        Hashify.render(text);
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
         document.title = div.textContent || 'Hashify';
         if (setEditorValue) setValue(text);
-        // Apply syntax highlighting unless instructed otherwise.
-        if (prettifyInUse()) highlight();
         return false;
       };
     }()),
@@ -370,6 +368,13 @@
       render(value);
       setLocation(encode(value));
     };
+
+  Hashify.render || (
+  Hashify.render = function (text) {
+    markup.innerHTML = convert(text);
+    // Apply syntax highlighting unless instructed otherwise.
+    if (prettifyInUse()) highlight();
+  });
 
   // EVENT HANDLERS //
 
@@ -602,7 +607,7 @@
         if (preferredWidth > sidebarMinimumWidth) {
           resizeSidebar(preferredWidth);
         }
-        if (!editor.value) setValue('# Title', 2, 7);
+        if (!hash) setValue(editor.value, 0, editor.value.length);
       }
       body.removeChild(mask);
       shortenUrl();
