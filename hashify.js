@@ -628,15 +628,17 @@
           var encoded = encode(editor.value + '\n\n[' + url + ']');
           location = 'data:text/plain;base64,' + encoded;
         });
-      } else if (presentationMode) {
-        resizeSidebar(0);
       } else {
-        if (preferredWidth > sidebarMinimumWidth) {
-          resizeSidebar(preferredWidth);
+        if (presentationMode) {
+          resizeSidebar(0);
+        } else {
+          if (preferredWidth > sidebarMinimumWidth) {
+            resizeSidebar(preferredWidth);
+          }
+          if (!hash) setValue(editor.value, 0, editor.value.length);
         }
-        if (!hash) setValue(editor.value, 0, editor.value.length);
+        body.removeChild(mask);
       }
-      body.removeChild(mask);
       shortenUrl();
     }
     // initialize `#counter`
