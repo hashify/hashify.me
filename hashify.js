@@ -69,6 +69,20 @@
 
     windowWidth,
 
+    _ = {
+      subs: {},
+      sub: function (event, action) {
+        _.subs[event] = action;
+      },
+      pub: function (event) {
+        var action = _.subs[event];
+        if (action) {
+          action.apply(null, Array.prototype.slice.call(arguments, 1));
+          delete _.subs[event];
+        }
+      }
+    },
+
     convert = new Showdown('datetimes', 'abbreviations').convert,
 
     encode = Hashify.encode,
@@ -288,6 +302,8 @@
       wrapper.insertBefore(shorturl, qrcode);
       return function (data) {
         var tweetText, url = data.url;
+        // publish "shorturl" event
+        _.pub('shorturl', url);
         if (textNode) shorturl.removeChild(textNode);
         shorturl.appendChild(textNode = document.createTextNode(url));
         shorturl.href = url;
@@ -608,10 +624,11 @@
 
     function ready() {
       if (queryContains('raw:yes')) {
-        location = 'data:text/plain;base64,' + hash;
-        return;
-      }
-      if (presentationMode) {
+        _.sub('shorturl', function (url) {
+          var encoded = encode(editor.value + '\n\n[' + url + ']');
+          location = 'data:text/plain;base64,' + encoded;
+        });
+      } else if (presentationMode) {
         resizeSidebar(0);
       } else {
         if (preferredWidth > sidebarMinimumWidth) {
