@@ -1,0 +1,92 @@
+#!/usr/bin/env ruby
+
+# Publish documents on the internets!
+# -----------------------------------
+# Copyright (c) 2011, David Chambers.
+
+# * * * * * * * * * * * * * * * * * *
+
+require 'base64'
+require 'pathname'
+
+# Variant display modes.
+modes = ['presentation']
+
+# Map synonyms to canonical symbols.
+symbols = {
+  :docco    => ['-d', '--docco'],
+  :help     => ['-h', '--help'],
+  :mode     => ['-m', '--mode'],
+  :prettify => ['-p', '--prettify'],
+}
+
+# Generate a hash with all the valid flags as its keys.
+options = {}
+symbols.each do |symbol, flags|
+  flags.each {|flag| options[flag] = symbol}
+end
+
+args = {}
+path = previous = nil
+ARGV.each do |arg|
+  # Argument is a valid flag.
+  if options.include? arg
+    previous = options[arg]
+    args[previous] = true
+  else
+    # Argument is a qualifier for the preceding flag.
+    if symbols.include? previous
+      args[previous] = arg == 'yes' ? true : arg == 'no' ? false : arg
+    # Argument is neither a valid flag nor preceded by a valid flag.
+    else
+      path = arg
+    end
+    previous = nil
+  end
+end
+
+if args[:help]
+  puts '''
+    usage: hashify path/to/file [options]
+    
+    options:
+      -d, --docco               use docco.hashify.me rather than hashify.me
+      -m, --mode MODE           editor is hidden in "presentation" mode
+      -p, --prettify [yes|no]   google-code-prettify is invoked unless "no"
+      -h, --help                show this overview
+  '''.gsub /^[ ]{4}|\s+\Z/, ''
+  exit
+end
+
+raise ArgumentError, 'no file specified' if not path
+
+# Read the contents of the specified file to determine the body of the
+# Hashify document. For Docco documents, include the file's name as the
+# document's title (partly for more reliable syntax highlighting).
+contents = IO.read path
+contents = "#{Pathname.new(path).basename}\n\n#{contents}" if args[:docco]
+
+params = {}
+
+# Use presentation mode by default for Docco documents.
+params[:mode] = :presentation if args[:docco]
+
+# Ignore unqualified, invalid, or implicit `--mode`.
+params[:mode] = args[:mode] if modes.include? args[:mode]
+
+# Only include "prettify" parameter if `--prettify no`.
+params[:prettify] = :no if not args[:docco] and args[:prettify] == false
+
+# Hashify uses "k1:v1;k2:v2" rather than "k1=v1&k2=v2".
+search = params.map {|param, value| "#{param}:#{value}"}.join ';'
+
+hostname = 'hashify.me'
+hostname = 'docco.' + hostname if args[:docco]
+
+# Generate a Hashify URL from the file's contents and provided options.
+url = "http://#{hostname}/"
+url += Base64.encode64(contents).gsub /\n/, ''
+url += "?#{search}" unless search.empty?
+
+# Open the URL in the default browser.
+`open #{url}`
