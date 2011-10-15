@@ -45,10 +45,14 @@
     preferredWidth = +localStorage.w || 0,
 
     presentationModeSpecified = function () {
-      return /[?;]mode:presentation(;|$)/.test(documentComponents()[2]);
+      return queryContains('mode:presentation');
     },
 
     pushStateExists = window.history && history.pushState,
+
+    queryContains = function (option) {
+      return RegExp('[?;]' + option + '(;|$)').test(documentComponents()[2]);
+    },
 
     returnFalse = function () { return false; },
 
@@ -119,10 +123,11 @@
     },
 
     queryString = function (presentationMode) {
-      var pairs = [], text;
+      var pairs = [], r = 'raw:yes', text;
 
       if (presentationMode) pairs.push('mode:presentation');
       if (!prettifyInUse()) pairs.push('prettify:no');
+      if (queryContains(r)) pairs.push(r);
 
       text = pairs.join(';');
       return text? '?' + text: text;
@@ -602,6 +607,10 @@
       search = queryString(presentationMode);
 
     function ready() {
+      if (queryContains('raw:yes')) {
+        location = 'data:text/plain;base64,' + hash;
+        return;
+      }
       if (presentationMode) {
         resizeSidebar(0);
       } else {
