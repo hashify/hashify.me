@@ -7,7 +7,15 @@
 # * * * * * * * * * * * * * * * * * *
 
 require 'base64'
+require 'net/http'
 require 'pathname'
+
+require 'json' # `gem install json` if necessary
+
+# bitly API credentials.
+# It's fine to use these values (Hashify itself does).
+$bitly_username = 'davidchambers'
+$bitly_api_key = 'R_20d23528ed6381ebb614a997de11c20a'
 
 # Variant display modes.
 modes = ['presentation']
@@ -17,7 +25,9 @@ symbols = {
   :docco    => ['-d', '--docco'],
   :help     => ['-h', '--help'],
   :mode     => ['-m', '--mode'],
+  :open     => ['-o', '--open'],
   :prettify => ['-p', '--prettify'],
+  :raw      => ['-r', '--raw'],
 }
 
 # Generate a hash with all the valid flags as its keys.
@@ -52,13 +62,42 @@ if args[:help]
     options:
       -d, --docco               use docco.hashify.me rather than hashify.me
       -m, --mode MODE           editor is hidden in "presentation" mode
+      -o, --open                open document in default web browser
       -p, --prettify [yes|no]   google-code-prettify is invoked unless "no"
+      -r, --raw                 generate URL for text/plain version
       -h, --help                show this overview
   '''.gsub /^[ ]{4}|\s+\Z/, ''
   exit
 end
 
 raise ArgumentError, 'no file specified' if not path
+
+# Return the Base64-encoded equivalent of `text`, *without* the line
+# breaks Ruby so helpfully inserts.
+def encode text
+  Base64.encode64(text).gsub /\n/, ''
+end
+
+# Send a "shorten" request to bitly, and return a data hash if things go
+# well (the hash should contain "hash" and "url" keys). A `RuntimeError`
+# is raised if bitly returns a non-200 status code.
+def shorten url
+  # Generate query string from parameters.
+  req = Net::HTTP::Get.new '/'
+  req.set_form_data(
+    :login => $bitly_username,
+    :apiKey => $bitly_api_key,
+    :longUrl => url,
+  )
+  # Send request to bitly.
+  req = Net::HTTP::Get.new "/v3/shorten?#{req.body}"
+  res = Net::HTTP.new('api.bitly.com').request req
+  res = JSON.parse res.body
+  unless (code = res['status_code']) == 200
+    raise RuntimeError, "bad response from bitly (#{code})"
+  end
+  res['data']
+end
 
 # Read the contents of the specified file to determine the body of the
 # Hashify document. For Docco documents, include the file's name as the
@@ -79,14 +118,67 @@ params[:prettify] = :no if not args[:docco] and args[:prettify] == false
 
 # Hashify uses "k1:v1;k2:v2" rather than "k1=v1&k2=v2".
 search = params.map {|param, value| "#{param}:#{value}"}.join ';'
+search = "?#{search}" unless search.empty?
 
 hostname = 'hashify.me'
 hostname = 'docco.' + hostname if args[:docco]
 
 # Generate a Hashify URL from the file's contents and provided options.
-url = "http://#{hostname}/"
-url += Base64.encode64(contents).gsub /\n/, ''
-url += "?#{search}" unless search.empty?
+domain = "http://#{hostname}/"
+url = domain + encode(contents) + search
 
-# Open the URL in the default browser.
-`open #{url}`
+max = 2048
+if url.length <= max
+  url = shorten(url)['url']
+else
+  chunks = []
+  max -= domain.length
+
+  # It's necessary to treat both `nil` and `""` as exit conditions.
+  # Virtually always, `idx` will be larger than `contents.length`:
+  # 
+  #     >> 'foo'[7..-1]
+  #     => nil
+  # 
+  # Should the two happen to be equal, though, the result is `""`:
+  # 
+  #     >> 'qux bar'[7..-1]
+  #     => ""
+  until contents.nil? or contents.empty?
+    # Three characters of binary text generally produce four characters
+    # of ASCII text when Base64 encoded:
+    # 
+    #     >> encode 'foo'
+    #     => "Zm9v"
+    # 
+    # Characters outside a defined range cannot be represented in ASCII
+    # so succinctly:
+    # 
+    #     >> encode '𝄞𝄞𝄞'
+    #     => "8J2EnvCdhJ7wnYSe"
+    #     >> '𝄞𝄞𝄞'.length
+    #     => 3
+    # 
+    # First we take the longest slice that *may* produce a string of an
+    # acceptable length. We then Base64 encode the slice. If the length
+    # of the resulting string exceeds `max`, we decrement `idx` and try
+    # again. We continue until we've found the longest acceptable slice.
+    idx = (max * 3/4).floor
+    idx -= 1 while (chunk = encode contents[0...idx]).length > max
+    contents = contents[idx..-1] # remainder
+    chunks.push chunk
+  end
+
+  # bitly allows up to 15 short URLs to be expanded in a single request.
+  # Hashify thus accepts a maximum of 15 bitly hashes in "packed" URLs.
+  raise ArgumentError, 'file too big for bitly :(' if chunks.length > 15
+
+  hashes = chunks.map {|chunk| shorten(domain + chunk)['hash']}
+  url = shorten(domain + 'unpack:' + hashes.join(',') + search)['url']
+end
+
+# Print short URL to stdout.
+puts url
+
+# Open document in default web browser if requested.
+`open #{url}` if args[:open]
