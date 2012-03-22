@@ -362,10 +362,13 @@
       }
     },
 
-    render = (function (div) {
-      div = document.createElement('div');
+    render = (function () {
+      var
+        div = document.createElement('div'),
+        stylesheets = [];
       return function (text, setEditorValue) {
         var
+          link, match, re, stylesheet,
           position = text.length - 1,
           charCode = text.charCodeAt(position);
         if (0xD800 <= charCode && charCode < 0xDC00) {
@@ -376,6 +379,15 @@
           text = text.substr(0, position);
           // normalize `editor.value`
           setEditorValue = true;
+        }
+        while (stylesheet = stylesheets.pop()) {
+          document.head.removeChild(stylesheet);
+        }
+        re = /^[ ]{0,3}\[stylesheet\]:[ \t]*(\S+)[ \t]*$/gm;
+        while (match = re.exec(text)) {
+          link = document.createElement('link');
+          link.rel = 'stylesheet'; link.href = match[1];
+          document.head.appendChild(stylesheets[stylesheets.length] = link);
         }
         Hashify.render(text);
         div.innerHTML = convert(text.match(/^.*$/m)[0]);
