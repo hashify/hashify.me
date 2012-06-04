@@ -177,7 +177,7 @@ body
       display: inline
       &:after
         content: ","
-      + li + li + li + li:after
+      &:last-child:after
         content: "."
   > p
     margin: 6px 0
