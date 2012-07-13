@@ -1,6 +1,7 @@
 fs = require 'fs'
 path = require 'path'
 
+CoffeeScript = require 'coffee-script'
 express = require 'express'
 {parser, uglify} = require 'uglify-js'
 
@@ -13,14 +14,18 @@ files = [
   'showdown/lib/datetimes.js'
   'showdown/lib/abbreviations.js'
   'hashify-editor/hashify-editor.js'
-  'hashify.js'
+  'src/hashify.coffee'
 ]
 
 option '-o', '--output [FILE]', 'write output to <file> instead of stdout'
 
 task 'build:scripts', 'concatenate and minify JavaScript files', (options) ->
+  read = (filename) ->
+    data = fs.readFileSync filename, 'utf8'
+    if /[.]coffee$/.test filename then CoffeeScript.compile data else data
+
   {ast_mangle, ast_squeeze, gen_code} = uglify
-  data = (fs.readFileSync f, 'utf8' for f in files).join(';')
+  data = (read f for f in files).join(';')
   data = gen_code ast_squeeze ast_mangle parser.parse data
 
   if options.output? then fs.writeFileSync options.output, data, 'utf8'
@@ -28,10 +33,20 @@ task 'build:scripts', 'concatenate and minify JavaScript files', (options) ->
 
 task 'server', 'start the development server', ->
   serve = (fn) -> (req, res) ->
-    filename = __dirname + fn req
+    filename = fn req
+    [first, second, rest..., last] = filename.split '/'
+    if compile = first is '' and second is 'lib'
+      last = last.replace /[.]js$/, '.coffee'
+      filename = [first, 'src', rest..., last].join '/'
+
+    filename = __dirname + filename
     path.exists filename, (exists) ->
       if exists
-        res.sendfile filename
+        if compile
+          res.contentType 'js'
+          res.send CoffeeScript.compile fs.readFileSync filename, 'utf8'
+        else
+          res.sendfile filename
       else
         res.redirect '/' + Buffer('# 400 Bad Request').toString('base64')
 

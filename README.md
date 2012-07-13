@@ -15,4 +15,4 @@ when one is able to store entire documents in URLs?
 ### Deploying Hashify
 
     git pull origin master
-    cake build:scripts
+    cake --output ./concat.min.js build:scripts

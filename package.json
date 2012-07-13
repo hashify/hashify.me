@@ -12,6 +12,7 @@
     "url": "git://github.com/hashify/hashify.me.git"
   },
   "devDependencies": {
+    "coffee-script": "1.3.x",
     "express": "2.5.x",
     "uglify-js": "1.3.x"
   }
