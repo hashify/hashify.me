@@ -7,7 +7,6 @@ express = require 'express'
 
 
 files = [
-  'ga.js'
   'prettify.js'
   'base64/base64.js'
   'showdown/lib/showdown.js'
@@ -17,6 +16,7 @@ files = [
   'src/hashify.coffee'
 ]
 
+option null, '--ga-key [KEY]',  'set the Google Analytics key'
 option '-o', '--output [FILE]', 'write output to <file> instead of stdout'
 
 task 'build:scripts', 'concatenate and minify JavaScript files', (options) ->
@@ -25,8 +25,10 @@ task 'build:scripts', 'concatenate and minify JavaScript files', (options) ->
     if /[.]coffee$/.test filename then CoffeeScript.compile data else data
 
   {ast_mangle, ast_squeeze, gen_code} = uglify
-  data = (read f for f in files).join(';')
-  data = gen_code ast_squeeze ast_mangle parser.parse data
+  scripts = (read f for f in files)
+  if key = options['ga-key']
+    scripts.push read('src/ga.coffee').replace /<KEY>/g, key
+  data = gen_code ast_squeeze ast_mangle parser.parse scripts.join ';'
 
   if options.output? then fs.writeFileSync options.output, data, 'utf8'
   else console.log data
