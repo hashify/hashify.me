@@ -1,5 +1,6 @@
 fs = require 'fs'
 path = require 'path'
+{exec} = require 'child_process'
 
 CoffeeScript = require 'coffee-script'
 express = require 'express'
@@ -16,6 +17,7 @@ files = [
   'src/hashify.coffee'
 ]
 
+option '-d', '--development',   'do not minify style sheet'
 option null, '--ga-key [KEY]',  'set the Google Analytics key'
 option '-o', '--output [FILE]', 'write output to <file> instead of stdout'
 
@@ -32,6 +34,16 @@ task 'build:scripts', 'concatenate and minify JavaScript files', (options) ->
 
   if options.output? then fs.writeFileSync options.output, data, 'utf8'
   else console.log data
+
+task 'build:styles', 'generate style sheet from Sass file', (options) ->
+  args = ['--sass-dir .', '--css-dir .']
+  if options.development
+    args.push '--no-line-comments'
+  else
+    args.push '--environment production'
+
+  exec "compass compile #{ args.join ' ' }", (err, stdout) ->
+    console.log stdout.trim()
 
 task 'server', 'start the development server', ->
   serve = (fn) -> (req, res) ->

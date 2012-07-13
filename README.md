@@ -16,3 +16,4 @@ when one is able to store entire documents in URLs?
 
     git pull origin master
     cake --ga-key UA-22176121-1 --output ./concat.min.js build:scripts
+    cake build:styles
