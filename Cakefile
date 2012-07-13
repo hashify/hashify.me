@@ -36,8 +36,8 @@ task 'server', 'start the development server', ->
         res.redirect '/' + Buffer('# 400 Bad Request').toString('base64')
 
   app = express.createServer()
-  app.get /^[A-Za-z0-9+/=]*$/, serve -> '/index.html'
-  app.get /^unpack:[A-Za-z0-9]+(?:,[A-Za-z0-9]+)*$/, serve -> '/index.html'
+  app.get /^\/[A-Za-z0-9+/=]*$/, serve -> '/index.html'
+  app.get /^\/unpack:[A-Za-z0-9]+(?:,[A-Za-z0-9]+)*$/, serve -> '/index.html'
   app.get '*', serve (req) -> req.route.params[0]
 
   port = process.env.PORT ? 3000
