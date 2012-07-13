@@ -73,24 +73,31 @@
       </div>
     </div>
     <div id=mask></div>
-    <script src=/LAB.js></script>
-    <script>
-      location.hostname === 'hashify.me'?
-        window.atob && window.btoa?
-          $LAB
-            .script('/concat.min.js'):
-          $LAB
-            .script('/base64/base64.min.js').wait()
-            .script('/concat.min.js'):
-        $LAB
-          .script('/ga.js')
-          .script('/prettify.js')
-          .script('/base64/base64.js')
-          .script('/showdown/lib/showdown.js').wait()
-          .script('/showdown/lib/datetimes.js')
-          .script('/showdown/lib/abbreviations.js')
-          .script('/hashify-editor/hashify-editor.js').wait()
-          .script('/hashify.js');
+    <script id=script>
+      !function() {
+        var files, insert, next
+        insert = function(src, onload) {
+          var script = document.createElement('script')
+          script.src = src
+          if (onload) script.onload = onload
+          document.body.insertBefore(script, document.getElementById('script'))
+        }
+        if (location.hostname == '127.0.0.1') {
+          files = [
+            '/prettify.js',
+            '/base64/base64.js',
+            '/showdown/lib/showdown.js',
+            '/showdown/lib/datetimes.js',
+            '/showdown/lib/abbreviations.js',
+            '/hashify-editor/hashify-editor.js',
+            '/hashify.js'
+          ]
+          next = function() { if (files.length) insert(files.shift(), next) }
+          next()
+        } else {
+          insert('/concat.min.js')
+        }
+      }()
     </script>
   </body>
 </html>

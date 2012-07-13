@@ -30,7 +30,10 @@
 
     dragging,
 
-    hashifyMe = location.protocol + '//' + location.hostname + '/',
+    hashifyMe = (function () {
+      var l = location, port = l.port;
+      return l.protocol + '//' + l.hostname + (port ? ':' + port : '') + '/';
+    }()),
 
     hashifyMeLen = hashifyMe.length,
 
