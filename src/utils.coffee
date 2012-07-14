@@ -6,8 +6,6 @@ addEvent = (el, type, handler) ->
   else if el.attachEvent
     el.attachEvent "on#{type}", handler
 
-convert = (new Showdown 'datetimes', 'abbreviations').convert
-
 decode = (text) ->
   try Hashify.decode text
   catch error
@@ -62,4 +60,4 @@ publish = (event, args...) ->
   s args... for s in subscriptions["post:#{event}"] or []
   return
 
-Hashify.utils = {$, addEvent, convert, decode, publish, sendRequest, subscribe}
+Hashify.utils = {$, addEvent, decode, publish, sendRequest, subscribe}

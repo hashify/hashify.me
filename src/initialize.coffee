@@ -1,10 +1,10 @@
 {bitlyLimit, root} = Hashify.settings
-{$, convert, decode, publish, sendRequest, subscribe} = Hashify.utils
+{$, decode, publish, sendRequest, subscribe} = Hashify.utils
 
 markup = $('markup')
 
 subscribe 'render', (text) ->
-  markup.innerHTML = convert text
+  markup.innerHTML = marked text
 
 subscribe 'editor:resized', (width) ->
   markup.style.marginLeft = width + 'px'

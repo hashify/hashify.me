@@ -1,8 +1,8 @@
-{convert, subscribe} = Hashify.utils
+{subscribe} = Hashify.utils
 
 extractTitle = (text) ->
   div = document.createElement 'div'
-  div.innerHTML = convert text.match(/^.*$/m)[0]
+  div.innerHTML = marked text.match(/^.*$/m)[0]
   div.textContent
 
 subscribe 'pre:render', (text, setEditorValue) ->
