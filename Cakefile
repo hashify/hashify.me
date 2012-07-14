@@ -14,7 +14,15 @@ files = [
   'showdown/lib/datetimes.js'
   'showdown/lib/abbreviations.js'
   'hashify-editor/hashify-editor.js'
-  'src/hashify.coffee'
+  'src/settings.coffee'
+  'src/utils.coffee'
+  'src/location.coffee'
+  'src/document.coffee'
+  'src/editor.coffee'
+  'src/highlight.coffee'
+  'src/share.coffee'
+  'src/shortcuts.coffee'
+  'src/initialize.coffee'
 ]
 
 option '-d', '--development',   'do not minify style sheet'
