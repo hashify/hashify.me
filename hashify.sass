@@ -322,13 +322,13 @@ pre
   padding: 1px
   white-space: pre-wrap
   > code
-    display: block
-    padding: 12px 18px
     font-size: 18px
     line-height: 24px
+    body &
+      padding: 12px 18px
 
 code
-  background: #eee
+  background: #f8f8ff
   padding: 0 0.25em
   line-height: 1
 
@@ -339,24 +339,6 @@ a
   &:hover
     color: #333
     outline: none
-
-// syntax highlighting
-
-@media screen
-  .kwd, .tag
-    color: #008
-  .atv, .str
-    color: #080
-  .com
-    color: #800
-  .clo, .opn, .pun
-    color: #660
-  .atn, .dec, .typ, .var
-    color: #606
-  .lit
-    color: #066
-  .fun
-    color: red
 
 @media print
   #sidebar

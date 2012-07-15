@@ -1,5 +1,4 @@
 fs = require 'fs'
-path = require 'path'
 {exec} = require 'child_process'
 
 CoffeeScript = require 'coffee-script'
@@ -8,9 +7,9 @@ express = require 'express'
 
 
 files = [
-  'prettify.js'
   'base64/base64.js'
   'marked/lib/marked.js'
+  'highlight.js/build/highlight.pack.js'
   'hashify-editor/hashify-editor.js'
   'src/settings.coffee'
   'src/utils.coffee'
@@ -32,14 +31,21 @@ task 'build:scripts', 'concatenate and minify JavaScript files', (options) ->
     data = fs.readFileSync filename, 'utf8'
     if /[.]coffee$/.test filename then CoffeeScript.compile data else data
 
-  {ast_mangle, ast_squeeze, gen_code} = uglify
-  scripts = (read f for f in files)
-  if key = options['ga-key']
-    scripts.push read('src/ga.coffee').replace /<KEY>/g, key
-  data = gen_code ast_squeeze ast_mangle parser.parse scripts.join ';'
+  # Include CoffeeScript lexer in addition to "common" lexers.
+  command = 'python highlight.js/tools/build.py :common coffeescript'
+  exec command, (err, stdout, stderr) ->
+    if err
+      console.error stderr.trim()
+      process.exit 1
 
-  if options.output? then fs.writeFileSync options.output, data, 'utf8'
-  else console.log data
+    {ast_mangle, ast_squeeze, gen_code} = uglify
+    scripts = (read f for f in files)
+    if key = options['ga-key']
+      scripts.push read('src/ga.coffee').replace /<KEY>/g, key
+    data = gen_code ast_squeeze ast_mangle parser.parse scripts.join ';'
+
+    if options.output? then fs.writeFileSync options.output, data, 'utf8'
+    else console.log data
 
 task 'build:styles', 'generate style sheet from Sass file', (options) ->
   args = ['--sass-dir .', '--css-dir .']
@@ -49,7 +55,19 @@ task 'build:styles', 'generate style sheet from Sass file', (options) ->
     args.push '--environment production'
 
   exec "compass compile #{ args.join ' ' }", (err, stdout) ->
-    console.log stdout.trim()
+    console.log output = stdout.trim()
+    # Strip colour codes before comparing output.
+    return if output.replace(/\u001b\[\d+m/g, '') is 'unchanged hashify.sass'
+
+    text = fs.readFileSync 'highlight.js/src/styles/github.css', 'utf8'
+    unless options.development
+      text = text
+        .replace(/\/\*[\s\S]+\*\//, '')   # strip header comment
+        .replace(/\n/g, '')               # strip line breaks
+        .replace(/[ ]+(?=\{)/g, '')       # strip spaces before "{"
+        .replace(/(\{|:|;)[ ]+/g, '$1')   # strip spaces after "{", ":" and ";"
+        .replace(/;(?=\})/g, '')          # strip semicolons before "}"
+    fs.appendFileSync 'hashify.css', text
 
 task 'server', 'start the development server', ->
   serve = (fn) -> (req, res) ->
@@ -60,15 +78,14 @@ task 'server', 'start the development server', ->
       filename = [first, 'src', rest..., last].join '/'
 
     filename = __dirname + filename
-    path.exists filename, (exists) ->
-      if exists
-        if compile
-          res.contentType 'js'
-          res.send CoffeeScript.compile fs.readFileSync filename, 'utf8'
-        else
-          res.sendfile filename
+    if fs.existsSync filename
+      if compile
+        res.contentType 'js'
+        res.send CoffeeScript.compile fs.readFileSync filename, 'utf8'
       else
-        res.redirect '/' + Buffer('# 400 Bad Request').toString('base64')
+        res.sendfile filename
+    else
+      res.redirect '/' + Buffer('# 400 Bad Request').toString('base64')
 
   app = express.createServer()
   app.get /^\/[A-Za-z0-9+/=]*$/, serve -> '/index.html'

@@ -22,12 +22,11 @@ modes = ['presentation']
 
 # Map synonyms to canonical symbols.
 symbols = {
-  :docco    => ['-d', '--docco'],
-  :help     => ['-h', '--help'],
-  :mode     => ['-m', '--mode'],
-  :open     => ['-o', '--open'],
-  :prettify => ['-p', '--prettify'],
-  :raw      => ['-r', '--raw'],
+  :docco => ['-d', '--docco'],
+  :help  => ['-h', '--help'],
+  :mode  => ['-m', '--mode'],
+  :open  => ['-o', '--open'],
+  :raw   => ['-r', '--raw'],
 }
 
 # Generate a hash with all the valid flags as its keys.
@@ -58,12 +57,11 @@ end
 if args[:help]
   puts '''
     usage: hashify path/to/file [options]
-    
+
     options:
       -d, --docco               use docco.hashify.me rather than hashify.me
       -m, --mode MODE           editor is hidden in "presentation" mode
       -o, --open                open document in default web browser
-      -p, --prettify [yes|no]   google-code-prettify is invoked unless "no"
       -r, --raw                 generate URL for text/plain version
       -h, --help                show this overview
   '''.gsub /^[ ]{4}|\s+\Z/, ''
@@ -113,9 +111,6 @@ params[:mode] = :presentation if args[:docco]
 # Ignore unqualified, invalid, or implicit `--mode`.
 params[:mode] = args[:mode] if modes.include? args[:mode]
 
-# Only include "prettify" parameter if `--prettify no`.
-params[:prettify] = :no if not args[:docco] and args[:prettify] == false
-
 # Hashify uses "k1:v1;k2:v2" rather than "k1=v1&k2=v2".
 search = params.map {|param, value| "#{param}:#{value}"}.join ';'
 search = "?#{search}" unless search.empty?
@@ -136,29 +131,29 @@ else
 
   # It's necessary to treat both `nil` and `""` as exit conditions.
   # Virtually always, `idx` will be larger than `contents.length`:
-  # 
+  #
   #     >> 'foo'[7..-1]
   #     => nil
-  # 
+  #
   # Should the two happen to be equal, though, the result is `""`:
-  # 
+  #
   #     >> 'qux bar'[7..-1]
   #     => ""
   until contents.nil? or contents.empty?
     # Three characters of binary text generally produce four characters
     # of ASCII text when Base64 encoded:
-    # 
+    #
     #     >> encode 'foo'
     #     => "Zm9v"
-    # 
+    #
     # Characters outside a defined range cannot be represented in ASCII
     # so succinctly:
-    # 
+    #
     #     >> encode '𝄞𝄞𝄞'
     #     => "8J2EnvCdhJ7wnYSe"
     #     >> '𝄞𝄞𝄞'.length
     #     => 3
-    # 
+    #
     # First we take the longest slice that *may* produce a string of an
     # acceptable length. We then Base64 encode the slice. If the length
     # of the resulting string exceeds `max`, we decrement `idx` and try

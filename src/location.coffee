@@ -3,7 +3,6 @@
 directives = [
   # name,  in longest query
   ['mode:presentation', yes]
-  ['prettify:no',       yes]
   ['raw:yes',            no]
 ]
 
