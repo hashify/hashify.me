@@ -69,6 +69,9 @@ task 'build:styles', 'generate style sheet from Sass file', (options) ->
         .replace(/;(?=\})/g, '')          # strip semicolons before "}"
     fs.appendFileSync 'hashify.css', text
 
+task 'watch', 'generate style sheet whenever Sass file is changed', ->
+  fs.watchFile 'hashify.sass', interval: 1000, -> invoke 'build:styles'
+
 task 'server', 'start the development server', ->
   serve = (fn) -> (req, res) ->
     filename = fn req
