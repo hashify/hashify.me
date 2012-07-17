@@ -86,7 +86,7 @@ addEvent shorten, 'click', (event) ->
   publish 'shorten'
 
 subscribe 'shorten', ->
-  chunk = undefined
+  chunk = lastChar = undefined
   hash = components().hash.replace /[+]/g, '%2B'
   if hash.length <= maxHashLength
     sendShortenRequests hash
