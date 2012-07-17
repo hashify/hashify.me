@@ -19,7 +19,7 @@ ready = ->
   if query.contains 'raw:yes'
     subscribe 'shorturl', (url) ->
       encoded = Hashify.encode "#{ value }\n\n[#{ url }]"
-      location = 'data:text/plain;base64,' + encoded
+      location.replace 'data:text/plain;base64,' + encoded
   else
     if query.contains 'mode:presentation'
       publish 'editor:hide'
