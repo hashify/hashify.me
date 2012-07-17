@@ -25,6 +25,19 @@ parseJSON = (data) ->
   if window.JSON?.parse then JSON.parse data
   else do new Function "return #{data}"
 
+corsNotSupported = ->
+  text = '''
+    # I'm sorry, Dave
+
+    Your browser appears not to support
+    [cross-origin resource sharing][1].
+
+
+    [1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing
+  '''
+  publish 'hashchange', Hashify.encode text
+  publish 'render', text, yes
+
 sendRequest = (action, params, success) ->
   request = new XMLHttpRequest()
   try
