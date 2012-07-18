@@ -1,12 +1,10 @@
 {components} = Hashify.location
 {bitlyLimit, maxHashLength, root} = Hashify.settings
-{$, addEvent, publish, sendRequest, subscribe} = Hashify.utils
+{$, addEvent, parseJSON, publish, sendRequest, subscribe} = Hashify.utils
 
 qrcode  = $('qrcode')
 shorten = $('shorten')
 wrapper = $('wrapper')
-
-lastSavedDocument = undefined
 
 subscribe 'request:error', (data) ->
   message = data.status_txt.toLowerCase().replace(/_/g, ' ')
@@ -75,7 +73,17 @@ setShortUrl = (data) ->
     encodeURIComponent tweetText
   wrapper.insertBefore tweet, shorturl
   wrapper.className = ''
-  publish 'hashchange', lastSavedDocument = components().hash, save: yes
+  publish 'hashchange', components().hash, save: yes
+
+subscribe 'save', (hash, text) ->
+  quote = (text) -> '"' + text + '"'
+  data = [
+    ['date', new Date().toISOString()]
+    ['shorturl', shorturl.href]
+    ['text', text]
+  ]
+  localStorage["document:#{hash}"] =
+    '{' + ("#{quote k}: #{quote v}" for [k, v] in data).join(', ') + '}'
 
 addEvent shorten, 'click', (event) ->
   (event or window.event).preventDefault()
@@ -133,5 +141,8 @@ subscribe 'shorten', ->
   shorten.style.display = 'none'
 
 subscribe 'hashchange', (hash) ->
-  shorten.style.display =
-    if hash is lastSavedDocument then 'none' else 'block'
+  if document = localStorage["document:#{hash}"]
+    setShortUrl url: parseJSON(document).shorturl
+    shorten.style.display = 'none'
+  else
+    shorten.style.display = 'block'

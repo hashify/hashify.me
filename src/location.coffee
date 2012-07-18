@@ -25,7 +25,8 @@ subscribe 'pre:hashchange', (args...) ->
   args unless /^unpack:/.test args[0]
 
 subscribe 'hashchange', (hash, options = {}) ->
-  publish 'textchange', decode hash
+  publish 'textchange', text = decode hash
+  publish 'save', hash, text if options.save
   path = '/' + hash + (Hashify.location.components().query or '')
   if window.history?.pushState
     method = if options.save then 'pushState' else 'replaceState'

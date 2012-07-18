@@ -82,4 +82,5 @@ publish = (event, args...) ->
     s args... for s in subscriptions["post:#{event}"] or []
   stack.pop()
 
-Hashify.utils = {$, addEvent, decode, publish, sendRequest, subscribe}
+Hashify.utils =
+  {$, addEvent, decode, parseJSON, publish, sendRequest, subscribe}
