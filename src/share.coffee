@@ -74,12 +74,8 @@ setShortUrl = (data) ->
     '?count=none&related=hashify&url=foo&text=' +
     encodeURIComponent tweetText
   wrapper.insertBefore tweet, shorturl
-
-  url = data.long_url.substr root.length
-  unless /^unpack:/.test url
-    lastSavedDocument = url
-    publish 'hashchange', url, save: yes
   wrapper.className = ''
+  publish 'hashchange', lastSavedDocument = components().hash, save: yes
 
 addEvent shorten, 'click', (event) ->
   (event or window.event).preventDefault()

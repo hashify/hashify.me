@@ -21,10 +21,12 @@ class Query
     params = (name for [name] in directives when @contains name).join(';')
     params and '?' + params
 
-subscribe 'hashchange', (hash, query, options = {}) ->
-  (options = query; query = undefined) if typeof query is 'object'
+subscribe 'pre:hashchange', (args...) ->
+  args unless /^unpack:/.test args[0]
 
-  path = '/' + hash + (query or '')
+subscribe 'hashchange', (hash, options = {}) ->
+  publish 'textchange', decode hash
+  path = '/' + hash + (Hashify.location.components().query or '')
   if window.history?.pushState
     method = if options.save then 'pushState' else 'replaceState'
     history[method] null, null, path
@@ -52,7 +54,7 @@ components = ->
     hash: pathname.substr(1), query: search
 
 addEvent window, 'popstate', ->
-  publish 'render', decode(components().hash), yes
+  publish 'hashchange', components().hash
 
 longest = new Query (name for [name, include] in directives when include)
 

@@ -5,6 +5,18 @@
 counter = $('counter')
 danger = 2083 - "#{root}#!/#{longestQueryString}".length
 
+subscribe 'pre:textchange', (text) ->
+  # In Chrome, if one attempts to delete a surrogate pair character,
+  # only half of the pair is deleted. We strip the orphan to avoid
+  # `encodeURIComponent` throwing a `URIError`.
+  pos = text.length - 1
+  text = text.substr(0, pos) if 0xD800 <= text.charCodeAt(pos) < 0xDC00
+  [text]
+
+subscribe 'textchange', (text) ->
+  publish 'hashchange', Hashify.encode text
+  Hashify.editor.value text
+
 subscribe 'hashchange', (hash) ->
   counter.innerHTML = length = hash.length
   counter.className =
@@ -86,8 +98,7 @@ setValue = (text, start, end) ->
   if start?
     editor.focus()
     editor.setSelectionRange start, end
-    publish 'hashchange', Hashify.encode text
-    publish 'render', text
+    publish 'textchange', text
 
 # Prevent typing from inadvertently triggering keyboard shortcuts.
 addEvent editor, 'keydown', (event) ->
@@ -103,9 +114,8 @@ addEvent editor, 'keyup', ->
   # If `editor.value` has changed since last we checked, we go ahead
   # and update the view. If it has _not_ changed, as will be the case
   # when one hits "enter" in the location bar, we needn't do anything.
-  unless lastEditorValue is lastEditorValue = @value
-    publish 'hashchange', Hashify.encode @value
-    publish 'render', @value
+  publish 'textchange', @value unless lastEditorValue is @value
+  lastEditorValue = @value
 
 addEvent editor, 'dragenter', -> false
 

@@ -26,7 +26,7 @@ parseJSON = (data) ->
   else do new Function "return #{data}"
 
 corsNotSupported = ->
-  text = '''
+  publish 'textchange', '''
     # I'm sorry, Dave
 
     Your browser appears not to support
@@ -35,8 +35,6 @@ corsNotSupported = ->
 
     [1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing
   '''
-  publish 'hashchange', Hashify.encode text
-  publish 'render', text, yes
 
 sendRequest = (action, params, success) ->
   request = new XMLHttpRequest()
@@ -62,15 +60,26 @@ sendRequest = (action, params, success) ->
     throw error unless error.message is 'Security violation' # Opera
     do corsNotSupported
 
-window.subscriptions = {}
+subscriptions = {}
 
 subscribe = (event, action) ->
   (subscriptions[event] or= []).push action
 
+stack = []
 publish = (event, args...) ->
-  args = s args... for s in subscriptions["pre:#{event}"] or []
-  s args... for s in subscriptions[event] or []
-  s args... for s in subscriptions["post:#{event}"] or []
-  return
+  return if event in stack # prevent recursion
+  stack.push event
+  # A "pre:" hook may modify the published arguments before they're
+  # passed to the remaining event listeners (by returning an array),
+  # or it may cancel the event (by returning a falsy value).
+  cancelled = no
+  for s in subscriptions["pre:#{event}"] or []
+    unless args = s args...
+      cancelled = yes
+      break
+  unless cancelled
+    s args... for s in subscriptions[event] or []
+    s args... for s in subscriptions["post:#{event}"] or []
+  stack.pop()
 
 Hashify.utils = {$, addEvent, decode, publish, sendRequest, subscribe}
