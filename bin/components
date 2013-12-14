@@ -1,0 +1,3 @@
+#!/usr/bin/env node
+var components = require('../package.json').components;
+for (var name in components) console.log(name + '#' + components[name]);

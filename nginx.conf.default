@@ -1,0 +1,6 @@
+server {
+    listen          80;
+    server_name     hashify.me;
+    root            <ROOT>;
+    rewrite         ^/(?:[A-Za-z0-9+/=]*|unpack:[A-Za-z0-9]+(?:,[A-Za-z0-9]+)*)$ /index.html last;
+}

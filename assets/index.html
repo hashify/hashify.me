@@ -3,8 +3,7 @@
   <head>
     <meta charset=utf-8 />
     <title>Hashify</title>
-    <link rel=stylesheet href=/hashify-editor/hashify-editor.css />
-    <link rel=stylesheet href=/hashify.css />
+    <link rel=stylesheet href=/style.css />
     <link rel="shortcut icon" href=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAANklEQVQ4y2P4//8/AyUYwQAygfgfCONUDJVnAGsbNQCvAUDcgAMTbcBfHJhOBoxG40AZQC4GAGFDLqEWPyCLAAAAAElFTkSuQmCC />
     <link rel=apple-touch-icon href=/apple-touch-icon-57x57.png />
     <link rel=apple-touch-icon href=/apple-touch-icon-72x72.png sizes=72x72 />
@@ -72,37 +71,6 @@
       </div>
     </div>
     <div id=mask></div>
-    <script id=script>
-      !function() {
-        var files, insert, next
-        insert = function(src, onload) {
-          var script = document.createElement('script')
-          script.src = src
-          if (onload) script.onload = onload
-          document.body.insertBefore(script, document.getElementById('script'))
-        }
-        if (location.hostname == '127.0.0.1') {
-          files = [
-            '/base64/base64.js',
-            '/marked/lib/marked.js',
-            '/highlight.js/build/highlight.pack.js',
-            '/hashify-editor/hashify-editor.js',
-            '/lib/settings.js',
-            '/lib/utils.js',
-            '/lib/location.js',
-            '/lib/document.js',
-            '/lib/editor.js',
-            '/lib/highlight.js',
-            '/lib/share.js',
-            '/lib/shortcuts.js',
-            '/lib/initialize.js'
-          ]
-          next = function() { if (files.length) insert(files.shift(), next) }
-          next()
-        } else {
-          insert('/concat.min.js')
-        }
-      }()
-    </script>
+    <script src=/concat.js></script>
   </body>
 </html>

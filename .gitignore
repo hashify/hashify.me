@@ -1,4 +1,6 @@
-/concat[.]min[.]js
-/hashify[.]css
-/highlight[.]js/
-/marked/
+.sass-cache/
+/bower_components/
+/lib/
+/nginx.conf
+/node_modules/
+/public/
