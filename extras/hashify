@@ -22,11 +22,12 @@ modes = ['presentation']
 
 # Map synonyms to canonical symbols.
 symbols = {
-  :docco => ['-d', '--docco'],
-  :help  => ['-h', '--help'],
-  :mode  => ['-m', '--mode'],
-  :open  => ['-o', '--open'],
-  :raw   => ['-r', '--raw'],
+  :docco    => ['-d', '--docco'],
+  :help     => ['-h', '--help'],
+  :mode     => ['-m', '--mode'],
+  :open     => ['-o', '--open'],
+  :prettify => ['-p', '--prettify'],
+  :raw      => ['-r', '--raw'],
 }
 
 # Generate a hash with all the valid flags as its keys.
@@ -62,6 +63,7 @@ if args[:help]
       -d, --docco               use docco.hashify.me rather than hashify.me
       -m, --mode MODE           editor is hidden in "presentation" mode
       -o, --open                open document in default web browser
+      -p, --prettify [yes|no]   code blocks are highlighted unless unless "no"
       -r, --raw                 generate URL for text/plain version
       -h, --help                show this overview
   '''.gsub /^[ ]{4}|\s+\Z/, ''
@@ -110,6 +112,9 @@ params[:mode] = :presentation if args[:docco]
 
 # Ignore unqualified, invalid, or implicit `--mode`.
 params[:mode] = args[:mode] if modes.include? args[:mode]
+
+# Only include "prettify" parameter if `--prettify no`.
+params[:prettify] = :no if not args[:docco] and args[:prettify] == false
 
 # Hashify uses "k1:v1;k2:v2" rather than "k1=v1&k2=v2".
 search = params.map {|param, value| "#{param}:#{value}"}.join ';'

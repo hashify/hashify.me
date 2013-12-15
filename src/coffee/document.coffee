@@ -19,4 +19,7 @@ subscribe 'textchange', (text) ->
     document.head.appendChild stylesheets[stylesheets.length] = link
 
   document.title = extractTitle(text) or 'Hashify'
-  markup.innerHTML = marked text
+  options = {}
+  unless Hashify.location.components().query.contains('prettify:no')
+    options.highlight = (code) -> hljs.highlightAuto(code).value
+  markup.innerHTML = marked text, options

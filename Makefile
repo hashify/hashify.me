@@ -40,7 +40,6 @@ public/concat.js: \
 		lib/js/location.js \
 		lib/js/document.js \
 		lib/js/editor.js \
-		lib/js/highlight.js \
 		lib/js/share.js \
 		lib/js/shortcuts.js \
 		lib/js/initialize.js
