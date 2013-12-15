@@ -1,12 +1,12 @@
 {components} = Hashify.location
 {bitlyLimit, maxHashLength, root} = Hashify.settings
-{$, addEvent, publish, sendRequest, subscribe} = Hashify.utils
+{$, addEvent, sendRequest} = Hashify.utils
 
 qrcode  = $('qrcode')
 shorten = $('shorten')
 wrapper = $('wrapper')
 
-subscribe 'request:error', (data) ->
+Hashify.channel.subscribe 'request:error', (data) ->
   message = data.status_txt.toLowerCase().replace(/_/g, ' ')
   wrapper.className = ''
   wrapper.innerHTML = "bitly \u2013 \"#{message}\" :\\"
@@ -42,7 +42,7 @@ wrapper.insertBefore shorturl, qrcode
 
 setShortUrl = (data) ->
   {url} = data
-  publish 'shorturl', url
+  Hashify.channel.broadcast 'shorturl', url
   shorturl.removeChild textNode if textNode
   shorturl.appendChild textNode = document.createTextNode url
   shorturl.href = url
@@ -73,9 +73,9 @@ setShortUrl = (data) ->
     encodeURIComponent tweetText
   wrapper.insertBefore tweet, shorturl
   wrapper.className = ''
-  publish 'hashchange', components().hash, save: yes
+  Hashify.channel.broadcast 'hashchange', components().hash, save: yes
 
-subscribe 'save', (hash, text) ->
+Hashify.channel.subscribe 'save', (hash, text) ->
   localStorage["document:#{hash}"] = JSON.stringify
     date: new Date().toISOString()
     shorturl: shorturl.href
@@ -83,9 +83,9 @@ subscribe 'save', (hash, text) ->
 
 addEvent shorten, 'click', (event) ->
   (event or window.event).preventDefault()
-  publish 'shorten'
+  Hashify.channel.broadcast 'shorten'
 
-subscribe 'shorten', ->
+Hashify.channel.subscribe 'shorten', ->
   chunk = lastChar = undefined
   hash = components().hash.replace /[+]/g, '%2B'
   if hash.length <= maxHashLength
@@ -136,7 +136,7 @@ subscribe 'shorten', ->
   wrapper.className = 'loading'
   shorten.style.display = 'none'
 
-subscribe 'hashchange', (hash) ->
+Hashify.channel.subscribe 'hashchange', (hash) ->
   if document = localStorage["document:#{hash}"]
     setShortUrl url: JSON.parse(document).shorturl
     shorten.style.display = 'none'

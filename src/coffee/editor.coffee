@@ -1,23 +1,25 @@
 {longestQueryString} = Hashify.location
 {maxHashLength, root} = Hashify.settings
-{$, addEvent, publish, subscribe} = Hashify.utils
+{$, addEvent} = Hashify.utils
 
 counter = $('counter')
 danger = 2083 - "#{root}#!/#{longestQueryString}".length
 
-subscribe 'pre:textchange', (text) ->
+Hashify.channel.intercept 'textchange', (broadcast, text) ->
   # In Chrome, if one attempts to delete a surrogate pair character,
   # only half of the pair is deleted. We strip the orphan to avoid
   # `encodeURIComponent` throwing a `URIError`.
   pos = text.length - 1
-  text = text.substr(0, pos) if 0xD800 <= text.charCodeAt(pos) < 0xDC00
-  [text]
+  if 0xD800 <= text.charCodeAt(pos) < 0xDC00
+    broadcast text.substr(0, pos)
+  else
+    broadcast text
 
-subscribe 'textchange', (text) ->
-  publish 'hashchange', Hashify.encode text
+Hashify.channel.subscribe 'textchange', (text) ->
+  Hashify.channel.broadcast 'hashchange', Hashify.encode text
   Hashify.editor.value text
 
-subscribe 'hashchange', (hash) ->
+Hashify.channel.subscribe 'hashchange', (hash) ->
   counter.innerHTML = length = hash.length
   counter.className =
     if length > danger # too long for old versions of IE
@@ -45,16 +47,16 @@ resizeSidebar = (width) ->
   else
     sidebar.style.left = 0
     sidebar.style.width = "#{ width }px"
-  publish 'editor:resized', sidebarVisibleWidth = width
+  Hashify.channel.broadcast 'editor:resized', sidebarVisibleWidth = width
 
-subscribe 'editor:hide', ->
+Hashify.channel.subscribe 'editor:hide', ->
   resizeSidebar 0
 
-subscribe 'editor:show', ->
+Hashify.channel.subscribe 'editor:show', ->
   width = Math.max sidebarMinimumWidth, preferredWidth
   resizeSidebar width if width > sidebarVisibleWidth
 
-subscribe 'editor:resize', ->
+Hashify.channel.subscribe 'editor:resize', ->
   resizeSidebar preferredWidth if preferredWidth > sidebarMinimumWidth
 
 addEvent dragger, 'selectstart', -> false # prevent text selection
@@ -98,7 +100,7 @@ setValue = (text, start, end) ->
   if start?
     editor.focus()
     editor.setSelectionRange start, end
-    publish 'textchange', text
+    Hashify.channel.broadcast 'textchange', text
 
 # Prevent typing from inadvertently triggering keyboard shortcuts.
 addEvent editor, 'keydown', (event) ->
@@ -114,7 +116,8 @@ addEvent editor, 'keyup', ->
   # If `editor.value` has changed since last we checked, we go ahead
   # and update the view. If it has _not_ changed, as will be the case
   # when one hits "enter" in the location bar, we needn't do anything.
-  publish 'textchange', @value unless lastEditorValue is @value
+  unless lastEditorValue is @value
+    Hashify.channel.broadcast 'textchange', @value
   lastEditorValue = @value
 
 addEvent editor, 'dragenter', -> false

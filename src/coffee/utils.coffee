@@ -13,7 +13,7 @@ decode = (text) ->
     '# ' + error
 
 corsNotSupported = ->
-  publish 'textchange', '''
+  Hashify.channel.broadcast 'textchange', '''
     # I'm sorry, Dave
 
     Your browser appears not to support
@@ -40,33 +40,11 @@ sendRequest = (action, params, success) ->
     return unless request.readyState is 4 and request.status is 200
     json = JSON.parse request.responseText
     if json.status_code is 200 then success json.data
-    else publish 'request:error', json
+    else Hashify.channel.broadcast 'request:error', json
   try
     request.send()
   catch error
     throw error unless error.message is 'Security violation' # Opera
     do corsNotSupported
 
-subscriptions = {}
-
-subscribe = (event, action) ->
-  (subscriptions[event] or= []).push action
-
-stack = []
-publish = (event, args...) ->
-  return if event in stack # prevent recursion
-  stack.push event
-  # A "pre:" hook may modify the published arguments before they're
-  # passed to the remaining event listeners (by returning an array),
-  # or it may cancel the event (by returning a falsy value).
-  cancelled = no
-  for s in subscriptions["pre:#{event}"] or []
-    unless args = s args...
-      cancelled = yes
-      break
-  unless cancelled
-    s args... for s in subscriptions[event] or []
-    s args... for s in subscriptions["post:#{event}"] or []
-  stack.pop()
-
-Hashify.utils = {$, addEvent, decode, publish, sendRequest, subscribe}
+Hashify.utils = {$, addEvent, decode, sendRequest}

@@ -1,5 +1,3 @@
-{subscribe} = Hashify.utils
-
 extractTitle = (text) ->
   div = document.createElement 'div'
   div.innerHTML = marked text.match(/^.*$/m)[0]
@@ -7,7 +5,7 @@ extractTitle = (text) ->
 
 stylesheets = []
 
-subscribe 'textchange', (text) ->
+Hashify.channel.subscribe 'textchange', (text) ->
   while stylesheet = stylesheets.pop()
     document.head.removeChild stylesheet
 

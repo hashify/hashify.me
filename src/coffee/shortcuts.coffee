@@ -1,4 +1,4 @@
-{$, addEvent, publish} = Hashify.utils
+{$, addEvent} = Hashify.utils
 
 kbdShortcuts = $('kbd-shortcuts')
 
@@ -10,9 +10,9 @@ addEvent document, 'keydown', (event) ->
     when 27 # escape
       kbdShortcuts.className = ''
     when 37 # left arrow
-      publish 'editor:hide'
+      Hashify.channel.broadcast 'editor:hide'
     when 39 # right arrow
-      publish 'editor:show'
+      Hashify.channel.broadcast 'editor:show'
     when 191, 0 # "/" or "?" (Firefox reports `keyCode` of `0` for "?")
       kbdShortcuts.className = 'active' if event.shiftKey
 

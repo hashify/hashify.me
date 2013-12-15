@@ -31,11 +31,13 @@ lib/css/hashify.css: src/sass/hashify.sass
 
 
 public/concat.js: \
+		node_modules/airwaves/lib/airwaves.js \
 		node_modules/Base64/base64.js \
 		node_modules/marked/lib/marked.js \
 		bower_components/highlightjs/highlight.pack.js \
 		bower_components/hashify-editor/hashify-editor.js \
 		lib/js/settings.js \
+		lib/js/channel.js \
 		lib/js/utils.js \
 		lib/js/location.js \
 		lib/js/document.js \

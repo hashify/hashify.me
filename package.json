@@ -16,6 +16,7 @@
     "highlightjs": "7.5.x"
   },
   "dependencies": {
+    "airwaves": "0.2.x",
     "Base64": "0.2.x",
     "marked": "0.2.10"
   },

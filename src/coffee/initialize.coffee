@@ -1,9 +1,9 @@
 {bitlyLimit, root} = Hashify.settings
-{$, decode, publish, sendRequest, subscribe} = Hashify.utils
+{$, decode, sendRequest} = Hashify.utils
 
 markup = $('markup')
 
-subscribe 'editor:resized', (width) ->
+Hashify.channel.subscribe 'editor:resized', (width) ->
   markup.style.marginLeft = width + 'px'
 
 {hash, query} = Hashify.location.components()
@@ -11,17 +11,17 @@ subscribe 'editor:resized', (width) ->
 ready = ->
   value = Hashify.editor.value()
   if query.contains 'raw:yes'
-    subscribe 'shorturl', (url) ->
+    Hashify.channel.subscribe 'shorturl', (url) ->
       encoded = Hashify.encode "#{ value }\n\n[#{ url }]"
       location.replace 'data:text/plain;base64,' + encoded
   else
     if query.contains 'mode:presentation'
-      publish 'editor:hide'
+      Hashify.channel.broadcast 'editor:hide'
     else
-      publish 'editor:resize'
+      Hashify.channel.broadcast 'editor:resize'
       Hashify.editor.value value, 0, value.length unless hash
     document.body.removeChild $('mask')
-  publish 'shorten'
+  Hashify.channel.broadcast 'shorten'
 
 if /^[A-Za-z0-9+/=]+$/.test hash
   unless window.history?.pushState or location.pathname is '/'
@@ -29,7 +29,7 @@ if /^[A-Za-z0-9+/=]+$/.test hash
     # we fall back to hashbangs. If `location.hash` is to be
     # the source of truth, `location.pathname` should be "/".
     location.replace '/#!/' + hash + query
-  publish 'hashchange', hash
+  Hashify.channel.broadcast 'hashchange', hash
   do ready
 else if /^unpack:/.test hash
   list = hash.substr(7).split(',')
@@ -39,7 +39,7 @@ else if /^unpack:/.test hash
       stripRoot = (url) -> url.substr root.length
       # Canonicalize: btoa('x') + btoa('y') != btoa('xy')
       text = (decode stripRoot long_url for {long_url} in data.expand).join ''
-      publish 'hashchange', Hashify.encode text
+      Hashify.channel.broadcast 'hashchange', Hashify.encode text
       do ready
 else
   do ready

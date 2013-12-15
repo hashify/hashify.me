@@ -1,4 +1,4 @@
-{addEvent, decode, publish, subscribe} = Hashify.utils
+{addEvent, decode} = Hashify.utils
 
 directives = [
   # name,  in longest query
@@ -22,12 +22,12 @@ class Query
     params = (name for [name] in directives when @contains name).join(';')
     params and '?' + params
 
-subscribe 'pre:hashchange', (args...) ->
-  args unless /^unpack:/.test args[0]
+Hashify.channel.intercept 'hashchange', (broadcast, hash, options) ->
+  broadcast hash, options unless /^unpack:/.test hash
 
-subscribe 'hashchange', (hash, options = {}) ->
-  publish 'textchange', text = decode hash
-  publish 'save', hash, text if options.save
+Hashify.channel.subscribe 'hashchange', (hash, options = {}) ->
+  Hashify.channel.broadcast 'textchange', text = decode hash
+  Hashify.channel.broadcast 'save', hash, text if options.save
   path = '/' + hash + (Hashify.location.components().query or '')
   if window.history?.pushState
     method = if options.save then 'pushState' else 'replaceState'
@@ -56,7 +56,7 @@ components = ->
     hash: pathname.substr(1), query: search
 
 addEvent window, 'popstate', ->
-  publish 'hashchange', components().hash
+  Hashify.channel.broadcast 'hashchange', components().hash
 
 longest = new Query (name for [name, include] in directives when include)
 
