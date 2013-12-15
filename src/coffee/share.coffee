@@ -1,6 +1,6 @@
 {components} = Hashify.location
 {bitlyLimit, maxHashLength, root} = Hashify.settings
-{$, addEvent, parseJSON, publish, sendRequest, subscribe} = Hashify.utils
+{$, addEvent, publish, sendRequest, subscribe} = Hashify.utils
 
 qrcode  = $('qrcode')
 shorten = $('shorten')
@@ -76,14 +76,10 @@ setShortUrl = (data) ->
   publish 'hashchange', components().hash, save: yes
 
 subscribe 'save', (hash, text) ->
-  quote = (text) -> '"' + text + '"'
-  data = [
-    ['date', new Date().toISOString()]
-    ['shorturl', shorturl.href]
-    ['text', text]
-  ]
-  localStorage["document:#{hash}"] =
-    '{' + ("#{quote k}: #{quote v}" for [k, v] in data).join(', ') + '}'
+  localStorage["document:#{hash}"] = JSON.stringify
+    date: new Date().toISOString()
+    shorturl: shorturl.href
+    text: text
 
 addEvent shorten, 'click', (event) ->
   (event or window.event).preventDefault()
@@ -142,7 +138,7 @@ subscribe 'shorten', ->
 
 subscribe 'hashchange', (hash) ->
   if document = localStorage["document:#{hash}"]
-    setShortUrl url: parseJSON(document).shorturl
+    setShortUrl url: JSON.parse(document).shorturl
     shorten.style.display = 'none'
   else
     shorten.style.display = 'block'

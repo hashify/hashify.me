@@ -12,19 +12,6 @@ decode = (text) ->
     throw error unless error instanceof URIError
     '# ' + error
 
-parseJSON = (data) ->
-  return null unless typeof data is 'string' and data
-
-  data = data.replace /^\s+|\s+$/g, ''
-
-  throw new SyntaxError 'Invalid JSON' unless /^[\],:{}\s]*$/.test data
-    .replace(/\\(?:["\\\/bfnrt]|u[0-9a-fA-F]{4})/g, '@')
-    .replace(/"[^"\\\n\r]*"|true|false|null|-?\d+(?:\.\d*)?(?:[eE][+-]?\d+)?/g, ']')
-    .replace(/(?:^|:|,)(?:\s*\[)+/g, '')
-
-  if window.JSON?.parse then JSON.parse data
-  else do new Function "return #{data}"
-
 corsNotSupported = ->
   publish 'textchange', '''
     # I'm sorry, Dave
@@ -51,7 +38,7 @@ sendRequest = (action, params, success) ->
 
   request.onreadystatechange = ->
     return unless request.readyState is 4 and request.status is 200
-    json = parseJSON request.responseText
+    json = JSON.parse request.responseText
     if json.status_code is 200 then success json.data
     else publish 'request:error', json
   try
@@ -82,5 +69,4 @@ publish = (event, args...) ->
     s args... for s in subscriptions["post:#{event}"] or []
   stack.pop()
 
-Hashify.utils =
-  {$, addEvent, decode, parseJSON, publish, sendRequest, subscribe}
+Hashify.utils = {$, addEvent, decode, publish, sendRequest, subscribe}
