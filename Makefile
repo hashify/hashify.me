@@ -24,6 +24,7 @@ public/style.css: \
 		bower_components/highlightjs/styles/github.css \
 		bower_components/hashify-editor/hashify-editor.css \
 		lib/css/hashify.css
+	mkdir -p $(@D)
 	cat $^ > $@
 
 lib/css/hashify.css: src/sass/hashify.sass
@@ -45,6 +46,7 @@ public/concat.js: \
 		lib/js/share.js \
 		lib/js/shortcuts.js \
 		lib/js/initialize.js
+	mkdir -p $(@D)
 	cat $^ > $@
 
 lib/js/%.js: src/coffee/%.coffee
