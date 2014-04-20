@@ -12,7 +12,7 @@
     "url": "git://github.com/hashify/hashify.me.git"
   },
   "components": {
-    "hashify-editor": "1.0.x",
+    "hashify-editor": "1.5.x",
     "highlightjs": "7.5.x"
   },
   "dependencies": {
