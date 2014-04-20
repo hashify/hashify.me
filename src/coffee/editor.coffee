@@ -189,3 +189,11 @@ Hashify.editor editor, no
 
 Hashify.editor.value = (args...) ->
   if args.length then setValue args... else editor.value
+
+# Broadcast "textchange" whenever a toolbar item is clicked so the
+# preview will be updated. [#1]
+addEvent(
+  document.getElementsByClassName('hashify-editor-toolbar')[0]
+  'click'
+  (event) -> Hashify.channel.broadcast 'textchange', Hashify.editor.value()
+)
