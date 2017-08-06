@@ -2,7 +2,6 @@
 {bitlyLimit, maxHashLength, root} = Hashify.settings
 {$, addEvent, sendRequest} = Hashify.utils
 
-qrcode  = $('qrcode')
 shorten = $('shorten')
 wrapper = $('wrapper')
 
@@ -38,7 +37,7 @@ sendShortenRequests = (paths) ->
 textNode = tweet = undefined
 shorturl = document.createElement 'a'
 shorturl.id = 'shorturl'
-wrapper.insertBefore shorturl, qrcode
+wrapper.appendChild shorturl
 
 setShortUrl = (data) ->
   {url} = data
@@ -46,7 +45,6 @@ setShortUrl = (data) ->
   shorturl.removeChild textNode if textNode
   shorturl.appendChild textNode = document.createTextNode url
   shorturl.href = url
-  qrcode.href = url + '.qrcode'
 
   # Set default tweet text.
   tweetText = " #{url}"

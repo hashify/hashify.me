@@ -85,15 +85,14 @@ body
 
 #wrapper.loading
   > #tweet,
-  > #shorturl,
-  > #qrcode
+  > #shorturl
     display: none
 
 #tweet
   position: relative
-  left: -108px
+  left: -103px
   float: left
-  margin: 0 -101px 0 50%
+  margin: 0 -97px 0 50%
   width: 61px
   height: 20px
   border: none
@@ -138,8 +137,7 @@ body
     &:before
       background-position: -5px
 
-#shorturl,
-#qrcode
+#shorturl
   float: left
   border: 1px solid #cde
   background: #fff
@@ -147,14 +145,6 @@ body
   &:hover
     border-color: #5ad
     background-color: #def
-
-#qrcode
-  display: block
-  margin-left: 4px
-  width: 18px
-  height: 18px
-  background-image: inline-image("qrcode.png")
-  text-indent: -9999px
 
 #credits
   position: absolute
