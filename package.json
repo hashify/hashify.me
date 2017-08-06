@@ -21,7 +21,8 @@
     "marked": "0.2.10"
   },
   "devDependencies": {
-    "bower": "1.2.x",
-    "coffee-script": "1.6.x"
+    "bower": "1.8.x",
+    "coffee-script": "1.6.x",
+    "mkdirp": "0.5.x"
   }
 }

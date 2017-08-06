@@ -9,10 +9,7 @@ when one is able to store entire documents in URLs?
 
 ### Installation
 
-1.  Install [Compass](http://compass-style.org/):
-
-        gem update --system
-        gem install compass
+1.  Install [rbenv](https://github.com/rbenv/rbenv).
 
 2.  Install dependencies:
 

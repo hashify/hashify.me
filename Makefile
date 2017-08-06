@@ -56,8 +56,11 @@ lib/js/%.js: src/coffee/%.coffee
 
 .PHONY: setup
 setup:
+	gem install sass -v 3.2.19
+	gem install compass -v 0.12.7
 	npm install
-	bin/components | xargs $(BOWER) install
+	node --print 'const {components} = require("./package.json"); Object.keys(components).map(k => k + "#" + components[k]).join("\n")' \
+	| xargs $(BOWER) install
 
 
 .PHONY: clean
