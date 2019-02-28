@@ -9,6 +9,7 @@
 require 'base64'
 require 'net/http'
 require 'pathname'
+require 'uri'
 
 require 'json' # `gem install json` if necessary
 
@@ -83,20 +84,19 @@ end
 # is raised if bitly returns a non-200 status code.
 def shorten url
   # Generate query string from parameters.
-  req = Net::HTTP::Get.new '/'
-  req.set_form_data(
-    :login => $bitly_username,
-    :apiKey => $bitly_api_key,
-    :longUrl => url,
+  uri = URI 'https://api-ssl.bitly.com/v3/shorten'
+  uri.query = URI.encode_www_form(
+    login: $bitly_username,
+    apiKey: $bitly_api_key,
+    longUrl: url,
   )
   # Send request to bitly.
-  req = Net::HTTP::Get.new "/v3/shorten?#{req.body}"
-  res = Net::HTTP.new('api.bitly.com').request req
-  res = JSON.parse res.body
-  unless (code = res['status_code']) == 200
+  res = Net::HTTP.get_response uri
+  rec = JSON.parse res.body
+  unless (code = rec['status_code']) == 200
     raise RuntimeError, "bad response from bitly (#{code})"
   end
-  res['data']
+  rec['data']
 end
 
 # Read the contents of the specified file to determine the body of the
@@ -124,7 +124,7 @@ hostname = 'hashify.me'
 hostname = 'docco.' + hostname if args[:docco]
 
 # Generate a Hashify URL from the file's contents and provided options.
-domain = "http://#{hostname}/"
+domain = "https://#{hostname}/"
 url = domain + encode(contents) + search
 
 max = 2048

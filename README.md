@@ -4,7 +4,7 @@ Hashify does not solve a problem, it poses a question: what becomes possible
 when one is able to store entire documents in URLs?
 
   - [Hashify overview](http://bit.ly/dXYxGU)
-  - [Hacker News thread](http://news.ycombinator.com/item?id=2464213)
+  - [Hacker News thread](https://news.ycombinator.com/item?id=2464213)
 
 
 ### Installation
@@ -19,7 +19,7 @@ when one is able to store entire documents in URLs?
 
         make
 
-4.  Install [nginx](http://nginx.com/).
+4.  Install [nginx](https://www.nginx.com/).
 
 5.  Create a symlink to nginx.conf from wherever nginx sites live. For example:
 
@@ -36,6 +36,6 @@ when one is able to store entire documents in URLs?
 
 ### localhost
 
-Hashify uses [CORS](http://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
+Hashify uses [CORS](https://en.wikipedia.org/wiki/Cross-origin_resource_sharing)
 in its communication with bitly. Though browsers don't allow this on localhost,
-one can use <http://lvh.me> for testing (lvh.me resolves to localhost).
+one can use <https://lvh.me> for testing (lvh.me resolves to localhost).
