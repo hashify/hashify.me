@@ -20,14 +20,14 @@ corsNotSupported = ->
     [cross-origin resource sharing][1].
 
 
-    [1]: http://en.wikipedia.org/wiki/Cross-Origin_Resource_Sharing
+    [1]: https://en.wikipedia.org/wiki/Cross-origin_resource_sharing
   '''
 
 sendRequest = (action, params, success) ->
   request = new XMLHttpRequest()
   try
     request.open 'GET',
-      "http://api.bitly.com/v3/#{action}?login=davidchambers&" +
+      "https://api-ssl.bitly.com/v3/#{action}?login=davidchambers&" +
       "apiKey=R_20d23528ed6381ebb614a997de11c20a&#{params}"
   catch error
     # NS_ERROR_DOM_BAD_URI

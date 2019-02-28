@@ -3,10 +3,12 @@
   "version": "1.0.0",
   "description": "Store entire documents in URLs",
   "author": "David Chambers <dc@davidchambers.me>",
-  "licenses": [{
-    "type": "BSD",
-    "url": "https://raw.github.com/hashify/hashify.me/master/LICENSE"
-  }],
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "https://raw.github.com/hashify/hashify.me/master/LICENSE"
+    }
+  ],
   "repository": {
     "type": "git",
     "url": "git://github.com/hashify/hashify.me.git"

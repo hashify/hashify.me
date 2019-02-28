@@ -54,7 +54,7 @@ setShortUrl = (data) ->
   # history entry which interferes with navigation. Instead,
   # we create a new `iframe` as per [Nir Levy's suggestion][1].
   #
-  # [1]: http://nirlevy.blogspot.com/2007/09/avoding-browser-history-when-changing.html
+  # [1]: https://nirlevy.blogspot.com/2007/09/avoding-browser-history-when-changing.html
   wrapper.removeChild tweet if tweet?.parentNode
   tweet = document.createElement 'iframe'
   tweet.id = 'tweet'
@@ -66,7 +66,7 @@ setShortUrl = (data) ->
   # invalid value: this value is not displayed, but prevents
   # Twitter from including the long URL in the tweet text.
   tweet.src =
-    'http://platform.twitter.com/widgets/tweet_button.html' +
+    'https://platform.twitter.com/widgets/tweet_button.html' +
     '?count=none&related=hashify&url=foo&text=' +
     encodeURIComponent tweetText
   wrapper.insertBefore tweet, shorturl
